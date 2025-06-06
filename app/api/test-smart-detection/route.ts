@@ -103,7 +103,8 @@ function extractSupplierFromFilename(filename: string): string | null {
 }
 
 async function simulateAIExtraction(text: string) {
-  // Simulate what our AI would extract
+  // Simulate what our AI would extract from the provided text
+  console.log('Processing text content:', text.substring(0, 100) + '...');
   return {
     supplier: {
       name: "Fresh Farms Wholesale Company",
