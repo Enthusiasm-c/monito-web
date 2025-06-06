@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Supplier {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  contactInfo String?
+  email       String?
+  phone       String?
+  address     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  prices      Price[]
+  uploads     Upload[]
+  
+  @@map("suppliers")
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  name            String
+  standardizedName String
+  category        String?
+  unit            String
+  standardizedUnit String
+  description     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  prices          Price[]
+  
+  @@unique([standardizedName, standardizedUnit])
+  @@map("products")
+}
+
+model Price {
+  id         String   @id @default(cuid())
+  amount     Decimal
+  unit       String
+  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  supplierId String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  String
+  upload     Upload?  @relation(fields: [uploadId], references: [id])
+  uploadId   String?
+  validFrom  DateTime @default(now())
+  validTo    DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@unique([supplierId, productId, validFrom])
+  @@map("prices")
+}
+
+model Upload {
+  id          String   @id @default(cuid())
+  filename    String
+  originalName String
+  fileSize    Int
+  mimeType    String
+  status      String   @default("pending") // pending, processing, completed, failed
+  supplier    Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  supplierId  String
+  extractedData Json?
+  errorMessage String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  prices      Price[]
+  
+  @@map("uploads")
+}
