@@ -54,8 +54,10 @@ export async function POST(request: NextRequest) {
           url: blob.url
         });
 
-        // Trigger background processing
-        processFileInBackground(upload.id);
+        // Trigger background processing with timeout protection
+        processFileInBackground(upload.id).catch(error => {
+          console.error(`Background processing failed for ${upload.id}:`, error);
+        });
 
       } catch (error) {
         console.error(`Error uploading file ${file.name}:`, error);
