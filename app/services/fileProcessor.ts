@@ -231,7 +231,7 @@ async function extractWithAI(text: string, fileType: string): Promise<ExtractedD
     `;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4.1-mini',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.1,
     });
