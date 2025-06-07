@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const status = searchParams.get('status');
 
-    const where: any = {};
+    const where: { status?: string } = {};
     if (status) {
       where.status = status;
     }
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
       uploads: detailedUploads,
       summary: {
         total: uploads.length,
-        byStatus: uploads.reduce((acc: any, upload) => {
+        byStatus: uploads.reduce((acc: Record<string, number>, upload) => {
           acc[upload.status] = (acc[upload.status] || 0) + 1;
           return acc;
         }, {}),

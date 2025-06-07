@@ -187,7 +187,7 @@ export async function POST(request: NextRequest) {
           processFileInBackground(upload.id);
         } else {
           console.log('⚠️ OpenAI not configured, creating mock data...');
-          createMockData(upload.id, finalSupplierId);
+          createMockData(upload.id);
         }
 
       } catch (fileError) {
@@ -253,7 +253,7 @@ async function processFileInBackground(uploadId: string) {
   }
 }
 
-async function createMockData(uploadId: string, supplierId: string) {
+async function createMockData(uploadId: string) {
   try {
     console.log(`🎭 Creating mock data for: ${uploadId}`);
     

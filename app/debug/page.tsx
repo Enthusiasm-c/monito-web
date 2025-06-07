@@ -42,7 +42,7 @@ export default function DebugPage() {
   const [loading, setLoading] = useState(true);
   const [testFile, setTestFile] = useState<File | null>(null);
   const [testing, setTesting] = useState(false);
-  const [testResult, setTestResult] = useState<any>(null);
+  const [testResult, setTestResult] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     fetchLogs();
