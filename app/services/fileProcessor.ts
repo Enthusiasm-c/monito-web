@@ -234,6 +234,7 @@ async function extractWithAI(text: string, fileType: string): Promise<ExtractedD
       model: 'gpt-4.1-mini',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.1,
+    }, {
       timeout: 8000, // 8 seconds timeout
     });
 
