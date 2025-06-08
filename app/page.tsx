@@ -55,12 +55,18 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   const [showSupplierModal, setShowSupplierModal] = useState(false);
   const [recentUploads, setRecentUploads] = useState<Upload[]>([]);
+  const [productsPerPage, setProductsPerPage] = useState<number>(50);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [sortBy, setSortBy] = useState<string>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   // Data fetching functions
   const fetchData = async () => {
     try {
       const [productsRes, statsRes, suppliersRes, uploadsRes] = await Promise.all([
-        fetch(`/api/products?category=${categoryFilter}`),
+        fetch(`/api/products?category=${categoryFilter}&limit=${productsPerPage}&page=${currentPage}&sortBy=${sortBy}&sortOrder=${sortOrder}`),
         fetch('/api/stats'),
         fetch('/api/suppliers'),
         fetch('/api/uploads/status?limit=5')
@@ -69,6 +75,9 @@ export default function Home() {
       if (productsRes.ok) {
         const productsData = await productsRes.json();
         setProducts(productsData.products || []);
+        if (productsData.pagination) {
+          setTotalPages(productsData.pagination.pages);
+        }
       }
 
       if (statsRes.ok) {
@@ -95,7 +104,29 @@ export default function Home() {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryFilter]);
+  }, [categoryFilter, productsPerPage, currentPage, sortBy, sortOrder]);
+
+  // Reset to first page when category, products per page, or sorting changes
+  useEffect(() => {
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryFilter, productsPerPage, sortBy, sortOrder]);
+
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+  };
+
+  const getSortIcon = (field: string) => {
+    if (sortBy !== field) return '↕️';
+    return sortOrder === 'asc' ? '↑' : '↓';
+  };
 
   const handleFiles = (files: FileList) => {
     const fileArray = Array.from(files).filter(file => 
@@ -232,9 +263,9 @@ export default function Home() {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('id-ID', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'IDR'
     }).format(amount);
   };
 
@@ -482,6 +513,10 @@ export default function Home() {
                   <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
                     Compare prices across all suppliers for optimal purchasing decisions.
                   </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    Showing {products.length} of {stats.products} total products
+                    {categoryFilter !== 'All Categories' && ` in ${categoryFilter}`}
+                  </p>
                 </div>
                 <div className="flex space-x-2">
                   <select 
@@ -496,6 +531,37 @@ export default function Home() {
                     <option>Grains</option>
                     <option>Dairy</option>
                     <option>Other</option>
+                  </select>
+                  <select 
+                    value={`${sortBy}-${sortOrder}`}
+                    onChange={(e) => {
+                      const [field, order] = e.target.value.split('-');
+                      setSortBy(field);
+                      setSortOrder(order as 'asc' | 'desc');
+                    }}
+                    className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm"
+                  >
+                    <option value="name-asc">Name A-Z</option>
+                    <option value="name-desc">Name Z-A</option>
+                    <option value="category-asc">Category A-Z</option>
+                    <option value="category-desc">Category Z-A</option>
+                    <option value="price-asc">Price Low-High</option>
+                    <option value="price-desc">Price High-Low</option>
+                    <option value="suppliers-desc">Most Suppliers</option>
+                    <option value="suppliers-asc">Fewest Suppliers</option>
+                    <option value="savings-desc">Highest Savings</option>
+                    <option value="savings-asc">Lowest Savings</option>
+                  </select>
+                  <select 
+                    value={productsPerPage}
+                    onChange={(e) => setProductsPerPage(Number(e.target.value))}
+                    className="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm"
+                  >
+                    <option value={50}>50 per page</option>
+                    <option value={100}>100 per page</option>
+                    <option value={200}>200 per page</option>
+                    <option value={500}>500 per page</option>
+                    <option value={1000}>Show All</option>
                   </select>
                   <div className="relative">
                     <button 
@@ -513,23 +579,62 @@ export default function Home() {
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Product
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                      onClick={() => handleSort('name')}
+                    >
+                      <div className="flex items-center space-x-1">
+                        <span>Product</span>
+                        <span className="text-sm">{getSortIcon('name')}</span>
+                      </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Category
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                      onClick={() => handleSort('category')}
+                    >
+                      <div className="flex items-center space-x-1">
+                        <span>Category</span>
+                        <span className="text-sm">{getSortIcon('category')}</span>
+                      </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Best Price
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                      onClick={() => handleSort('unit')}
+                    >
+                      <div className="flex items-center space-x-1">
+                        <span>Unit</span>
+                        <span className="text-sm">{getSortIcon('unit')}</span>
+                      </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Suppliers
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                      onClick={() => handleSort('price')}
+                    >
+                      <div className="flex items-center space-x-1">
+                        <span>Best Price</span>
+                        <span className="text-sm">{getSortIcon('price')}</span>
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                      onClick={() => handleSort('suppliers')}
+                    >
+                      <div className="flex items-center space-x-1">
+                        <span>Suppliers</span>
+                        <span className="text-sm">{getSortIcon('suppliers')}</span>
+                      </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Price Range
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Savings
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                      onClick={() => handleSort('savings')}
+                    >
+                      <div className="flex items-center space-x-1">
+                        <span>Savings</span>
+                        <span className="text-sm">{getSortIcon('savings')}</span>
+                      </div>
                     </th>
                   </tr>
                 </thead>
@@ -548,17 +653,20 @@ export default function Home() {
                     </tr>
                   ) : (
                     products.map((product) => (
-                      <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer" onClick={() => setSelectedProduct(product)}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
                             <div className="text-sm font-medium text-gray-900 dark:text-white">{product.standardizedName}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">per {product.unit}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">{product.name}</div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                             {product.category}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900 dark:text-white">{product.unit}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {product.priceComparison.bestPrice ? (
@@ -603,6 +711,88 @@ export default function Home() {
                 </tbody>
               </table>
             </div>
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
+                <div className="flex-1 flex justify-between sm:hidden">
+                  <button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+                <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      Showing page <span className="font-medium">{currentPage}</span> of{' '}
+                      <span className="font-medium">{totalPages}</span>
+                      {productsPerPage < 1000 && (
+                        <span> ({productsPerPage} products per page)</span>
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                      <button
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        disabled={currentPage === 1}
+                        className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span className="sr-only">Previous</span>
+                        ←
+                      </button>
+                      
+                      {/* Page numbers */}
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                              currentPage === pageNum
+                                ? 'z-10 bg-blue-50 dark:bg-blue-900 border-blue-500 text-blue-600 dark:text-blue-400'
+                                : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                      
+                      <button
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        disabled={currentPage === totalPages}
+                        className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span className="sr-only">Next</span>
+                        →
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -661,6 +851,130 @@ export default function Home() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Product Details Modal */}
+      {selectedProduct && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div className="mt-3">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">{selectedProduct.standardizedName}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Original name: {selectedProduct.name}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Category: {selectedProduct.category}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Unit: {selectedProduct.unit}</p>
+                </div>
+                <button
+                  onClick={() => setSelectedProduct(null)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                  <span className="sr-only">Close</span>
+                  ✕
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Price Overview */}
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Price Overview</h4>
+                  
+                  {selectedProduct.priceComparison.bestPrice && (
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Best Price:</span>
+                        <span className="text-lg font-medium text-green-600 dark:text-green-400">
+                          {formatCurrency(selectedProduct.priceComparison.bestPrice.amount)}
+                        </span>
+                      </div>
+                      
+                      {selectedProduct.priceComparison.highestPrice && selectedProduct.priceComparison.supplierCount > 1 && (
+                        <>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">Highest Price:</span>
+                            <span className="text-lg font-medium text-red-600 dark:text-red-400">
+                              {formatCurrency(selectedProduct.priceComparison.highestPrice.amount)}
+                            </span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">Potential Savings:</span>
+                            <span className="text-lg font-medium text-blue-600 dark:text-blue-400">
+                              {selectedProduct.priceComparison.savings}%
+                            </span>
+                          </div>
+                        </>
+                      )}
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Available from:</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {selectedProduct.priceComparison.supplierCount} supplier{selectedProduct.priceComparison.supplierCount > 1 ? 's' : ''}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Supplier Prices */}
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Supplier Prices</h4>
+                  
+                  {selectedProduct.prices && selectedProduct.prices.length > 0 ? (
+                    <div className="space-y-3">
+                      {selectedProduct.prices
+                        .sort((a, b) => Number(a.amount) - Number(b.amount))
+                        .map((price, index) => (
+                          <div key={price.id || index} className="p-3 bg-white dark:bg-gray-600 rounded-md">
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="flex-1">
+                                <p className="font-medium text-gray-900 dark:text-white">{price.supplier?.name || 'Unknown Supplier'}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">per {price.unit}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className={`font-medium ${index === 0 ? 'text-green-600 dark:text-green-400' : 'text-gray-900 dark:text-white'}`}>
+                                  {formatCurrency(Number(price.amount))}
+                                </p>
+                                {index === 0 && (
+                                  <p className="text-xs text-green-600 dark:text-green-400">Best Price</p>
+                                )}
+                              </div>
+                            </div>
+                            {/* Supplier's original name and update date */}
+                            <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-500">
+                              <p className="text-xs text-gray-600 dark:text-gray-400">
+                                <span className="font-medium">Supplier calls it:</span> {price.product?.rawName || price.product?.name || selectedProduct.name}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <span className="font-medium">Last updated:</span> {new Date(price.updatedAt || price.createdAt).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">No price information available</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setSelectedProduct(null)}
+                  className="bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

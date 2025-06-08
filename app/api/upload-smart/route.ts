@@ -4,6 +4,9 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// Database-based queue processing to handle serverless restarts
+// No in-memory state needed - we use database status for queue management
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -23,6 +26,7 @@ export async function POST(request: NextRequest) {
         // Upload file to Vercel Blob
         const blob = await put(file.name, file, {
           access: 'public',
+          addRandomSuffix: true,
         });
 
         // Create a temporary supplier for processing
@@ -54,9 +58,11 @@ export async function POST(request: NextRequest) {
           url: blob.url
         });
 
-        // Trigger background processing with timeout protection
+        // Start background processing immediately
+        // Database-based queue will handle coordination
+        console.log(`🚀 Starting background processing for upload: ${upload.id}`);
         processFileInBackground(upload.id).catch(error => {
-          console.error(`Background processing failed for ${upload.id}:`, error);
+          console.error(`❌ Background processing failed for ${upload.id}:`, error);
         });
 
       } catch (error) {
@@ -83,28 +89,65 @@ export async function POST(request: NextRequest) {
   }
 }
 
+
+// Database-based sequential processing with better error handling
 async function processFileInBackground(uploadId: string) {
   try {
-    // Update status to processing
-    await prisma.upload.update({
-      where: { id: uploadId },
-      data: { status: 'processing' }
-    });
-
-    // Import the processing service
-    const { processFile } = await import('../../services/fileProcessor');
-    await processFile(uploadId);
-
-  } catch (error) {
-    console.error(`Error processing file ${uploadId}:`, error);
+    console.log(`🔄 Starting processing for upload: ${uploadId}`);
     
-    // Update status to failed
+    // Check if file is already being processed or completed
+    const currentUpload = await prisma.upload.findUnique({
+      where: { id: uploadId }
+    });
+    
+    if (!currentUpload) {
+      console.error(`❌ Upload ${uploadId} not found`);
+      return;
+    }
+    
+    if (currentUpload.status !== 'pending') {
+      console.log(`ℹ️ Upload ${uploadId} is already ${currentUpload.status}, skipping`);
+      return;
+    }
+    
+    // Update status to processing with proper error handling
     await prisma.upload.update({
       where: { id: uploadId },
       data: { 
-        status: 'failed',
-        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+        status: 'processing',
+        updatedAt: new Date()
       }
     });
+    
+    console.log(`✅ Updated status to processing for: ${uploadId}`);
+    
+    // Add rate limiting delay (500ms between file processing starts)
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Import and run the file processor
+    const { processFile } = await import('../../services/fileProcessor');
+    await processFile(uploadId);
+    
+    console.log(`🎉 Successfully completed processing for: ${uploadId}`);
+    
+  } catch (error) {
+    console.error(`💥 Error processing file ${uploadId}:`, error);
+    
+    try {
+      // Update status to failed with detailed error message
+      await prisma.upload.update({
+        where: { id: uploadId },
+        data: { 
+          status: 'failed',
+          errorMessage: error instanceof Error ? error.message : 'Unknown processing error',
+          updatedAt: new Date()
+        }
+      });
+      console.log(`❌ Marked upload ${uploadId} as failed`);
+    } catch (updateError) {
+      console.error(`💥 Failed to update error status for ${uploadId}:`, updateError);
+    }
+    
+    throw error;
   }
 }

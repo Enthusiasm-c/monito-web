@@ -10,6 +10,8 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
+    const sortBy = searchParams.get('sortBy') || 'name';
+    const sortOrder = searchParams.get('sortOrder') || 'asc';
     const offset = (page - 1) * limit;
 
     const where: { category?: string; OR?: Array<{ name?: { contains: string; mode: 'insensitive' }; standardizedName?: { contains: string; mode: 'insensitive' } }> } = {};
@@ -23,6 +25,23 @@ export async function GET(request: NextRequest) {
         { name: { contains: search, mode: 'insensitive' } },
         { standardizedName: { contains: search, mode: 'insensitive' } }
       ];
+    }
+
+    // Create orderBy object based on sortBy parameter
+    let orderBy: any = { standardizedName: 'asc' }; // default
+    
+    switch (sortBy) {
+      case 'name':
+        orderBy = { standardizedName: sortOrder };
+        break;
+      case 'category':
+        orderBy = { category: sortOrder };
+        break;
+      case 'unit':
+        orderBy = { unit: sortOrder };
+        break;
+      default:
+        orderBy = { standardizedName: sortOrder };
     }
 
     const [products, total] = await Promise.all([
@@ -43,25 +62,64 @@ export async function GET(request: NextRequest) {
         },
         skip: offset,
         take: limit,
-        orderBy: {
-          standardizedName: 'asc'
-        }
+        orderBy: orderBy
       }),
       prisma.product.count({ where })
     ]);
 
     // Calculate comparison data for each product
-    const productsWithComparison = products.map(product => {
-      const prices = product.prices;
-      const bestPrice = prices.length > 0 ? prices[0] : null;
-      const highestPrice = prices.length > 0 ? 
-        prices.reduce((max, current) => current.amount > max.amount ? current : max) : null;
+    const productsWithComparison = await Promise.all(products.map(async product => {
+      // Get all prices for products with the same standardized name and unit
+      const allRelatedPrices = await prisma.price.findMany({
+        where: {
+          product: {
+            standardizedName: product.standardizedName,
+            standardizedUnit: product.standardizedUnit
+          },
+          validTo: null
+        },
+        include: {
+          supplier: true,
+          product: {
+            select: {
+              rawName: true,
+              name: true,
+              id: true
+            }
+          }
+        },
+        orderBy: {
+          amount: 'asc'
+        }
+      });
+
+      // Deduplicate prices by supplier to prevent showing the same supplier multiple times
+      const supplierMap = new Map<string, typeof allRelatedPrices[0]>();
       
-      const savings = bestPrice && highestPrice && prices.length > 1 ? 
+      for (const price of allRelatedPrices) {
+        const supplierId = price.supplierId;
+        
+        // Keep the best (lowest) price for each supplier
+        if (!supplierMap.has(supplierId) || price.amount < supplierMap.get(supplierId)!.amount) {
+          supplierMap.set(supplierId, price);
+        }
+      }
+      
+      const deduplicatedPrices = Array.from(supplierMap.values()).sort((a, b) => a.amount - b.amount);
+
+      const bestPrice = deduplicatedPrices.length > 0 ? deduplicatedPrices[0] : null;
+      const highestPrice = deduplicatedPrices.length > 0 ? 
+        deduplicatedPrices.reduce((max, current) => current.amount > max.amount ? current : max) : null;
+      
+      const savings = bestPrice && highestPrice && deduplicatedPrices.length > 1 ? 
         ((Number(highestPrice.amount) - Number(bestPrice.amount)) / Number(highestPrice.amount) * 100) : 0;
 
       return {
         ...product,
+        prices: deduplicatedPrices.map(price => ({
+          ...price,
+          amount: Number(price.amount)
+        })),
         priceComparison: {
           bestPrice: bestPrice ? {
             amount: Number(bestPrice.amount),
@@ -73,15 +131,44 @@ export async function GET(request: NextRequest) {
             supplier: highestPrice.supplier.name,
             supplierId: highestPrice.supplierId
           } : null,
-          supplierCount: prices.length,
+          supplierCount: deduplicatedPrices.length,
           savings: Math.round(savings * 10) / 10,
-          priceRange: prices.length > 1 ? {
+          priceRange: deduplicatedPrices.length > 1 ? {
             min: Number(bestPrice?.amount || 0),
             max: Number(highestPrice?.amount || 0)
           } : null
         }
       };
-    });
+    }));
+
+    // Sort products based on calculated fields (price, suppliers, savings)
+    if (sortBy === 'price' || sortBy === 'suppliers' || sortBy === 'savings') {
+      productsWithComparison.sort((a, b) => {
+        let aValue: number = 0;
+        let bValue: number = 0;
+        
+        switch (sortBy) {
+          case 'price':
+            aValue = a.priceComparison.bestPrice?.amount || Number.MAX_VALUE;
+            bValue = b.priceComparison.bestPrice?.amount || Number.MAX_VALUE;
+            break;
+          case 'suppliers':
+            aValue = a.priceComparison.supplierCount;
+            bValue = b.priceComparison.supplierCount;
+            break;
+          case 'savings':
+            aValue = a.priceComparison.savings;
+            bValue = b.priceComparison.savings;
+            break;
+        }
+        
+        if (sortOrder === 'asc') {
+          return aValue - bValue;
+        } else {
+          return bValue - aValue;
+        }
+      });
+    }
 
     return NextResponse.json({
       products: productsWithComparison,

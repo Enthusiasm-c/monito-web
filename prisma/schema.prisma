@@ -30,17 +30,18 @@ model Supplier {
 }
 
 model Product {
-  id              String   @id @default(cuid())
-  name            String
-  standardizedName String
-  category        String?
-  unit            String
+  id               String   @id @default(cuid())
+  rawName          String   // Original name from supplier
+  name             String   // Cleaned original name
+  standardizedName String   // AI-standardized name for matching
+  category         String?
+  unit             String
   standardizedUnit String
-  description     String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  description      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
   
-  prices          Price[]
+  prices           Price[]
   
   @@unique([standardizedName, standardizedUnit])
   @@map("products")
