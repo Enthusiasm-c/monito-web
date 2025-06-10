@@ -1,0 +1,31 @@
+SKU,Product Name,Brand,Category,Subcategory,Unit,Pack Size,Qty Available,Price IDR,Wholesale Price IDR,Min Order,Max Order,Supplier,Supplier Code,Origin,Storage Temp,Shelf Life Days,Organic,Certification,Last Updated
+VEG001,Fresh Tomatoes,FarmFresh,Vegetables,Fresh Produce,kg,1,150,12500,11000,10,500,Local Farm Co,LFC001,Indonesia,4°C,7,Yes,Organic Cert,2024-01-15
+MEAT001,Chicken Breast Fillet,PremiumPoultry,Meat,Poultry,kg,1,75,55000,50000,5,100,Premium Poultry Ltd,PPL001,Indonesia,2°C,3,No,Halal,2024-01-15
+GRAIN001,Jasmine Rice Premium,RiceKing,Grains,Rice,kg,5,200,30000,27000,20,1000,Rice King Supply,RKS001,Thailand,Room Temp,365,No,None,2024-01-15
+DAIRY001,Cheddar Cheese Block,DairyDeluxe,Dairy,Cheese,kg,0.5,45,95000,88000,2,50,Dairy Deluxe Inc,DDI001,Australia,4°C,45,No,None,2024-01-15
+FISH001,Fresh Salmon Fillet,OceanBest,Seafood,Fish,kg,1,25,125000,115000,3,30,Ocean Best Seafood,OBS001,Norway,0°C,2,No,MSC,2024-01-15
+VEG002,Red Bell Peppers,FarmFresh,Vegetables,Fresh Produce,kg,1,120,18000,16500,8,200,Local Farm Co,LFC001,Indonesia,4°C,10,Yes,Organic Cert,2024-01-15
+MEAT002,Ground Beef Premium,ButchersBest,Meat,Beef,kg,1,85,48000,44000,5,150,Butchers Best Ltd,BBL001,Australia,2°C,2,No,None,2024-01-15
+GRAIN002,Basmati Rice Aged,RiceKing,Grains,Rice,kg,5,180,35000,32000,15,800,Rice King Supply,RKS001,India,Room Temp,730,No,None,2024-01-15
+DAIRY002,Mozzarella Cheese,DairyDeluxe,Dairy,Cheese,kg,1,60,85000,78000,3,80,Dairy Deluxe Inc,DDI001,Italy,4°C,30,No,None,2024-01-15
+FISH002,Fresh Tuna Steak,OceanBest,Seafood,Fish,kg,1,18,135000,125000,2,20,Ocean Best Seafood,OBS001,Maldives,0°C,1,No,MSC,2024-01-15
+VEG003,Organic Spinach,GreenLeaf,Vegetables,Leafy Greens,kg,1,95,15000,13500,10,300,Green Leaf Organic,GLO001,Indonesia,4°C,5,Yes,Organic Cert,2024-01-15
+MEAT003,Pork Tenderloin,ButchersBest,Meat,Pork,kg,1,40,52000,48000,3,60,Butchers Best Ltd,BBL001,Denmark,2°C,3,No,None,2024-01-15
+GRAIN003,Brown Rice Organic,HealthyGrains,Grains,Rice,kg,5,220,32000,29000,25,1200,Healthy Grains Co,HGC001,Indonesia,Room Temp,545,Yes,Organic Cert,2024-01-15
+DAIRY003,Greek Yogurt Natural,DairyDeluxe,Dairy,Yogurt,kg,1,80,45000,41000,5,100,Dairy Deluxe Inc,DDI001,Greece,4°C,21,No,None,2024-01-15
+FISH003,Shrimp Large Raw,OceanBest,Seafood,Shellfish,kg,1,35,165000,152000,2,40,Ocean Best Seafood,OBS001,Ecuador,0°C,2,No,None,2024-01-15
+VEG004,Baby Carrots,FarmFresh,Vegetables,Root Vegetables,kg,1,140,14000,12500,12,400,Local Farm Co,LFC001,Indonesia,4°C,14,Yes,Organic Cert,2024-01-15
+MEAT004,Lamb Chops French,PremiumMeats,Meat,Lamb,kg,1,22,85000,78000,2,30,Premium Meats Ltd,PML001,New Zealand,2°C,4,No,None,2024-01-15
+GRAIN004,Quinoa Tricolor,SuperGrains,Grains,Ancient Grains,kg,1,65,65000,60000,5,80,Super Grains Supply,SGS001,Bolivia,Room Temp,730,Yes,Organic Cert,2024-01-15
+DAIRY004,Butter Unsalted Premium,DairyDeluxe,Dairy,Butter,kg,1,55,75000,69000,4,70,Dairy Deluxe Inc,DDI001,France,4°C,60,No,None,2024-01-15
+FISH004,Sea Bass Fillet,OceanBest,Seafood,Fish,kg,1,15,155000,143000,1,15,Ocean Best Seafood,OBS001,Mediterranean,0°C,2,No,None,2024-01-15
+VEG005,Organic Kale,GreenLeaf,Vegetables,Leafy Greens,kg,1,85,22000,20000,8,200,Green Leaf Organic,GLO001,Indonesia,4°C,7,Yes,Organic Cert,2024-01-15
+MEAT005,Duck Breast Magret,PremiumPoultry,Meat,Poultry,kg,1,28,95000,88000,2,35,Premium Poultry Ltd,PPL001,France,2°C,5,No,None,2024-01-15
+GRAIN005,Wild Rice Canadian,SuperGrains,Grains,Specialty Rice,kg,1,45,55000,50000,3,50,Super Grains Supply,SGS001,Canada,Room Temp,1095,No,None,2024-01-15
+DAIRY005,Heavy Cream 35%,DairyDeluxe,Dairy,Cream,l,1,70,35000,32000,6,120,Dairy Deluxe Inc,DDI001,France,4°C,14,No,None,2024-01-15
+FISH005,Lobster Tail Canadian,LuxurySeafood,Seafood,Shellfish,kg,1,8,285000,265000,1,10,Luxury Seafood Co,LSC001,Canada,-18°C,90,No,None,2024-01-15
+VEG006,Zucchini Fresh,FarmFresh,Vegetables,Fresh Produce,kg,1,160,13000,11500,15,500,Local Farm Co,LFC001,Indonesia,4°C,8,Yes,Organic Cert,2024-01-15
+MEAT006,Beef Ribeye Aged,PremiumMeats,Meat,Beef,kg,1,18,125000,115000,1,25,Premium Meats Ltd,PML001,Australia,2°C,7,No,None,2024-01-15
+GRAIN006,Couscous Pearl,Mediterranean,Grains,Pasta,kg,1,90,28000,25500,8,150,Mediterranean Foods,MF001,Morocco,Room Temp,730,No,None,2024-01-15
+DAIRY006,Parmesan Cheese Aged,ItalianImports,Dairy,Hard Cheese,kg,1,32,165000,152000,1,20,Italian Imports Ltd,IIL001,Italy,4°C,180,No,DOP,2024-01-15
+FISH006,King Crab Legs Alaskan,LuxurySeafood,Seafood,Shellfish,kg,1,5,385000,355000,1,5,Luxury Seafood Co,LSC001,Alaska,-18°C,180,No,None,2024-01-15

@@ -1,0 +1,410 @@
+{
+  "project_info": {
+    "name": "Monito-Web Supplier Price Comparison Platform",
+    "analysis_date": "2025-06-10T20:51:57.404818",
+    "project_root": "/Users/denisdomashenko/monito-web"
+  },
+  "pipeline_components": {
+    "product_normalizer.py": {
+      "size_bytes": 32389,
+      "size_kb": 31.63,
+      "last_modified": "2025-06-10T19:57:58.782235"
+    },
+    "pdf_text_extractor.py": {
+      "size_bytes": 21587,
+      "size_kb": 21.08,
+      "last_modified": "2025-06-10T19:26:54.851655"
+    },
+    "price_parser.py": {
+      "size_bytes": 31489,
+      "size_kb": 30.75,
+      "last_modified": "2025-06-10T20:03:14.991202"
+    },
+    "excel_reader.py": {
+      "size_bytes": 27208,
+      "size_kb": 26.57,
+      "last_modified": "2025-06-10T19:38:53.158974"
+    },
+    "logging_service.py": {
+      "size_bytes": 33050,
+      "size_kb": 32.28,
+      "last_modified": "2025-06-10T20:37:57.212099"
+    },
+    "__init__.py": {
+      "size_bytes": 18,
+      "size_kb": 0.02,
+      "last_modified": "2025-06-10T13:45:38.557266"
+    },
+    "ai_structuring_service.py": {
+      "size_bytes": 34597,
+      "size_kb": 33.79,
+      "last_modified": "2025-06-10T20:15:57.461910"
+    },
+    "ai_cache_service.py": {
+      "size_bytes": 30006,
+      "size_kb": 29.3,
+      "last_modified": "2025-06-10T20:13:42.126041"
+    },
+    "image_preprocessor.py": {
+      "size_bytes": 26153,
+      "size_kb": 25.54,
+      "last_modified": "2025-06-10T19:33:20.824113"
+    },
+    "batch_database_service.py": {
+      "size_bytes": 43892,
+      "size_kb": 42.86,
+      "last_modified": "2025-06-10T20:26:55.356656"
+    },
+    "document_classifier.py": {
+      "size_bytes": 9965,
+      "size_kb": 9.73,
+      "last_modified": "2025-06-10T13:46:25.594259"
+    },
+    "table_extractor.py": {
+      "size_bytes": 33553,
+      "size_kb": 32.77,
+      "last_modified": "2025-06-10T19:45:28.277261"
+    },
+    "ai_cache_integration.ts": {
+      "size_bytes": 14618,
+      "size_kb": 14.28,
+      "last_modified": "2025-06-10T20:11:08.745165"
+    },
+    "batch_database_integration.ts": {
+      "size_bytes": 16032,
+      "size_kb": 15.66,
+      "last_modified": "2025-06-10T20:24:22.011648"
+    },
+    "pdf_text_service.ts": {
+      "size_bytes": 10114,
+      "size_kb": 9.88,
+      "last_modified": "2025-06-10T19:28:04.108738"
+    },
+    "excel_reading_service.ts": {
+      "size_bytes": 14611,
+      "size_kb": 14.27,
+      "last_modified": "2025-06-10T19:40:11.572392"
+    },
+    "price_parsing_service.ts": {
+      "size_bytes": 16160,
+      "size_kb": 15.78,
+      "last_modified": "2025-06-10T20:04:40.049070"
+    },
+    "ai_structuring_service.ts": {
+      "size_bytes": 15627,
+      "size_kb": 15.26,
+      "last_modified": "2025-06-10T19:52:34.883847"
+    },
+    "image_preprocessing_service.ts": {
+      "size_bytes": 11439,
+      "size_kb": 11.17,
+      "last_modified": "2025-06-10T19:34:19.641266"
+    },
+    "upload_processor.ts": {
+      "size_bytes": 9985,
+      "size_kb": 9.75,
+      "last_modified": "2025-06-10T19:18:55.831043"
+    },
+    "logging_integration.ts": {
+      "size_bytes": 16859,
+      "size_kb": 16.46,
+      "last_modified": "2025-06-10T20:34:24.637958"
+    },
+    "document_classifier_service.ts": {
+      "size_bytes": 8133,
+      "size_kb": 7.94,
+      "last_modified": "2025-06-10T19:19:47.454740"
+    }
+  },
+  "test_coverage": {
+    "test_excel_reading.py": {
+      "size_bytes": 22307,
+      "size_kb": 21.78,
+      "last_modified": "2025-06-10T19:41:59.512423"
+    },
+    "test_document_classification.py": {
+      "size_bytes": 15222,
+      "size_kb": 14.87,
+      "last_modified": "2025-06-10T19:22:37.317202"
+    },
+    "test_ai_structuring.py": {
+      "size_bytes": 22188,
+      "size_kb": 21.67,
+      "last_modified": "2025-06-10T19:54:28.160932"
+    },
+    "test_batch_database.py": {
+      "size_bytes": 23625,
+      "size_kb": 23.07,
+      "last_modified": "2025-06-10T20:26:22.655210"
+    },
+    "test_price_parsing.py": {
+      "size_bytes": 21518,
+      "size_kb": 21.01,
+      "last_modified": "2025-06-10T20:06:30.781164"
+    },
+    "test_image_preprocessing.py": {
+      "size_bytes": 19210,
+      "size_kb": 18.76,
+      "last_modified": "2025-06-10T19:35:49.153736"
+    },
+    "test_pdf_text_extraction.py": {
+      "size_bytes": 18113,
+      "size_kb": 17.69,
+      "last_modified": "2025-06-10T19:29:44.596530"
+    },
+    "test_complete_pipeline_integration.py": {
+      "size_bytes": 17655,
+      "size_kb": 17.24,
+      "last_modified": "2025-06-10T20:40:19.611525"
+    },
+    "test_ai_cache.py": {
+      "size_bytes": 22233,
+      "size_kb": 21.71,
+      "last_modified": "2025-06-10T20:12:58.205507"
+    },
+    "test_extraction_pipeline.py": {
+      "size_bytes": 14982,
+      "size_kb": 14.63,
+      "last_modified": "2025-06-10T13:44:54.650541"
+    },
+    "test_logging_service.py": {
+      "size_bytes": 21246,
+      "size_kb": 20.75,
+      "last_modified": "2025-06-10T20:36:10.506633"
+    }
+  },
+  "implementation_status": {
+    "Task 1": {
+      "description": "Document Classification with MIME + Hash",
+      "files": {
+        "document_classifier.py": {
+          "exists": true,
+          "path": "src/pipeline/document_classifier.py"
+        },
+        "document_classifier_service.ts": {
+          "exists": true,
+          "path": "src/pipeline/document_classifier_service.ts"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 2": {
+      "description": "PDF Text Extraction and OCR Fallback",
+      "files": {
+        "pdf_text_extractor.py": {
+          "exists": true,
+          "path": "src/pipeline/pdf_text_extractor.py"
+        },
+        "pdf_text_service.ts": {
+          "exists": true,
+          "path": "src/pipeline/pdf_text_service.ts"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 3": {
+      "description": "Image Preprocessing for Menu Readability",
+      "files": {
+        "image_preprocessor.py": {
+          "exists": true,
+          "path": "src/pipeline/image_preprocessor.py"
+        },
+        "image_preprocessing_service.ts": {
+          "exists": true,
+          "path": "src/pipeline/image_preprocessing_service.ts"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 4": {
+      "description": "Unified XLSX Reading for All Sheets",
+      "files": {
+        "excel_reader.py": {
+          "exists": true,
+          "path": "src/pipeline/excel_reader.py"
+        },
+        "excel_reading_service.ts": {
+          "exists": true,
+          "path": "src/pipeline/excel_reading_service.ts"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 5": {
+      "description": "Rule-based Table Extraction",
+      "files": {
+        "table_extractor.py": {
+          "exists": true,
+          "path": "src/pipeline/table_extractor.py"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 6": {
+      "description": "AI Structuring with Function Calling",
+      "files": {
+        "ai_structuring_service.py": {
+          "exists": true,
+          "path": "src/pipeline/ai_structuring_service.py"
+        },
+        "ai_structuring_service.ts": {
+          "exists": true,
+          "path": "src/pipeline/ai_structuring_service.ts"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 7": {
+      "description": "Product Normalization with Fuzzy Matching",
+      "files": {
+        "product_normalizer.py": {
+          "exists": true,
+          "path": "src/pipeline/product_normalizer.py"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 8": {
+      "description": "Composite Price Parsing",
+      "files": {
+        "price_parser.py": {
+          "exists": true,
+          "path": "src/pipeline/price_parser.py"
+        },
+        "price_parsing_service.ts": {
+          "exists": true,
+          "path": "src/pipeline/price_parsing_service.ts"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 9": {
+      "description": "AI Response Caching with Redis",
+      "files": {
+        "ai_cache_service.py": {
+          "exists": true,
+          "path": "src/pipeline/ai_cache_service.py"
+        },
+        "ai_cache_integration.ts": {
+          "exists": true,
+          "path": "src/pipeline/ai_cache_integration.ts"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 10": {
+      "description": "Batch Database Operations",
+      "files": {
+        "batch_database_service.py": {
+          "exists": true,
+          "path": "src/pipeline/batch_database_service.py"
+        },
+        "batch_database_integration.ts": {
+          "exists": true,
+          "path": "src/pipeline/batch_database_integration.ts"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 11": {
+      "description": "Logging and Metrics with Structlog",
+      "files": {
+        "logging_service.py": {
+          "exists": true,
+          "path": "src/pipeline/logging_service.py"
+        },
+        "logging_integration.ts": {
+          "exists": true,
+          "path": "src/pipeline/logging_integration.ts"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 12": {
+      "description": "Auto-tests and Validation",
+      "files": {
+        "test_complete_pipeline_integration.py": {
+          "exists": true,
+          "path": "tests/test_complete_pipeline_integration.py"
+        },
+        "test_pipeline_basic.py": {
+          "exists": true,
+          "path": "test_pipeline_basic.py"
+        }
+      },
+      "completion": 1.0
+    },
+    "Task 13": {
+      "description": "Developer Documentation",
+      "files": {},
+      "completion": 0
+    },
+    "Task 14": {
+      "description": "CI/CD with GitHub Actions",
+      "files": {},
+      "completion": 0
+    }
+  },
+  "dependencies": {
+    "python_packages": {
+      "required": {
+        "fastapi": "Available",
+        "pytest": "Available",
+        "structlog": "Available",
+        "redis": "Available",
+        "pandas": "Available"
+      },
+      "optional": {
+        "rapidfuzz": "Available",
+        "pint": "Missing",
+        "psutil": "Available",
+        "psycopg2": "Missing",
+        "asyncpg": "Missing",
+        "opencv-python": "Missing",
+        "pillow": "Missing"
+      },
+      "ai_related": {
+        "openai": "Available",
+        "anthropic": "Missing"
+      }
+    },
+    "system_dependencies": {
+      "required": {
+        "python3": "Available",
+        "node": "Available",
+        "npm": "Available"
+      },
+      "optional": {
+        "redis-server": "Available",
+        "postgresql": "Missing",
+        "tesseract": "Missing",
+        "poppler-utils": "Missing"
+      }
+    }
+  },
+  "recommendations": [
+    {
+      "category": "Implementation",
+      "priority": "Medium",
+      "issue": "Some tasks are not fully implemented",
+      "details": [
+        "Task 13: 0% complete",
+        "Task 14: 0% complete"
+      ],
+      "action": "Complete missing implementation files"
+    },
+    {
+      "category": "Dependencies",
+      "priority": "Medium",
+      "issue": "Missing optional dependencies that enhance functionality",
+      "details": [
+        "pint",
+        "psycopg2",
+        "asyncpg",
+        "opencv-python",
+        "pillow"
+      ],
+      "action": "Consider installing optional packages for full functionality"
+    }
+  ]
+}

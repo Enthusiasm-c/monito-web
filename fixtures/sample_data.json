@@ -1,0 +1,173 @@
+{
+  "reference_files": {
+    "pdf_structured": {
+      "file": "structured_price_list.pdf",
+      "type": "application/pdf",
+      "expected_min_rows": 150,
+      "expected_products": 140,
+      "supplier_name": "STRUCTURED SUPPLIER",
+      "has_prices": true,
+      "complexity": "medium",
+      "description": "Well-formatted PDF with clear table structure"
+    },
+    "pdf_complex": {
+      "file": "complex_catalog.pdf", 
+      "type": "application/pdf",
+      "expected_min_rows": 200,
+      "expected_products": 180,
+      "supplier_name": "COMPLEX CATALOG CO",
+      "has_prices": true,
+      "complexity": "high",
+      "description": "Multi-page catalog with varied layouts"
+    },
+    "pdf_simple": {
+      "file": "simple_price_sheet.pdf",
+      "type": "application/pdf", 
+      "expected_min_rows": 80,
+      "expected_products": 70,
+      "supplier_name": "SIMPLE SUPPLIER",
+      "has_prices": true,
+      "complexity": "low",
+      "description": "Single page with basic table"
+    },
+    "excel_multi_sheet": {
+      "file": "multi_sheet_inventory.xlsx",
+      "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "expected_min_rows": 100,
+      "expected_products": 90,
+      "supplier_name": "MULTI SHEET SUPPLIER",
+      "has_prices": true,
+      "complexity": "medium",
+      "description": "Excel file with multiple product sheets"
+    },
+    "csv_simple": {
+      "file": "basic_price_list.csv",
+      "type": "text/csv",
+      "expected_min_rows": 50,
+      "expected_products": 45,
+      "supplier_name": "CSV SUPPLIER",
+      "has_prices": true,
+      "complexity": "low",
+      "description": "Basic CSV with product name, price, unit columns"
+    },
+    "image_menu": {
+      "file": "restaurant_menu.jpg",
+      "type": "image/jpeg",
+      "expected_min_rows": 30,
+      "expected_products": 25,
+      "supplier_name": "RESTAURANT MENU",
+      "has_prices": true,
+      "complexity": "high",
+      "description": "Photo of restaurant menu requiring OCR"
+    },
+    "pdf_catalog": {
+      "file": "wholesale_catalog.pdf",
+      "type": "application/pdf",
+      "expected_min_rows": 300,
+      "expected_products": 280,
+      "supplier_name": "WHOLESALE CATALOG",
+      "has_prices": true,
+      "complexity": "high",
+      "description": "Large wholesale catalog with multiple sections"
+    },
+    "excel_single_sheet": {
+      "file": "single_sheet_prices.xlsx",
+      "type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "expected_min_rows": 40,
+      "expected_products": 35,
+      "supplier_name": "SINGLE SHEET SUPPLIER",
+      "has_prices": true,
+      "complexity": "low",
+      "description": "Simple Excel file with one sheet"
+    },
+    "pdf_scanned": {
+      "file": "scanned_price_list.pdf",
+      "type": "application/pdf",
+      "expected_min_rows": 60,
+      "expected_products": 50,
+      "supplier_name": "SCANNED SUPPLIER",
+      "has_prices": true,
+      "complexity": "high",
+      "description": "Scanned PDF requiring OCR processing"
+    },
+    "csv_complex": {
+      "file": "detailed_inventory.csv",
+      "type": "text/csv",
+      "expected_min_rows": 200,
+      "expected_products": 180,
+      "supplier_name": "DETAILED INVENTORY CO",
+      "has_prices": true,
+      "complexity": "medium",
+      "description": "Complex CSV with many columns and detailed product info"
+    }
+  },
+  "test_products": [
+    {
+      "product": "Fresh Tomatoes",
+      "variants": ["Tomatoes Fresh 1kg", "Fresh Tomato 1 kg", "Tomato - Fresh (1kg)"],
+      "category": "vegetables",
+      "expected_uom": "kg",
+      "price_range": [8.0, 15.0]
+    },
+    {
+      "product": "Chicken Breast",
+      "variants": ["Chicken Breast Fillet", "Fresh Chicken Breast", "Chicken Breast (Boneless)"],
+      "category": "meat",
+      "expected_uom": "kg",
+      "price_range": [45.0, 65.0]
+    },
+    {
+      "product": "Jasmine Rice",
+      "variants": ["Rice Jasmine 5kg", "Jasmine Rice 5 kg", "Rice - Jasmine (5kg bag)"],
+      "category": "grains",
+      "expected_uom": "kg",
+      "price_range": [25.0, 35.0]
+    },
+    {
+      "product": "Cheddar Cheese",
+      "variants": ["Cheddar 500g", "Cheddar Block 0.5kg", "Cheese Cheddar 500 gr"],
+      "category": "dairy",
+      "expected_uom": "kg",
+      "price_range": [85.0, 120.0]
+    }
+  ],
+  "composite_prices": [
+    {
+      "input": "17/15",
+      "expected": [
+        {"price": 17.0, "type": "baked"},
+        {"price": 15.0, "type": "frozen"}
+      ]
+    },
+    {
+      "input": "250@10 pcs",
+      "expected": [
+        {"price": 250.0, "pack_qty": 10, "uom": "pcs"}
+      ]
+    },
+    {
+      "input": "12.50/11.00",
+      "expected": [
+        {"price": 12.5, "type": "baked"},
+        {"price": 11.0, "type": "frozen"}
+      ]
+    },
+    {
+      "input": "150@5kg",
+      "expected": [
+        {"price": 150.0, "pack_qty": 5, "uom": "kg"}
+      ]
+    }
+  ],
+  "performance_expectations": {
+    "pdf_simple": {"max_time_s": 15, "min_accuracy": 0.90},
+    "pdf_medium": {"max_time_s": 30, "min_accuracy": 0.85},
+    "pdf_complex": {"max_time_s": 60, "min_accuracy": 0.80},
+    "excel_simple": {"max_time_s": 5, "min_accuracy": 0.95},
+    "excel_complex": {"max_time_s": 15, "min_accuracy": 0.90},
+    "csv_simple": {"max_time_s": 3, "min_accuracy": 0.98},
+    "csv_complex": {"max_time_s": 10, "min_accuracy": 0.95},
+    "image_simple": {"max_time_s": 20, "min_accuracy": 0.75},
+    "image_complex": {"max_time_s": 45, "min_accuracy": 0.70}
+  }
+}

@@ -73,12 +73,17 @@ model Upload {
   fileSize              Int?
   mimeType              String?
   url                   String?
-  status                String   @default("pending") // pending, processing, completed, completed_with_errors, failed, too_large
+  status                String   @default("pending") // pending, processing, completed, completed_with_errors, failed, too_large, pending_ocr, pending_large
   supplier              Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   supplierId            String
   extractedData         Json?
   processingDetails     String?
   errorMessage          String?
+
+  // Document classification fields
+  fileHash              String?  @unique // SHA-256 hash for deduplication
+  documentType          String?  // pdf_structured, pdf_scanned, excel_multi, etc.
+  classificationResult  Json?    // Full classification metadata
   
   // New processing metrics
   totalRowsDetected     Int?
