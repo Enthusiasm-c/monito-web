@@ -14,7 +14,23 @@ export async function GET(request: NextRequest) {
     const sortOrder = searchParams.get('sortOrder') || 'asc';
     const offset = (page - 1) * limit;
 
-    const where: { category?: string; OR?: Array<{ name?: { contains: string; mode: 'insensitive' }; standardizedName?: { contains: string; mode: 'insensitive' } }> } = {};
+    interface WhereClause {
+      category?: string;
+      OR?: Array<{
+        name?: { contains: string; mode: 'insensitive' };
+        standardizedName?: { contains: string; mode: 'insensitive' };
+        category?: { contains: string; mode: 'insensitive' };
+        prices?: {
+          some: {
+            supplier: {
+              name: { contains: string; mode: 'insensitive' };
+            };
+          };
+        };
+      }>;
+    }
+    
+    const where: WhereClause = {};
     
     if (category && category !== 'All Categories') {
       where.category = category;
@@ -23,25 +39,41 @@ export async function GET(request: NextRequest) {
     if (search) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
-        { standardizedName: { contains: search, mode: 'insensitive' } }
+        { standardizedName: { contains: search, mode: 'insensitive' } },
+        { category: { contains: search, mode: 'insensitive' } },
+        { 
+          prices: {
+            some: {
+              supplier: {
+                name: { contains: search, mode: 'insensitive' }
+              }
+            }
+          }
+        }
       ];
     }
 
     // Create orderBy object based on sortBy parameter
-    let orderBy: any = { standardizedName: 'asc' }; // default
+    interface OrderBy {
+      standardizedName?: 'asc' | 'desc';
+      category?: 'asc' | 'desc';
+      unit?: 'asc' | 'desc';
+    }
+    
+    let orderBy: OrderBy = { standardizedName: 'asc' }; // default
     
     switch (sortBy) {
       case 'name':
-        orderBy = { standardizedName: sortOrder };
+        orderBy = { standardizedName: sortOrder as 'asc' | 'desc' };
         break;
       case 'category':
-        orderBy = { category: sortOrder };
+        orderBy = { category: sortOrder as 'asc' | 'desc' };
         break;
       case 'unit':
-        orderBy = { unit: sortOrder };
+        orderBy = { unit: sortOrder as 'asc' | 'desc' };
         break;
       default:
-        orderBy = { standardizedName: sortOrder };
+        orderBy = { standardizedName: sortOrder as 'asc' | 'desc' };
     }
 
     const [products, total] = await Promise.all([

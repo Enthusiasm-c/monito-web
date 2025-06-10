@@ -62,7 +62,6 @@ export async function GET() {
     return NextResponse.json({
       products: productCount,
       suppliers: supplierCount,
-      avgSavings,
       lastUpdate,
       uploads: uploadCount
     });

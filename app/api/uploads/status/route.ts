@@ -11,9 +11,9 @@ export async function GET(request: NextRequest) {
     const uploads = await prisma.upload.findMany({
       include: {
         supplier: true,
-        _count: {
+        prices: {
           select: {
-            prices: true
+            id: true
           }
         }
       },
@@ -23,7 +23,26 @@ export async function GET(request: NextRequest) {
       take: limit
     });
 
-    return NextResponse.json(uploads);
+    // Add enhanced metrics and count
+    const uploadsWithMetrics = uploads.map(upload => ({
+      ...upload,
+      _count: {
+        prices: upload.prices.length
+      },
+      prices: undefined, // Remove prices data, only keep count
+      // Enhanced processing metrics
+      processingMetrics: {
+        completenessRatio: upload.completenessRatio,
+        totalRows: upload.totalRowsDetected,
+        processedRows: upload.totalRowsProcessed,
+        processingTimeMs: upload.processingTimeMs,
+        tokensUsed: upload.tokensUsed,
+        costUsd: upload.processingCostUsd,
+        sheetsProcessed: upload.sheetsProcessed
+      }
+    }));
+
+    return NextResponse.json(uploadsWithMetrics);
   } catch (error) {
     console.error('Error fetching upload status:', error);
     return NextResponse.json(

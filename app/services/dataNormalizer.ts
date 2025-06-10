@@ -260,10 +260,10 @@ export class DataNormalizer {
   /**
    * Extract currency information from price string
    */
-  extractCurrency(priceStr: string): string {
+  extractCurrency(priceStr: string | number): string {
     if (!priceStr) return 'IDR'; // Default to Indonesian Rupiah
 
-    const str = priceStr.toLowerCase();
+    const str = String(priceStr).toLowerCase();
     
     if (str.includes('rp') || str.includes('rupiah') || str.includes('idr')) return 'IDR';
     if (str.includes('$') || str.includes('usd')) return 'USD';
@@ -286,7 +286,7 @@ export class DataNormalizer {
       unit: weightResult.unit || 'pcs',
       category: rawProduct.category || null,
       description: rawProduct.description || null,
-      currency: this.extractCurrency(rawProduct.price),
+      currency: this.extractCurrency(String(rawProduct.price || '')),
       weightGrams: weightResult.value,
       originalData: {
         name: rawProduct.name,

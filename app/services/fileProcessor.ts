@@ -48,14 +48,14 @@ export async function processFile(uploadId: string) {
     let extractedData: ExtractedData = { products: [] };
 
     // Extract data based on file type
-    if (upload.mimeType.includes('pdf')) {
-      extractedData = await processPDF(upload.filename);
-    } else if (upload.mimeType.includes('excel') || upload.mimeType.includes('sheet')) {
-      extractedData = await processExcel(upload.filename);
-    } else if (upload.mimeType.includes('csv')) {
-      extractedData = await processCSV(upload.filename);
-    } else if (upload.mimeType.includes('image')) {
-      extractedData = await processImage(upload.filename);
+    if (upload.mimeType?.includes('pdf')) {
+      extractedData = await processPDF(upload.url || '');
+    } else if (upload.mimeType?.includes('excel') || upload.mimeType?.includes('sheet')) {
+      extractedData = await processExcel(upload.url || '');
+    } else if (upload.mimeType?.includes('csv')) {
+      extractedData = await processCSV(upload.url || '');
+    } else if (upload.mimeType?.includes('image')) {
+      extractedData = await processImage(upload.url || '');
     } else {
       throw new Error(`Unsupported file type: ${upload.mimeType}`);
     }

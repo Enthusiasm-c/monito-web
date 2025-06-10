@@ -20,7 +20,6 @@ interface Product {
 interface Stats {
   products: number;
   suppliers: number;
-  avgSavings: number;
   lastUpdate: string;
 }
 
@@ -47,7 +46,7 @@ export default function Home() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [stats, setStats] = useState<Stats>({ products: 0, suppliers: 0, avgSavings: 0, lastUpdate: 'Never' });
+  const [stats, setStats] = useState<Stats>({ products: 0, suppliers: 0, lastUpdate: 'Never' });
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [selectedSupplier, setSelectedSupplier] = useState<string>('');
   const [categoryFilter, setCategoryFilter] = useState<string>('All Categories');
@@ -59,17 +58,33 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedSupplierCard, setSelectedSupplierCard] = useState<Supplier | null>(null);
+  const [supplierProducts, setSupplierProducts] = useState<any[]>([]);
+  const [supplierDetails, setSupplierDetails] = useState<any>(null);
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
+  const [tokenUsage, setTokenUsage] = useState<{totalCostUsd: number; totalCostFormatted: string}>({totalCostUsd: 0, totalCostFormatted: '$0.0000'});
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // Data fetching functions
   const fetchData = async () => {
     try {
-      const [productsRes, statsRes, suppliersRes, uploadsRes] = await Promise.all([
-        fetch(`/api/products?category=${categoryFilter}&limit=${productsPerPage}&page=${currentPage}&sortBy=${sortBy}&sortOrder=${sortOrder}`),
+      const [productsRes, statsRes, suppliersRes, uploadsRes, tokenRes] = await Promise.all([
+        fetch(`/api/products?category=${categoryFilter}&limit=${productsPerPage}&page=${currentPage}&sortBy=${sortBy}&sortOrder=${sortOrder}&search=${encodeURIComponent(debouncedSearchQuery)}`),
         fetch('/api/stats'),
         fetch('/api/suppliers'),
-        fetch('/api/uploads/status?limit=5')
+        fetch('/api/uploads/status?limit=5'),
+        fetch('/api/token-usage')
       ]);
 
       if (productsRes.ok) {
@@ -94,6 +109,11 @@ export default function Home() {
         const uploadsData = await uploadsRes.json();
         setRecentUploads(uploadsData);
       }
+
+      if (tokenRes.ok) {
+        const tokenData = await tokenRes.json();
+        setTokenUsage(tokenData);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -104,15 +124,15 @@ export default function Home() {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryFilter, productsPerPage, currentPage, sortBy, sortOrder]);
+  }, [categoryFilter, productsPerPage, currentPage, sortBy, sortOrder, debouncedSearchQuery]);
 
-  // Reset to first page when category, products per page, or sorting changes
+  // Reset to first page when category, products per page, sorting, or search changes
   useEffect(() => {
     if (currentPage !== 1) {
       setCurrentPage(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryFilter, productsPerPage, sortBy, sortOrder]);
+  }, [categoryFilter, productsPerPage, sortBy, sortOrder, debouncedSearchQuery]);
 
   const handleSort = (field: string) => {
     if (sortBy === field) {
@@ -267,6 +287,20 @@ export default function Home() {
       style: 'currency',
       currency: 'IDR'
     }).format(amount);
+  };
+
+  const openSupplierCard = async (supplier: Supplier) => {
+    try {
+      setSelectedSupplierCard(supplier);
+      const response = await fetch(`/api/suppliers/${supplier.id}/products`);
+      if (response.ok) {
+        const data = await response.json();
+        setSupplierDetails(data.supplier);
+        setSupplierProducts(data.products);
+      }
+    } catch (error) {
+      console.error('Error fetching supplier products:', error);
+    }
   };
 
   return (
@@ -430,23 +464,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">$</span>
-                  </div>
-                </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Avg Savings</dt>
-                    <dd className="text-lg font-medium text-gray-900 dark:text-white">{stats.avgSavings}%</dd>
-                  </dl>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
             <div className="p-5">
@@ -460,6 +477,24 @@ export default function Home() {
                   <dl>
                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Last Update</dt>
                     <dd className="text-lg font-medium text-gray-900 dark:text-white">{stats.lastUpdate}</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-emerald-500 rounded-md flex items-center justify-center">
+                    <span className="text-white text-sm font-medium">💰</span>
+                  </div>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">AI Cost</dt>
+                    <dd className="text-lg font-medium text-gray-900 dark:text-white">{tokenUsage.totalCostFormatted}</dd>
                   </dl>
                 </div>
               </div>
@@ -503,6 +538,45 @@ export default function Home() {
           </div>
         )}
 
+        {/* Product Search Section */}
+        <div className="mb-8 px-4 sm:px-0">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Search Products</h2>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products by name, category, or supplier name..."
+                className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <svg className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Searching for: <span className="font-medium">&quot;{searchQuery}&quot;</span>
+                {products.length > 0 && (
+                  <span> - Found {products.length} results</span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Price Comparison Table */}
         <div className="px-4 sm:px-0">
           <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
@@ -516,6 +590,7 @@ export default function Home() {
                   <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                     Showing {products.length} of {stats.products} total products
                     {categoryFilter !== 'All Categories' && ` in ${categoryFilter}`}
+                    {debouncedSearchQuery && ` matching "${debouncedSearchQuery}"`}
                   </p>
                 </div>
                 <div className="flex space-x-2">
@@ -549,8 +624,6 @@ export default function Home() {
                     <option value="price-desc">Price High-Low</option>
                     <option value="suppliers-desc">Most Suppliers</option>
                     <option value="suppliers-asc">Fewest Suppliers</option>
-                    <option value="savings-desc">Highest Savings</option>
-                    <option value="savings-asc">Lowest Savings</option>
                   </select>
                   <select 
                     value={productsPerPage}
@@ -627,27 +700,18 @@ export default function Home() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Price Range
                     </th>
-                    <th 
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
-                      onClick={() => handleSort('savings')}
-                    >
-                      <div className="flex items-center space-x-1">
-                        <span>Savings</span>
-                        <span className="text-sm">{getSortIcon('savings')}</span>
-                      </div>
-                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {loading ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                      <td colSpan={5} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                         Loading products...
                       </td>
                     </tr>
                   ) : products.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                      <td colSpan={5} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                         No products found. Upload some price lists to get started.
                       </td>
                     </tr>
@@ -674,9 +738,16 @@ export default function Home() {
                               <div className="text-sm font-medium text-green-600 dark:text-green-400">
                                 {formatCurrency(product.priceComparison.bestPrice.amount)}
                               </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const supplier = suppliers.find(s => s.name === product.priceComparison.bestPrice?.supplier);
+                                  if (supplier) openSupplierCard(supplier);
+                                }}
+                                className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                              >
                                 {product.priceComparison.bestPrice.supplier}
-                              </div>
+                              </button>
                             </>
                           ) : (
                             <div className="text-sm text-gray-500 dark:text-gray-400">No prices</div>
@@ -694,15 +765,6 @@ export default function Home() {
                             </div>
                           ) : (
                             <div className="text-sm text-gray-500 dark:text-gray-400">-</div>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {product.priceComparison.savings > 0 ? (
-                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                              {product.priceComparison.savings}%
-                            </span>
-                          ) : (
-                            <span className="text-sm text-gray-500 dark:text-gray-400">-</span>
                           )}
                         </td>
                       </tr>
@@ -931,7 +993,19 @@ export default function Home() {
                           <div key={price.id || index} className="p-3 bg-white dark:bg-gray-600 rounded-md">
                             <div className="flex justify-between items-start mb-2">
                               <div className="flex-1">
-                                <p className="font-medium text-gray-900 dark:text-white">{price.supplier?.name || 'Unknown Supplier'}</p>
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const supplier = suppliers.find(s => s.name === price.supplier?.name);
+                                    if (supplier) {
+                                      setSelectedProduct(null);
+                                      openSupplierCard(supplier);
+                                    }
+                                  }}
+                                  className="font-medium text-blue-600 dark:text-blue-400 hover:underline text-left"
+                                >
+                                  {price.supplier?.name || 'Unknown Supplier'}
+                                </button>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">per {price.unit}</p>
                               </div>
                               <div className="text-right">
@@ -970,6 +1044,175 @@ export default function Home() {
               <div className="mt-6 flex justify-end">
                 <button
                   onClick={() => setSelectedProduct(null)}
+                  className="bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Supplier Card Modal */}
+      {selectedSupplierCard && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-full max-w-5xl shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div className="mt-3">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">{selectedSupplierCard.name}</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      {supplierDetails?.email && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                          <span className="font-medium">Email:</span> {supplierDetails.email}
+                        </p>
+                      )}
+                      {supplierDetails?.phone && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                          <span className="font-medium">Phone:</span> {supplierDetails.phone}
+                        </p>
+                      )}
+                      {supplierDetails?.address && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                          <span className="font-medium">Address:</span> {supplierDetails.address}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                        <span className="font-medium">Products:</span> {supplierProducts.length}
+                      </p>
+                      {supplierDetails?.createdAt && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                          <span className="font-medium">In database since:</span> {new Date(supplierDetails.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setSelectedSupplierCard(null);
+                    setSupplierProducts([]);
+                    setSupplierDetails(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                  <span className="sr-only">Close</span>
+                  ✕
+                </button>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">All Products from {selectedSupplierCard.name}</h4>
+                
+                {supplierProducts.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                      <thead className="bg-gray-100 dark:bg-gray-600">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Product
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Category
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Unit
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Price
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Competition
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Last Updated
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {supplierProducts.map((product) => (
+                          <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <div>
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      // Fetch full product details with all suppliers
+                                      const response = await fetch(`/api/products/${product.id}`);
+                                      if (response.ok) {
+                                        const fullProduct = await response.json();
+                                        setSelectedSupplierCard(null);
+                                        setSupplierProducts([]);
+                                        setSupplierDetails(null);
+                                        setSelectedProduct(fullProduct);
+                                      }
+                                    } catch (error) {
+                                      console.error('Error fetching product details:', error);
+                                    }
+                                  }}
+                                  className="text-left w-full"
+                                >
+                                  <div className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                                    {product.standardizedName}
+                                  </div>
+                                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                                    {product.name}
+                                  </div>
+                                </button>
+                              </div>
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                {product.category}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                              {product.unit}
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                {formatCurrency(product.price.amount)}
+                              </div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                                per {product.price.unit}
+                              </div>
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                              {product.totalSuppliers} supplier{product.totalSuppliers !== 1 ? 's' : ''}
+                            </td>
+                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                              {new Date(product.price.updatedAt).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Loading products...</p>
+                )}
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => {
+                    setSelectedSupplierCard(null);
+                    setSupplierProducts([]);
+                    setSupplierDetails(null);
+                  }}
                   className="bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500"
                 >
                   Close

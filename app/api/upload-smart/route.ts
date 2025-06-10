@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 import { PrismaClient } from '@prisma/client';
+import { enhancedFileProcessor } from '../../services/enhancedFileProcessor';
 
 const prisma = new PrismaClient();
 
@@ -42,10 +43,11 @@ export async function POST(request: NextRequest) {
         // Create upload record in database
         const upload = await prisma.upload.create({
           data: {
-            filename: blob.url,
+            fileName: file.name,
             originalName: file.name,
             fileSize: file.size,
             mimeType: file.type,
+            url: blob.url,
             supplierId: tempSupplier.id,
             status: 'pending'
           }
@@ -124,9 +126,14 @@ async function processFileInBackground(uploadId: string) {
     // Add rate limiting delay (500ms between file processing starts)
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Import and run the file processor
-    const { processFile } = await import('../../services/fileProcessor');
-    await processFile(uploadId);
+    // Run the enhanced file processor with timeout (5 minutes max)
+    const timeoutMs = 5 * 60 * 1000; // 5 minutes
+    const result = await Promise.race([
+      enhancedFileProcessor.processFile(uploadId),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Processing timeout after 5 minutes')), timeoutMs)
+      )
+    ]);
     
     console.log(`🎉 Successfully completed processing for: ${uploadId}`);
     

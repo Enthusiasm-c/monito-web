@@ -67,20 +67,32 @@ model Price {
 }
 
 model Upload {
-  id          String   @id @default(cuid())
-  filename    String
-  originalName String
-  fileSize    Int
-  mimeType    String
-  status      String   @default("pending") // pending, processing, completed, failed
-  supplier    Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  supplierId  String
-  extractedData Json?
-  errorMessage String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  fileName              String?
+  originalName          String?
+  fileSize              Int?
+  mimeType              String?
+  url                   String?
+  status                String   @default("pending") // pending, processing, completed, completed_with_errors, failed, too_large
+  supplier              Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  supplierId            String
+  extractedData         Json?
+  processingDetails     String?
+  errorMessage          String?
   
-  prices      Price[]
+  // New processing metrics
+  totalRowsDetected     Int?
+  totalRowsProcessed    Int?
+  completenessRatio     Float?
+  sheetsProcessed       Json?     // [{name: "Sheet1", rows: 25, processed: 23}]
+  processingTimeMs      Int?
+  tokensUsed            Int?
+  processingCostUsd     Float?
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  prices                Price[]
   
   @@map("uploads")
 }
