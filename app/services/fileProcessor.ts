@@ -1139,25 +1139,35 @@ function fallbackStandardization(name: string): string {
 
 function standardizeUnit(unit: string): string {
   const unitMap: { [key: string]: string } = {
-    // Weight
+    // Weight units
+    'kg': 'kg',
     'kilogram': 'kg',
     'kilograms': 'kg',
+    'kilo': 'kg',
+    'g': 'g',
+    'gram': 'g',
+    'grams': 'g',
+    'gr': 'g',
+    'lb': 'lb',
     'pound': 'lb',
     'pounds': 'lb',
     'lbs': 'lb',
-    'gram': 'g',
-    'grams': 'g',
+    'oz': 'oz',
     'ounce': 'oz',
     'ounces': 'oz',
     
-    // Volume
-    'litre': 'l',
-    'litres': 'l',
+    // Volume units
+    'l': 'l',
     'liter': 'l',
+    'litre': 'l',
     'liters': 'l',
+    'litres': 'l',
     'ltr': 'l',
     'gln': 'l',
     'gallon': 'l',
+    'ml': 'ml',
+    'milliliter': 'ml',
+    'milliliters': 'ml',
     
     // Count/Bunch (Indonesian terms)
     'sisir': 'bunch',
@@ -1172,22 +1182,28 @@ function standardizeUnit(unit: string): string {
     'pcs': 'pcs',
     'each': 'pcs',
     'pc': 'pcs',
+    'item': 'pcs',
+    'unit': 'pcs',
     
     // Packs
-    'pack': 'pck',
-    'package': 'pck',
-    'pck': 'pck',
-    'pax': 'pck',
-    'packet': 'pck',
+    'pack': 'pack',
+    'package': 'pack',
+    'pck': 'pack',
+    'pax': 'pack',
+    'packet': 'pack',
     
     // Bottles
-    'bottle': 'btl',
-    'bottles': 'btl',
-    'btl': 'btl',
+    'bottle': 'bottle',
+    'bottles': 'bottle',
+    'btl': 'bottle',
     
     // Cans
     'can': 'can',
     'cans': 'can',
+    
+    // Boxes
+    'box': 'box',
+    'boxes': 'box',
     
     // Others
     'lepit': 'pcs',
@@ -1202,29 +1218,45 @@ function standardizeUnit(unit: string): string {
 function categorizeProduct(name: string): string {
   const lowerName = name.toLowerCase();
   
-  if (lowerName.includes('tomato') || lowerName.includes('onion') || 
-      lowerName.includes('carrot') || lowerName.includes('potato') ||
-      lowerName.includes('vegetable')) {
+  // Vegetables
+  if (lowerName.includes('asparagus') || lowerName.includes('tomato') || lowerName.includes('onion') || 
+      lowerName.includes('carrot') || lowerName.includes('potato') || lowerName.includes('cabbage') ||
+      lowerName.includes('lettuce') || lowerName.includes('spinach') || lowerName.includes('broccoli') ||
+      lowerName.includes('cauliflower') || lowerName.includes('pepper') || lowerName.includes('cucumber') ||
+      lowerName.includes('celery') || lowerName.includes('zucchini') || lowerName.includes('eggplant') ||
+      lowerName.includes('bean') || lowerName.includes('pea') || lowerName.includes('corn') ||
+      lowerName.includes('mushroom') || lowerName.includes('vegetable')) {
     return 'Vegetables';
   }
   
+  // Meat
   if (lowerName.includes('chicken') || lowerName.includes('beef') || 
-      lowerName.includes('pork') || lowerName.includes('meat')) {
+      lowerName.includes('pork') || lowerName.includes('meat') || lowerName.includes('lamb') ||
+      lowerName.includes('duck') || lowerName.includes('turkey') || lowerName.includes('sausage') ||
+      lowerName.includes('bacon')) {
     return 'Meat';
   }
   
+  // Seafood
   if (lowerName.includes('fish') || lowerName.includes('salmon') || 
-      lowerName.includes('tuna') || lowerName.includes('seafood')) {
+      lowerName.includes('tuna') || lowerName.includes('seafood') || lowerName.includes('shrimp') ||
+      lowerName.includes('crab') || lowerName.includes('lobster') || lowerName.includes('squid') ||
+      lowerName.includes('prawn')) {
     return 'Seafood';
   }
   
+  // Grains
   if (lowerName.includes('rice') || lowerName.includes('flour') || 
-      lowerName.includes('bread') || lowerName.includes('grain')) {
+      lowerName.includes('bread') || lowerName.includes('grain') || lowerName.includes('pasta') ||
+      lowerName.includes('noodle') || lowerName.includes('wheat') || lowerName.includes('oat') ||
+      lowerName.includes('barley')) {
     return 'Grains';
   }
   
+  // Dairy
   if (lowerName.includes('milk') || lowerName.includes('cheese') || 
-      lowerName.includes('yogurt') || lowerName.includes('dairy')) {
+      lowerName.includes('yogurt') || lowerName.includes('dairy') || lowerName.includes('butter') ||
+      lowerName.includes('cream')) {
     return 'Dairy';
   }
   

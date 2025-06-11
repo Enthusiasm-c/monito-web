@@ -30,9 +30,10 @@ interface ProcessingResult {
   processingTimeMs: number;
   tokensUsed: number;
   costUsd: number;
-  status: 'completed' | 'completed_with_errors' | 'failed' | 'too_large';
+  status: 'completed' | 'completed_with_errors' | 'failed' | 'too_large' | 'pending_review';
   errors: string[];
   extractionDetails?: any;
+  needsApproval?: boolean;
 }
 
 interface ProcessingMetrics {
@@ -161,16 +162,27 @@ class EnhancedFileProcessor {
         }
       }
 
-      // Process and store products
-      const productsCreated = await this.storeExtractedProducts(
-        extractedData.products,
-        finalSupplierId,
-        uploadId,
-        metrics
-      );
-
-      // Determine final status
-      const status = this.determineStatus(extractedData, metrics.errors);
+      // Check if auto-approval is enabled
+      const autoApprovalEnabled = process.env.AUTO_APPROVAL_ENABLED === 'true';
+      const needsApproval = !autoApprovalEnabled;
+      
+      let productsCreated = 0;
+      let status: 'completed' | 'completed_with_errors' | 'failed' | 'pending_review';
+      
+      if (needsApproval) {
+        // Save extracted data for review but don't create products/prices yet
+        status = 'pending_review';
+        console.log(`📋 Upload ${uploadId} requires approval. Extracted data saved for review.`);
+      } else {
+        // Auto-approval: create products and prices immediately  
+        productsCreated = await this.storeExtractedProducts(
+          extractedData.products,
+          finalSupplierId,
+          uploadId,
+          metrics
+        );
+        status = this.determineStatus(extractedData, metrics.errors);
+      }
 
       // Calculate final completeness
       const completenessRatio = extractedData.totalRowsDetected > 0
@@ -187,7 +199,9 @@ class EnhancedFileProcessor {
         processingTimeMs: Date.now() - metrics.startTime,
         tokensUsed: metrics.totalTokensUsed,
         processingCostUsd: metrics.totalCostUsd,
-        errorMessage: metrics.errors.length > 0 ? metrics.errors.join('; ') : null
+        errorMessage: metrics.errors.length > 0 ? metrics.errors.join('; ') : null,
+        approvalStatus: needsApproval ? 'pending_review' : 'approved',
+        autoApproved: !needsApproval
       });
 
       // Log processing results
@@ -223,7 +237,8 @@ class EnhancedFileProcessor {
         costUsd: metrics.totalCostUsd,
         status,
         errors: metrics.errors,
-        extractionDetails: extractedData
+        extractionDetails: extractedData,
+        needsApproval
       };
 
     } catch (error) {
@@ -634,20 +649,142 @@ class EnhancedFileProcessor {
   private categorizeProduct(productName: string): string {
     const name = productName.toLowerCase();
     
-    if (name.includes('beef') || name.includes('chicken') || name.includes('pork') || name.includes('meat')) {
+    // Vegetables
+    if (name.includes('asparagus') || name.includes('tomato') || name.includes('onion') || 
+        name.includes('carrot') || name.includes('potato') || name.includes('cabbage') ||
+        name.includes('lettuce') || name.includes('spinach') || name.includes('broccoli') ||
+        name.includes('cauliflower') || name.includes('pepper') || name.includes('cucumber') ||
+        name.includes('celery') || name.includes('zucchini') || name.includes('eggplant') ||
+        name.includes('bean') || name.includes('pea') || name.includes('corn') ||
+        name.includes('mushroom') || name.includes('vegetable')) {
+      return 'Vegetables';
+    }
+    
+    // Meat
+    if (name.includes('beef') || name.includes('chicken') || name.includes('pork') || 
+        name.includes('meat') || name.includes('lamb') || name.includes('duck') ||
+        name.includes('turkey') || name.includes('sausage') || name.includes('bacon')) {
       return 'Meat';
     }
-    if (name.includes('fish') || name.includes('seafood') || name.includes('tuna') || name.includes('salmon')) {
+    
+    // Seafood
+    if (name.includes('fish') || name.includes('seafood') || name.includes('tuna') || 
+        name.includes('salmon') || name.includes('shrimp') || name.includes('crab') ||
+        name.includes('lobster') || name.includes('squid') || name.includes('prawn')) {
       return 'Seafood';
     }
-    if (name.includes('rice') || name.includes('bread') || name.includes('grain')) {
+    
+    // Grains
+    if (name.includes('rice') || name.includes('bread') || name.includes('grain') ||
+        name.includes('flour') || name.includes('pasta') || name.includes('noodle') ||
+        name.includes('wheat') || name.includes('oat') || name.includes('barley')) {
       return 'Grains';
     }
-    if (name.includes('milk') || name.includes('cheese') || name.includes('dairy')) {
+    
+    // Dairy
+    if (name.includes('milk') || name.includes('cheese') || name.includes('dairy') ||
+        name.includes('yogurt') || name.includes('butter') || name.includes('cream')) {
       return 'Dairy';
     }
     
     return 'Other';
+  }
+
+  /**
+   * Approve upload and create products/prices from extracted data
+   */
+  async approveUpload(uploadId: string, approvedBy: string, reviewNotes?: string): Promise<{ success: boolean; productsCreated: number; error?: string }> {
+    try {
+      const upload = await prisma.upload.findUnique({
+        where: { id: uploadId },
+        include: { supplier: true }
+      });
+
+      if (!upload) {
+        return { success: false, productsCreated: 0, error: 'Upload not found' };
+      }
+
+      if (upload.approvalStatus !== 'pending_review') {
+        return { success: false, productsCreated: 0, error: 'Upload is not pending review' };
+      }
+
+      if (!upload.extractedData) {
+        return { success: false, productsCreated: 0, error: 'No extracted data found' };
+      }
+
+      const extractedData = upload.extractedData as any;
+      const metrics: ProcessingMetrics = {
+        startTime: Date.now(),
+        totalTokensUsed: 0,
+        totalCostUsd: 0,
+        errors: []
+      };
+
+      // Create products and prices from extracted data
+      const productsCreated = await this.storeExtractedProducts(
+        extractedData.products || [],
+        upload.supplierId,
+        uploadId,
+        metrics
+      );
+
+      // Update upload status to approved
+      await prisma.upload.update({
+        where: { id: uploadId },
+        data: {
+          approvalStatus: 'approved',
+          approvedBy,
+          approvedAt: new Date(),
+          reviewNotes,
+          status: 'completed'
+        }
+      });
+
+      console.log(`✅ Upload ${uploadId} approved by ${approvedBy}. Created ${productsCreated} products.`);
+
+      return { success: true, productsCreated };
+    } catch (error) {
+      console.error(`❌ Failed to approve upload ${uploadId}:`, error);
+      return { success: false, productsCreated: 0, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
+  }
+
+  /**
+   * Reject upload and mark as rejected
+   */
+  async rejectUpload(uploadId: string, rejectedBy: string, reason: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const upload = await prisma.upload.findUnique({
+        where: { id: uploadId }
+      });
+
+      if (!upload) {
+        return { success: false, error: 'Upload not found' };
+      }
+
+      if (upload.approvalStatus !== 'pending_review') {
+        return { success: false, error: 'Upload is not pending review' };
+      }
+
+      // Update upload status to rejected
+      await prisma.upload.update({
+        where: { id: uploadId },
+        data: {
+          approvalStatus: 'rejected',
+          approvedBy: rejectedBy,
+          approvedAt: new Date(),
+          rejectionReason: reason,
+          status: 'failed'
+        }
+      });
+
+      console.log(`❌ Upload ${uploadId} rejected by ${rejectedBy}. Reason: ${reason}`);
+
+      return { success: true };
+    } catch (error) {
+      console.error(`❌ Failed to reject upload ${uploadId}:`, error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
   }
 
   /**
@@ -657,19 +794,60 @@ class EnhancedFileProcessor {
     const normalized = unit.toLowerCase().trim();
     
     const unitMap: { [key: string]: string } = {
+      // Weight units
+      'kg': 'kg',
       'kilogram': 'kg',
       'kilograms': 'kg',
       'kilo': 'kg',
+      'g': 'g',
       'gram': 'g',
       'grams': 'g',
+      'gr': 'g',
+      'lb': 'lb',
+      'pound': 'lb',
+      'pounds': 'lb',
+      'lbs': 'lb',
+      'oz': 'oz',
+      'ounce': 'oz',
+      'ounces': 'oz',
+      
+      // Volume units
+      'l': 'l',
       'liter': 'l',
       'litre': 'l',
       'liters': 'l',
       'litres': 'l',
-      'pieces': 'pcs',
+      'ltr': 'l',
+      'ml': 'ml',
+      'milliliter': 'ml',
+      'milliliters': 'ml',
+      
+      // Count units
+      'pcs': 'pcs',
       'piece': 'pcs',
+      'pieces': 'pcs',
+      'pc': 'pcs',
+      'each': 'pcs',
+      'item': 'pcs',
+      'unit': 'pcs',
+      
+      // Container units
       'box': 'box',
-      'boxes': 'box'
+      'boxes': 'box',
+      'pack': 'pack',
+      'package': 'pack',
+      'packet': 'pack',
+      'bottle': 'bottle',
+      'bottles': 'bottle',
+      'btl': 'bottle',
+      'can': 'can',
+      'cans': 'can',
+      
+      // Indonesian units
+      'sisir': 'bunch',
+      'ikat': 'bunch',
+      'bunch': 'bunch',
+      'bundle': 'bunch'
     };
 
     return unitMap[normalized] || normalized;

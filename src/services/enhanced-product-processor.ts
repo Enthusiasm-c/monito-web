@@ -481,10 +481,12 @@ export class EnhancedProductProcessor {
    */
   private inferCategory(name: string): string {
     const categoryKeywords: Record<string, string[]> = {
-      'Vegetables': ['tomato', 'carrot', 'onion', 'potato', 'cabbage', 'lettuce'],
-      'Fruits': ['apple', 'banana', 'orange', 'mango', 'grape', 'strawberry'],
-      'Meat & Seafood': ['chicken', 'beef', 'pork', 'fish', 'shrimp', 'crab'],
-      'Dairy': ['milk', 'cheese', 'yogurt', 'butter', 'cream'],
+      'Vegetables': ['asparagus', 'tomato', 'carrot', 'onion', 'potato', 'cabbage', 'lettuce', 'spinach', 'broccoli', 'cauliflower', 'pepper', 'cucumber', 'celery', 'zucchini', 'eggplant', 'bean', 'pea', 'corn', 'mushroom', 'vegetable'],
+      'Fruits': ['apple', 'banana', 'orange', 'mango', 'grape', 'strawberry', 'pineapple', 'watermelon', 'melon', 'lemon', 'lime', 'kiwi', 'peach', 'pear'],
+      'Meat': ['chicken', 'beef', 'pork', 'lamb', 'duck', 'turkey', 'sausage', 'bacon', 'meat'],
+      'Seafood': ['fish', 'shrimp', 'crab', 'salmon', 'tuna', 'lobster', 'squid', 'prawn', 'seafood'],
+      'Dairy': ['milk', 'cheese', 'yogurt', 'butter', 'cream', 'dairy'],
+      'Grains': ['rice', 'bread', 'flour', 'pasta', 'noodle', 'wheat', 'oat', 'barley', 'grain'],
       'Bakery': ['bread', 'cake', 'pastry', 'cookie', 'biscuit'],
       'Beverages': ['juice', 'water', 'soda', 'coffee', 'tea'],
       'Cleaning': ['detergent', 'soap', 'shampoo', 'cleaner', 'disinfectant']

@@ -27,6 +27,8 @@ interface Supplier {
   id: string;
   name: string;
   email?: string;
+  phone?: string;
+  address?: string;
 }
 
 interface Upload {
@@ -61,11 +63,14 @@ export default function Home() {
   const [selectedSupplierCard, setSelectedSupplierCard] = useState<Supplier | null>(null);
   const [supplierProducts, setSupplierProducts] = useState<any[]>([]);
   const [supplierDetails, setSupplierDetails] = useState<any>(null);
+  const [isEditingSupplier, setIsEditingSupplier] = useState(false);
+  const [editingSupplierData, setEditingSupplierData] = useState<any>(null);
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [tokenUsage, setTokenUsage] = useState<{totalCostUsd: number; totalCostFormatted: string}>({totalCostUsd: 0, totalCostFormatted: '$0.0000'});
+  const [pendingUploadsCount, setPendingUploadsCount] = useState<number>(0);
 
   // Debounce search query
   useEffect(() => {
@@ -79,12 +84,13 @@ export default function Home() {
   // Data fetching functions
   const fetchData = async () => {
     try {
-      const [productsRes, statsRes, suppliersRes, uploadsRes, tokenRes] = await Promise.all([
+      const [productsRes, statsRes, suppliersRes, uploadsRes, tokenRes, pendingRes] = await Promise.all([
         fetch(`/api/products?category=${categoryFilter}&limit=${productsPerPage}&page=${currentPage}&sortBy=${sortBy}&sortOrder=${sortOrder}&search=${encodeURIComponent(debouncedSearchQuery)}`),
         fetch('/api/stats'),
         fetch('/api/suppliers'),
         fetch('/api/uploads/status?limit=5'),
-        fetch('/api/token-usage')
+        fetch('/api/token-usage'),
+        fetch('/api/uploads/pending-count')
       ]);
 
       if (productsRes.ok) {
@@ -113,6 +119,11 @@ export default function Home() {
       if (tokenRes.ok) {
         const tokenData = await tokenRes.json();
         setTokenUsage(tokenData);
+      }
+
+      if (pendingRes.ok) {
+        const pendingData = await pendingRes.json();
+        setPendingUploadsCount(pendingData.count);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -292,6 +303,8 @@ export default function Home() {
   const openSupplierCard = async (supplier: Supplier) => {
     try {
       setSelectedSupplierCard(supplier);
+      setIsEditingSupplier(false);
+      setEditingSupplierData(null);
       const response = await fetch(`/api/suppliers/${supplier.id}/products`);
       if (response.ok) {
         const data = await response.json();
@@ -300,6 +313,90 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Error fetching supplier products:', error);
+    }
+  };
+
+  const startEditingSupplier = () => {
+    setIsEditingSupplier(true);
+    setEditingSupplierData({
+      name: supplierDetails?.name || '',
+      email: supplierDetails?.email || '',
+      phone: supplierDetails?.phone || '',
+      address: supplierDetails?.address || ''
+    });
+  };
+
+  const cancelEditingSupplier = () => {
+    setIsEditingSupplier(false);
+    setEditingSupplierData(null);
+  };
+
+  const saveSupplierChanges = async () => {
+    if (!selectedSupplierCard || !editingSupplierData) return;
+
+    // Validate required fields
+    if (!editingSupplierData.name || editingSupplierData.name.trim().length === 0) {
+      alert('❌ Supplier name is required');
+      return;
+    }
+
+    // Validate email format if provided
+    if (editingSupplierData.email && editingSupplierData.email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(editingSupplierData.email.trim())) {
+        alert('❌ Please enter a valid email address');
+        return;
+      }
+    }
+
+    try {
+      const response = await fetch(`/api/suppliers/${selectedSupplierCard.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editingSupplierData),
+      });
+
+      if (response.ok) {
+        const updatedSupplier = await response.json();
+        
+        // Update local state
+        setSupplierDetails(updatedSupplier);
+        setSuppliers(prev => prev.map(s => 
+          s.id === selectedSupplierCard.id 
+            ? { 
+                ...s, 
+                name: updatedSupplier.name, 
+                email: updatedSupplier.email,
+                phone: updatedSupplier.phone,
+                address: updatedSupplier.address 
+              }
+            : s
+        ));
+        setSelectedSupplierCard(prev => 
+          prev ? { 
+            ...prev, 
+            name: updatedSupplier.name, 
+            email: updatedSupplier.email,
+            phone: updatedSupplier.phone,
+            address: updatedSupplier.address 
+          } : null
+        );
+        
+        setIsEditingSupplier(false);
+        setEditingSupplierData(null);
+        alert('✅ Supplier information updated successfully!');
+        
+        // Refresh data to ensure consistency
+        await fetchData();
+      } else {
+        const errorData = await response.json();
+        alert('❌ ' + (errorData.error || 'Failed to update supplier information'));
+      }
+    } catch (error) {
+      console.error('Error updating supplier:', error);
+      alert('❌ Network error. Please check your connection and try again.');
     }
   };
 
@@ -313,6 +410,17 @@ export default function Home() {
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Supplier Price Comparison</h1>
             </div>
             <div className="flex items-center space-x-4">
+              <a 
+                href="/admin"
+                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium relative"
+              >
+                Admin Panel
+                {pendingUploadsCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {pendingUploadsCount > 9 ? '9+' : pendingUploadsCount}
+                  </span>
+                )}
+              </a>
               <button 
                 onClick={() => setShowSupplierModal(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -1060,50 +1168,162 @@ export default function Home() {
           <div className="relative top-20 mx-auto p-5 border w-full max-w-5xl shadow-lg rounded-md bg-white dark:bg-gray-800">
             <div className="mt-3">
               <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">{selectedSupplierCard.name}</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      {supplierDetails?.email && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                          <span className="font-medium">Email:</span> {supplierDetails.email}
-                        </p>
-                      )}
-                      {supplierDetails?.phone && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                          <span className="font-medium">Phone:</span> {supplierDetails.phone}
-                        </p>
-                      )}
-                      {supplierDetails?.address && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                          <span className="font-medium">Address:</span> {supplierDetails.address}
-                        </p>
-                      )}
+                <div className="flex-1">
+                  {isEditingSupplier ? (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Supplier Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={editingSupplierData?.name || ''}
+                          onChange={(e) => setEditingSupplierData(prev => ({ ...prev, name: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                          placeholder="Enter supplier name"
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Email
+                          </label>
+                          <input
+                            type="email"
+                            value={editingSupplierData?.email || ''}
+                            onChange={(e) => setEditingSupplierData(prev => ({ ...prev, email: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                            placeholder="Enter email address"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Phone
+                          </label>
+                          <input
+                            type="tel"
+                            value={editingSupplierData?.phone || ''}
+                            onChange={(e) => setEditingSupplierData(prev => ({ ...prev, phone: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                            placeholder="Enter phone number"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Address
+                        </label>
+                        <textarea
+                          value={editingSupplierData?.address || ''}
+                          onChange={(e) => setEditingSupplierData(prev => ({ ...prev, address: e.target.value }))}
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                          placeholder="Enter full address"
+                        />
+                      </div>
+                      
+                      <div className="flex space-x-3">
+                        <button
+                          onClick={saveSupplierChanges}
+                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                        >
+                          Save Changes
+                        </button>
+                        <button
+                          onClick={cancelEditingSupplier}
+                          className="bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md hover:bg-gray-400 dark:hover:bg-gray-500 text-sm font-medium"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
+                  ) : (
                     <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                        <span className="font-medium">Products:</span> {supplierProducts.length}
-                      </p>
-                      {supplierDetails?.createdAt && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                          <span className="font-medium">In database since:</span> {new Date(supplierDetails.createdAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </p>
-                      )}
+                      <div className="flex items-center space-x-2 mb-2">
+                        <h3 className="text-xl font-medium text-gray-900 dark:text-white">{selectedSupplierCard.name}</h3>
+                        <button
+                          onClick={startEditingSupplier}
+                          className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800 px-3 py-1 rounded-md text-sm font-medium transition-colors"
+                          title="Edit supplier information"
+                        >
+                          ✏️ Edit Information
+                        </button>
+                      </div>
+                      
+                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3 mb-4">
+                        <div className="flex">
+                          <div className="flex-shrink-0">
+                            <span className="text-yellow-400 text-sm">⚠️</span>
+                          </div>
+                          <div className="ml-2">
+                            <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                              <strong>Note:</strong> This information was automatically extracted from documents. 
+                              Click "Edit Information" to correct any errors or add missing details.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                          {supplierDetails?.email ? (
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <span className="font-medium">Email:</span> {supplierDetails.email}
+                            </p>
+                          ) : (
+                            <p className="text-sm text-gray-500 dark:text-gray-500 mb-1 italic">
+                              <span className="font-medium">Email:</span> Not provided
+                            </p>
+                          )}
+                          {supplierDetails?.phone ? (
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <span className="font-medium">Phone:</span> {supplierDetails.phone}
+                            </p>
+                          ) : (
+                            <p className="text-sm text-gray-500 dark:text-gray-500 mb-1 italic">
+                              <span className="font-medium">Phone:</span> Not provided
+                            </p>
+                          )}
+                          {supplierDetails?.address ? (
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <span className="font-medium">Address:</span> {supplierDetails.address}
+                            </p>
+                          ) : (
+                            <p className="text-sm text-gray-500 dark:text-gray-500 mb-1 italic">
+                              <span className="font-medium">Address:</span> Not provided
+                            </p>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                            <span className="font-medium">Products:</span> {supplierProducts.length}
+                          </p>
+                          {supplierDetails?.createdAt && (
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              <span className="font-medium">In database since:</span> {new Date(supplierDetails.createdAt).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </p>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
+                
                 <button
                   onClick={() => {
                     setSelectedSupplierCard(null);
                     setSupplierProducts([]);
                     setSupplierDetails(null);
+                    setIsEditingSupplier(false);
+                    setEditingSupplierData(null);
                   }}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 ml-4"
                 >
                   <span className="sr-only">Close</span>
                   ✕

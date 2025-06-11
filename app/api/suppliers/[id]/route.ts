@@ -60,24 +60,60 @@ export async function PUT(
     const body = await request.json();
     const { name, email, phone, address, contactInfo } = body;
 
+    // Validate required field
+    if (!name || name.trim().length === 0) {
+      return NextResponse.json(
+        { error: 'Supplier name is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check if another supplier exists with the same name (excluding current supplier)
+    const existingSupplier = await prisma.supplier.findFirst({
+      where: {
+        name: name.trim(),
+        NOT: {
+          id: id
+        }
+      }
+    });
+
+    if (existingSupplier) {
+      return NextResponse.json(
+        { error: 'A supplier with this name already exists' },
+        { status: 400 }
+      );
+    }
+
     const supplier = await prisma.supplier.update({
       where: { id },
       data: {
-        name,
-        email,
-        phone,
-        address,
-        contactInfo
+        name: name.trim(),
+        email: email?.trim() || null,
+        phone: phone?.trim() || null,
+        address: address?.trim() || null,
+        contactInfo: contactInfo?.trim() || null,
+        updatedAt: new Date()
       }
     });
 
     return NextResponse.json(supplier);
   } catch (error) {
     console.error('Error updating supplier:', error);
+    
+    if (error.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'Supplier not found' },
+        { status: 404 }
+      );
+    }
+    
     return NextResponse.json(
       { error: 'Failed to update supplier' },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }
 

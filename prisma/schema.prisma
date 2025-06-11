@@ -79,6 +79,15 @@ model Upload {
   tokensUsed         Int?
   totalRowsDetected  Int?
   totalRowsProcessed Int?
+  
+  // Approval workflow fields
+  approvalStatus     String?  @default("pending_review") // pending_review, approved, rejected
+  approvedBy         String?
+  approvedAt         DateTime?
+  rejectionReason    String?
+  reviewNotes        String?
+  autoApproved       Boolean  @default(false)
+  
   prices             Price[]
   supplier           Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 

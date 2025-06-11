@@ -1,0 +1,95 @@
+
+> vercel-marketplace-neon@0.1.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.1.6 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.215:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 534ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2s
+ GET / 200 in 2119ms
+ ✓ Compiled /api/products in 130ms
+ GET /api/token-usage 200 in 172ms
+ GET /api/uploads/pending-count 200 in 614ms
+ GET /api/uploads/status?limit=5 200 in 619ms
+ GET /api/suppliers 200 in 632ms
+ GET /api/stats 200 in 964ms
+ GET /api/products?category=All%20Categories&limit=50&page=1&sortBy=name&sortOrder=asc&search= 200 in 968ms
+ ✓ Compiled /admin in 94ms
+ GET /admin 200 in 113ms
+ ✓ Compiled /api/uploads/pending in 63ms
+ GET /api/uploads/pending?page=1&limit=10 200 in 619ms
+ GET / 200 in 54ms
+ GET /api/token-usage 200 in 29ms
+ GET /api/uploads/status?limit=5 200 in 73ms
+ GET /api/suppliers 200 in 74ms
+ GET /api/stats 200 in 119ms
+ GET /api/products?category=All%20Categories&limit=50&page=1&sortBy=name&sortOrder=asc&search= 200 in 121ms
+ GET /api/uploads/pending-count 200 in 439ms
+ ○ Compiling /api/upload-smart ...
+ ✓ Compiled /api/upload-smart in 535ms
+🚀 Starting background processing for upload: cmbrf0yj10002ouv12uvrde71
+🔄 Starting processing for upload: cmbrf0yj10002ouv12uvrde71
+ POST /api/upload-smart 200 in 2322ms
+ GET /api/token-usage 200 in 53ms
+ GET /api/products?category=All%20Categories&limit=50&page=1&sortBy=name&sortOrder=asc&search= 200 in 148ms
+✅ Updated status to processing for: cmbrf0yj10002ouv12uvrde71
+ GET /api/stats 200 in 192ms
+ GET /api/uploads/status?limit=5 200 in 340ms
+ GET /api/suppliers 200 in 343ms
+ GET /api/uploads/pending-count 200 in 481ms
+🚀 Enhanced processing starting for upload: cmbrf0yj10002ouv12uvrde71
+🔍 Enhanced Excel extraction starting: widi wiguna.xlsx
+📊 Excel file has 3 sheets: Sheet1, Sheet2, Sheet3
+📄 Processing sheet: "Sheet1"
+   📋 Sheet "Sheet1": 242 non-empty rows
+   🔬 Sheet structure: {
+  nameColumn: 1,
+  priceColumn: 3,
+  unitColumn: 2,
+  categoryColumn: -1,
+  dataStartRow: 4,
+  headerRow: 3
+}
+📄 Processing sheet: "Sheet2"
+   📋 Sheet "Sheet2": 0 non-empty rows
+   ⚠️ Skipping sheet "Sheet2": too few rows
+📄 Processing sheet: "Sheet3"
+   📋 Sheet "Sheet3": 0 non-empty rows
+   ⚠️ Skipping sheet "Sheet3": too few rows
+✅ Enhanced extraction completed: widi wiguna.xlsx
+   📊 Rows: 205/242 (84.7%)
+   🛍️ Products: 205
+   📄 Sheets: 1
+   ⏱️ Time: 768ms
+   💰 Cost: $0.0000
+🏢 Processing supplier: "widi"
+   📞 Phone: Not provided
+   📧 Email: Not provided
+   📍 Address: Not provided
+🆕 Creating new supplier: "widi"
+📝 Supplier detection: "widi" → using cmbrf10fw0003ouv1ea6wrpwx
+📋 Upload cmbrf0yj10002ouv12uvrde71 requires approval. Extracted data saved for review.
+📋 Processing Log: cmbrf0yj10002ouv12uvrde71 - pending_review - 0.847 completeness
+✅ Enhanced processing completed: cmbrf0yj10002ouv12uvrde71
+   📊 Completeness: 84.7%
+   🛍️ Products: 0
+   💰 Cost: $0.0000
+🎉 Successfully completed processing for: cmbrf0yj10002ouv12uvrde71
+ GET /admin 200 in 64ms
+ GET /api/uploads/pending?page=1&limit=10 200 in 848ms
+ ✓ Compiled in 27ms
+ GET /admin 200 in 77ms
+ GET /admin 200 in 17ms
+ ✓ Compiled in 22ms
+ GET /admin 200 in 64ms
+ GET /admin 200 in 15ms
+ GET /admin 200 in 32ms
+ GET /admin 200 in 52ms
+ GET /api/uploads/pending?page=1&limit=10 200 in 786ms
+ GET /admin 200 in 52ms
+ GET /api/uploads/pending?page=1&limit=10 200 in 783ms
