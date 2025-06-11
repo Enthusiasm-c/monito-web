@@ -16,25 +16,11 @@ try:
     import camelot
     import pdfplumber
     import pandas as pd
+from ai_pdf_ocr_extractor import AiPdfOcrExtractor
     DEPENDENCIES_AVAILABLE = True
 except ImportError as e:
     print(f"Missing dependencies: {e}", file=sys.stderr)
     DEPENDENCIES_AVAILABLE = False
-
-# Try to import AI Vision OCR if available
-try:
-    from ai_pdf_ocr_extractor import AiPdfOcrExtractor
-    AI_VISION_AVAILABLE = True
-except ImportError:
-    AI_VISION_AVAILABLE = False
-
-# Try to import specialized extractors
-try:
-    from island_organics_extractor import extract_island_organics
-    from valenta_wrapper import extract_valenta_products
-    SPECIALIZED_EXTRACTORS_AVAILABLE = True
-except ImportError:
-    SPECIALIZED_EXTRACTORS_AVAILABLE = False
 
 class EnhancedPdfProcessor:
     def __init__(self):
@@ -70,52 +56,6 @@ class EnhancedPdfProcessor:
             
             if not temp_path:
                 raise Exception("Failed to download PDF")
-            
-            # Check for specialized extractors first
-            pdf_name = os.path.basename(temp_path).lower()
-            
-            if SPECIALIZED_EXTRACTORS_AVAILABLE:
-                # Check for Island Organics
-                if 'island organics' in pdf_name:
-                    self.log("🔧 Using specialized Island Organics extractor...")
-                    try:
-                        result = extract_island_organics(temp_path)
-                        if result and result.get('products'):
-                            return {
-                                "supplier": result.get('supplier', {'name': 'Island Organics Bali'}),
-                                "products": result['products'],
-                                "errors": [],
-                                "metrics": {
-                                    "totalRowsDetected": result.get('metrics', {}).get('total_rows', len(result['products'])),
-                                    "totalRowsProcessed": len(result['products']),
-                                    "tokensUsed": 0,
-                                    "costUsd": 0.0
-                                },
-                                "extractionMethods": {"bestMethod": "specialized_island_organics"}
-                            }
-                    except Exception as e:
-                        self.log(f"⚠️ Specialized extractor failed, falling back: {e}")
-                
-                # Check for VALENTA
-                elif 'valenta' in pdf_name:
-                    self.log("🔧 Using specialized VALENTA extractor...")
-                    try:
-                        result = extract_valenta_products(temp_path)
-                        if result and result.get('products'):
-                            return {
-                                "supplier": result.get('supplier', {'name': 'VALENTA cheese supplier'}),
-                                "products": result['products'],
-                                "errors": [],
-                                "metrics": {
-                                    "totalRowsDetected": result.get('total_rows', len(result['products'])),
-                                    "totalRowsProcessed": len(result['products']),
-                                    "tokensUsed": 0,
-                                    "costUsd": 0.0
-                                },
-                                "extractionMethods": {"bestMethod": "specialized_valenta"}
-                            }
-                    except Exception as e:
-                        self.log(f"⚠️ Specialized extractor failed, falling back: {e}")
 
             # Try multiple extraction methods
             results = {}
@@ -134,54 +74,6 @@ class EnhancedPdfProcessor:
             
             # Choose best result
             best_result = self.choose_best_result(results)
-            
-            # AI Vision fallback for poor extraction results
-            if AI_VISION_AVAILABLE and os.getenv('OPENAI_API_KEY'):
-                total_products = len(best_result['products'])
-                total_rows = best_result['total_rows']
-                completeness_ratio = (total_products / total_rows * 100) if total_rows > 0 else 0
-                
-                # Determine if we should use AI Vision fallback
-                should_use_ai_vision = False
-                ai_vision_reason = ""
-                
-                # Check various conditions for AI Vision fallback
-                if total_products < 10 and completeness_ratio < 20:
-                    should_use_ai_vision = True
-                    ai_vision_reason = "Very few products extracted"
-                elif completeness_ratio < 15:
-                    should_use_ai_vision = True
-                    ai_vision_reason = "Low extraction completeness"
-                elif total_products < 50 and completeness_ratio < 50:
-                    should_use_ai_vision = True
-                    ai_vision_reason = "Poor extraction results"
-                elif 'milk up' in os.path.basename(temp_path).lower():
-                    should_use_ai_vision = True
-                    ai_vision_reason = "Known visual-heavy supplier"
-                
-                if should_use_ai_vision:
-                    self.log(f"🤖 Attempting AI Vision fallback: {ai_vision_reason}")
-                    try:
-                        ai_extractor = AiPdfOcrExtractor(os.getenv('OPENAI_API_KEY'))
-                        ai_result = ai_extractor.process_pdf(temp_path)
-                        
-                        if ai_result.get('products') and len(ai_result['products']) > total_products:
-                            self.log(f"✅ AI Vision extracted {len(ai_result['products'])} products (vs {total_products} from traditional methods)")
-                            
-                            # Update best_result with AI Vision results
-                            best_result = {
-                                'method': 'ai_vision_ocr',
-                                'total_rows': len(ai_result['products']),
-                                'products': ai_result['products'],
-                                'ai_metrics': ai_result.get('metrics', {})
-                            }
-                            
-                            # Add AI Vision to results for reporting
-                            results['ai_vision'] = best_result
-                        else:
-                            self.log(f"⚠️ AI Vision did not improve results ({len(ai_result.get('products', []))} products)")
-                    except Exception as e:
-                        self.log(f"❌ AI Vision fallback failed: {e}", 'ERROR')
             
             # Extract supplier info
             supplier_info = self.extract_supplier_info(temp_path)
@@ -214,10 +106,6 @@ class EnhancedPdfProcessor:
                         "pages": results['pdfplumber']['pages_count'],
                         "rows": results['pdfplumber']['total_rows']
                     } if results['pdfplumber'] else None,
-                    "aiVision": {
-                        "products": len(results['ai_vision']['products']),
-                        "pages": results['ai_vision'].get('ai_metrics', {}).get('pages_processed', 0)
-                    } if 'ai_vision' in results else None,
                     "bestMethod": best_result['method']
                 }
             }
@@ -229,6 +117,49 @@ class EnhancedPdfProcessor:
             if self.debug_mode:
                 traceback.print_exc()
             
+
+                # AI Vision fallback for low completeness
+                completeness_ratio = (total_processed / total_detected * 100) if total_detected > 0 else 0
+
+                # Determine if we should use AI Vision fallback
+                should_use_ai_vision = False
+                ai_vision_reason = ""
+
+                if len(best_products) < 10 and completeness_ratio < 20:
+                    should_use_ai_vision = True
+                    ai_vision_reason = "Very few products extracted"
+                elif completeness_ratio < 15:
+                    should_use_ai_vision = True
+                    ai_vision_reason = "Low extraction completeness"
+                elif len(best_products) < 50 and completeness_ratio < 50:
+                    should_use_ai_vision = True
+                    ai_vision_reason = "Poor extraction results"
+                elif 'milk up' in pdf_path.lower() or 'visual' in pdf_path.lower():
+                    should_use_ai_vision = True
+                    ai_vision_reason = "Known visual-heavy supplier"
+
+                if should_use_ai_vision and os.getenv('OPENAI_API_KEY'):
+                    self.log(f"🤖 Attempting AI Vision fallback: {ai_vision_reason}")
+                    try:
+                        ai_extractor = AiPdfOcrExtractor(os.getenv('OPENAI_API_KEY'))
+                        ai_result = ai_extractor.process_pdf(pdf_path)
+
+                        if ai_result.get('products') and len(ai_result['products']) > len(best_products):
+                            self.log(f"✅ AI Vision extracted {len(ai_result['products'])} products (vs {len(best_products)} from traditional methods)")
+                            best_products = ai_result['products']
+                            best_method = "ai_vision_ocr"
+                            total_processed = len(ai_result['products'])
+
+                            # Update metrics
+                            if 'metrics' in ai_result:
+                                metrics.update({
+                                    'ai_vision_pages': ai_result['metrics'].get('pages_processed', 0),
+                                    'ai_vision_cost': ai_result['metrics'].get('cost_usd', 0)
+                                })
+                    except Exception as e:
+                        self.log(f"AI Vision fallback failed: {e}", 'ERROR')
+
+
             return {
                 "supplier": None,
                 "products": [],

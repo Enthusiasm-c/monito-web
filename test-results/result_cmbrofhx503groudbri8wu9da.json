@@ -1,0 +1,50 @@
+{
+  "id": "cmbrofhx503groudbri8wu9da",
+  "originalName": "PRICE QUOTATATION FOR EGGSTRA CAFE.pdf",
+  "fileSize": 352677,
+  "mimeType": "application/pdf",
+  "status": "processing",
+  "supplierId": "cmbrhel3w0007ouv15ohfq8jf",
+  "extractedData": null,
+  "errorMessage": null,
+  "createdAt": "2025-06-11T08:17:16.409Z",
+  "updatedAt": "2025-06-11T08:17:24.819Z",
+  "fileName": "PRICE QUOTATATION FOR EGGSTRA CAFE.pdf",
+  "processingDetails": null,
+  "url": "https://cdc1w79ssc4kg6xh.public.blob.vercel-storage.com/PRICE%20QUOTATATION%20FOR%20EGGSTRA%20CAFE-8wP00y9UppBuI3rBoVPYnlgFPaDn4M.pdf",
+  "completenessRatio": null,
+  "processingCostUsd": null,
+  "processingTimeMs": null,
+  "sheetsProcessed": null,
+  "tokensUsed": null,
+  "totalRowsDetected": null,
+  "totalRowsProcessed": null,
+  "approvalStatus": "pending_review",
+  "approvedBy": null,
+  "approvedAt": null,
+  "rejectionReason": null,
+  "reviewNotes": null,
+  "autoApproved": false,
+  "supplier": {
+    "id": "cmbrhel3w0007ouv15ohfq8jf",
+    "name": "Indonesian Cheese",
+    "contactInfo": null,
+    "email": null,
+    "phone": null,
+    "address": null,
+    "createdAt": "2025-06-11T05:00:36.573Z",
+    "updatedAt": "2025-06-11T05:00:36.573Z"
+  },
+  "_count": {
+    "prices": 29
+  },
+  "processingMetrics": {
+    "completenessRatio": null,
+    "totalRows": null,
+    "processedRows": null,
+    "processingTimeMs": null,
+    "tokensUsed": null,
+    "costUsd": null,
+    "sheetsProcessed": null
+  }
+}

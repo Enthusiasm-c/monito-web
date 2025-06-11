@@ -1,0 +1,1048 @@
+{
+  "filename": "milk up.pdf",
+  "extraction_method": "AI Vision OCR",
+  "products": [
+    {
+      "name": "French Yogurt",
+      "price": 104000,
+      "unit": "ml",
+      "size": "1000 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Coconut Yogurt",
+      "price": 120000,
+      "unit": "ml",
+      "size": "1000 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Plain Cream Cheese",
+      "price": 183000,
+      "unit": "kg",
+      "size": "1 kg",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Plain Mascarpone Cream Cheese",
+      "price": 210000,
+      "unit": "kg",
+      "size": "1 kg",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Coconut Milk Plant-Based",
+      "price": 59000,
+      "unit": "pcs",
+      "size": "",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Plain Yogurt",
+      "price": 50000,
+      "unit": "ml",
+      "size": "1000 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Greek Yogurt",
+      "price": 132000,
+      "unit": "ml",
+      "size": "1000 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Full Cream",
+      "price": 17000,
+      "unit": "ml",
+      "size": "1000 ml",
+      "price_type": "retail",
+      "notes": "suitable for whipping",
+      "source_page": 2
+    },
+    {
+      "name": "Cottage Cheese",
+      "price": 85000,
+      "unit": "gr",
+      "size": "500 gr",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Cottage Cheese",
+      "price": 170000,
+      "unit": "kg",
+      "size": "1 kg",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Sour Cream",
+      "price": 105000,
+      "unit": "ml",
+      "size": "1000 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Goat Yogurt",
+      "price": 102000,
+      "unit": "ml",
+      "size": "1000 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Syrniki",
+      "price": 120000,
+      "unit": "pcs",
+      "size": "12 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Beef Dumplings",
+      "price": 98000,
+      "unit": "gr",
+      "size": "500 gr",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Chicken Dumplings",
+      "price": 85000,
+      "unit": "gr",
+      "size": "500 gr",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Kefir",
+      "price": 49000,
+      "unit": "ml",
+      "size": "1000 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 2
+    },
+    {
+      "name": "Mango Yogurt",
+      "price": 36000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Mango Yogurt",
+      "price": 45000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Raspberry Yogurt",
+      "price": 36000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Raspberry Yogurt",
+      "price": 45000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Strawberry Yogurt",
+      "price": 36000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Strawberry Yogurt",
+      "price": 45000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Blueberry Yogurt",
+      "price": 44000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Blueberry Yogurt",
+      "price": 55000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Vanilla Chia & Flax Seeds Yogurt",
+      "price": 34400,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Vanilla Chia & Flax Seeds Yogurt",
+      "price": 56000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Coconut Chia & Flax Seeds Yogurt",
+      "price": 44800,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Coconut Chia & Flax Seeds Yogurt",
+      "price": 43000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Passion Fruit Yogurt",
+      "price": 34400,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Passion Fruit Yogurt",
+      "price": 43000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Chocolate Yogurt",
+      "price": 34400,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Chocolate Yogurt",
+      "price": 43000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Fresh Milk, Glass",
+      "price": 36000,
+      "unit": "ml",
+      "size": "650 ml",
+      "price_type": "retail",
+      "notes": "(PASTEURIZED)",
+      "source_page": 3
+    },
+    {
+      "name": "Fresh Milk, Glass",
+      "price": 36000,
+      "unit": "ml",
+      "size": "650 ml",
+      "price_type": "recommended retail",
+      "notes": "(PASTEURIZED)",
+      "source_page": 3
+    },
+    {
+      "name": "Raw Milk Cow, Glass",
+      "price": 35200,
+      "unit": "ml",
+      "size": "650 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Raw Milk Cow, Glass",
+      "price": 44000,
+      "unit": "ml",
+      "size": "650 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Fresh Milk, Plastic",
+      "price": 29000,
+      "unit": "ml",
+      "size": "950 ml",
+      "price_type": "retail",
+      "notes": "(PASTEURIZED)",
+      "source_page": 3
+    },
+    {
+      "name": "Fresh Milk, Plastic",
+      "price": 36000,
+      "unit": "ml",
+      "size": "950 ml",
+      "price_type": "recommended retail",
+      "notes": "(PASTEURIZED)",
+      "source_page": 3
+    },
+    {
+      "name": "Raw Milk Cow, Plastic",
+      "price": 29600,
+      "unit": "ml",
+      "size": "950 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Raw Milk Cow, Plastic",
+      "price": 37000,
+      "unit": "ml",
+      "size": "950 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Raw Milk Goat, Glass",
+      "price": 44800,
+      "unit": "ml",
+      "size": "650 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Raw Milk Goat, Glass",
+      "price": 56000,
+      "unit": "ml",
+      "size": "650 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Raw Milk Goat, Plastic",
+      "price": 52800,
+      "unit": "ml",
+      "size": "950 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Raw Milk Goat, Plastic",
+      "price": 66000,
+      "unit": "ml",
+      "size": "950 ml",
+      "price_type": "recommended retail",
+      "notes": "",
+      "source_page": 3
+    },
+    {
+      "name": "Mango Cardamom",
+      "price": 46400,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 4
+    },
+    {
+      "name": "Mango Cardamom",
+      "price": 58000,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 4
+    },
+    {
+      "name": "Saffron Rose",
+      "price": 38400,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 4
+    },
+    {
+      "name": "Saffron Rose",
+      "price": 48000,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 4
+    },
+    {
+      "name": "Indian Masala",
+      "price": 34400,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 4
+    },
+    {
+      "name": "Indian Masala",
+      "price": 43000,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 4
+    },
+    {
+      "name": "Kefir",
+      "price": 32000,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "retail",
+      "notes": "glass (cow)",
+      "source_page": 4
+    },
+    {
+      "name": "Kefir",
+      "price": 40000,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "standard",
+      "notes": "glass (cow)",
+      "source_page": 4
+    },
+    {
+      "name": "Kefir",
+      "price": 34400,
+      "unit": "ml",
+      "size": "650 ml",
+      "price_type": "retail",
+      "notes": "glass (cow)",
+      "source_page": 4
+    },
+    {
+      "name": "Kefir",
+      "price": 43000,
+      "unit": "ml",
+      "size": "650 ml",
+      "price_type": "standard",
+      "notes": "glass (cow)",
+      "source_page": 4
+    },
+    {
+      "name": "Gentle Kefir",
+      "price": 26000,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "retail",
+      "notes": "glass (suitable for baby >6 months old)",
+      "source_page": 4
+    },
+    {
+      "name": "Gentle Kefir",
+      "price": 33000,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "standard",
+      "notes": "glass (suitable for baby >6 months old)",
+      "source_page": 4
+    },
+    {
+      "name": "Goat Kefir",
+      "price": 44000,
+      "unit": "ml",
+      "size": "650 ml",
+      "price_type": "retail",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Goat Kefir",
+      "price": 55000,
+      "unit": "ml",
+      "size": "650 ml",
+      "price_type": "standard",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Goat Kefir",
+      "price": 31200,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "retail",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Goat Kefir",
+      "price": 39000,
+      "unit": "ml",
+      "size": "350 ml",
+      "price_type": "standard",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Plain Cream Cheese",
+      "price": 46400,
+      "unit": "gr",
+      "size": "230 gr",
+      "price_type": "retail",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Plain Cream Cheese",
+      "price": 58000,
+      "unit": "gr",
+      "size": "230 gr",
+      "price_type": "standard",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Low-Salt Cream Cheese",
+      "price": 51200,
+      "unit": "gr",
+      "size": "230 gr",
+      "price_type": "retail",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Low-Salt Cream Cheese",
+      "price": 64000,
+      "unit": "gr",
+      "size": "230 gr",
+      "price_type": "standard",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Dill Cream Cheese",
+      "price": 56000,
+      "unit": "gr",
+      "size": "230 gr",
+      "price_type": "retail",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Dill Cream Cheese",
+      "price": 70000,
+      "unit": "gr",
+      "size": "230 gr",
+      "price_type": "standard",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Paprika Cream Cheese",
+      "price": 56000,
+      "unit": "gr",
+      "size": "230 gr",
+      "price_type": "retail",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Paprika Cream Cheese",
+      "price": 70000,
+      "unit": "gr",
+      "size": "230 gr",
+      "price_type": "standard",
+      "notes": "glass",
+      "source_page": 4
+    },
+    {
+      "name": "Plain Mascarpone Cream",
+      "price": 41600,
+      "unit": "pcs",
+      "size": "Plastic Container",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Raisin Mascarpone Cream",
+      "price": 48000,
+      "unit": "pcs",
+      "size": "Plastic Container",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Sweet Mascarpone Cream",
+      "price": 41600,
+      "unit": "pcs",
+      "size": "Plastic Container",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Mascarpone Cheese Bar, Vanilla",
+      "price": 58400,
+      "unit": "210gr",
+      "size": "3 pcs",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Mascarpone Cheese Bar, Choco",
+      "price": 68800,
+      "unit": "210gr",
+      "size": "3 pcs",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Mascarpone Cheese Bar, Matcha",
+      "price": 68800,
+      "unit": "210gr",
+      "size": "3 pcs",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Mascarpone Cheese Bar, Vanilla",
+      "price": 29000,
+      "unit": "70gr",
+      "size": "Box",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Mascarpone Cheese Bar, Choco",
+      "price": 37000,
+      "unit": "70gr",
+      "size": "Box",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Apple Cinnamon",
+      "price": 115000,
+      "unit": "pcs",
+      "size": "9 pcs, 650-700gr",
+      "price_type": "standard",
+      "notes": "Vegan",
+      "source_page": 5
+    },
+    {
+      "name": "Sweet Ricotta",
+      "price": 96000,
+      "unit": "pcs",
+      "size": "9 pcs, 650-700gr",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Dill Cream Cheese & Parsley",
+      "price": 104000,
+      "unit": "pcs",
+      "size": "9 pcs, 650-700gr",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Cookonuts Dulce De Leche Cookies",
+      "price": 40000,
+      "unit": "pcs",
+      "size": "8 pcs",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Cookonuts Coconut Caramel Cookies",
+      "price": 36000,
+      "unit": "pcs",
+      "size": "8 pcs",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 5
+    },
+    {
+      "name": "Plain Ricotta Cake",
+      "price": 78400,
+      "unit": "gr",
+      "size": "540 gr",
+      "price_type": "retail",
+      "notes": "Flour free",
+      "source_page": 6
+    },
+    {
+      "name": "Plain Ricotta Cake",
+      "price": 95000,
+      "unit": "gr",
+      "size": "540 gr",
+      "price_type": "standard",
+      "notes": "Flour free",
+      "source_page": 6
+    },
+    {
+      "name": "Pear Pound Cake",
+      "price": 57600,
+      "unit": "gr",
+      "size": "600 gr",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 6
+    },
+    {
+      "name": "Pear Pound Cake",
+      "price": 72000,
+      "unit": "gr",
+      "size": "600 gr",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 6
+    },
+    {
+      "name": "Raisin Ricotta Cake",
+      "price": 80000,
+      "unit": "gr",
+      "size": "540 gr",
+      "price_type": "retail",
+      "notes": "Flour free",
+      "source_page": 6
+    },
+    {
+      "name": "Raisin Ricotta Cake",
+      "price": 100000,
+      "unit": "gr",
+      "size": "540 gr",
+      "price_type": "standard",
+      "notes": "Flour free",
+      "source_page": 6
+    },
+    {
+      "name": "Greek Yogurt",
+      "price": 68800,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "retail",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "Greek Yogurt",
+      "price": 86000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "standard",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "Greek Yogurt",
+      "price": 79200,
+      "unit": "ml",
+      "size": "500 ml",
+      "price_type": "retail",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "Greek Yogurt",
+      "price": 99000,
+      "unit": "ml",
+      "size": "500 ml",
+      "price_type": "standard",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "Goat Yogurt",
+      "price": 38400,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "retail",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "Goat Yogurt",
+      "price": 48000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "standard",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "French Yogurt",
+      "price": 22400,
+      "unit": "ml",
+      "size": "100 ml",
+      "price_type": "retail",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "French Yogurt",
+      "price": 28000,
+      "unit": "ml",
+      "size": "100 ml",
+      "price_type": "standard",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "Plain Yogurt",
+      "price": 30400,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "retail",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "Plain Yogurt",
+      "price": 38000,
+      "unit": "ml",
+      "size": "330 ml",
+      "price_type": "standard",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "Plain Yogurt",
+      "price": 24800,
+      "unit": "ml",
+      "size": "400 ml",
+      "price_type": "retail",
+      "notes": "Plastic",
+      "source_page": 6
+    },
+    {
+      "name": "Plain Yogurt",
+      "price": 31000,
+      "unit": "ml",
+      "size": "400 ml",
+      "price_type": "standard",
+      "notes": "Plastic",
+      "source_page": 6
+    },
+    {
+      "name": "Skim Yogurt",
+      "price": 34800,
+      "unit": "ml",
+      "size": "400 ml",
+      "price_type": "retail",
+      "notes": "Plastic",
+      "source_page": 6
+    },
+    {
+      "name": "Skim Yogurt",
+      "price": 48000,
+      "unit": "ml",
+      "size": "400 ml",
+      "price_type": "standard",
+      "notes": "Plastic",
+      "source_page": 6
+    },
+    {
+      "name": "Cottage Cheese",
+      "price": 99000,
+      "unit": "gr",
+      "size": "400 gr",
+      "price_type": "standard",
+      "notes": "Plastic",
+      "source_page": 6
+    },
+    {
+      "name": "Cottage Cheese",
+      "price": 52800,
+      "unit": "gr",
+      "size": "250 gr",
+      "price_type": "retail",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "Cottage Cheese",
+      "price": 66000,
+      "unit": "gr",
+      "size": "250 gr",
+      "price_type": "standard",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "Fat Free Cottage Cheese",
+      "price": 121600,
+      "unit": "gr",
+      "size": "400 gr",
+      "price_type": "retail",
+      "notes": "Plastic",
+      "source_page": 6
+    },
+    {
+      "name": "Fat Free Cottage Cheese",
+      "price": 152000,
+      "unit": "gr",
+      "size": "400 gr",
+      "price_type": "standard",
+      "notes": "Plastic",
+      "source_page": 6
+    },
+    {
+      "name": "Little Cottage Cheese",
+      "price": 43200,
+      "unit": "gr",
+      "size": "140 gr",
+      "price_type": "retail",
+      "notes": "Glass",
+      "source_page": 6
+    },
+    {
+      "name": "Little Cottage Cheese",
+      "price": 54000,
+      "unit": "gr",
+      "size": "140 gr",
+      "price_type": "standard",
+      "notes": "Glass",
+      "source_page": 6
+    }
+  ],
+  "metrics": {
+    "pages_processed": 6,
+    "total_pages": 6,
+    "products_extracted": 108,
+    "products_before_dedup": 109,
+    "tokens_used": 0,
+    "cost_usd": 0.0
+  },
+  "page_results": [
+    {
+      "page": 1,
+      "products_count": 0,
+      "page_info": {
+        "has_table": false,
+        "table_type": "standard",
+        "total_products_visible": 0
+      },
+      "error": null
+    },
+    {
+      "page": 2,
+      "products_count": 16,
+      "page_info": {
+        "has_table": true,
+        "table_type": "complex",
+        "total_products_visible": 15
+      },
+      "error": null
+    },
+    {
+      "page": 3,
+      "products_count": 28,
+      "page_info": {
+        "has_table": true,
+        "table_type": "complex",
+        "total_products_visible": 36
+      },
+      "error": null
+    },
+    {
+      "page": 4,
+      "products_count": 24,
+      "page_info": {
+        "has_table": true,
+        "table_type": "complex",
+        "total_products_visible": 24
+      },
+      "error": null
+    },
+    {
+      "page": 5,
+      "products_count": 13,
+      "page_info": {
+        "has_table": true,
+        "table_type": "complex",
+        "total_products_visible": 12
+      },
+      "error": null
+    },
+    {
+      "page": 6,
+      "products_count": 28,
+      "page_info": {
+        "has_table": true,
+        "table_type": "complex",
+        "total_products_visible": 30
+      },
+      "error": null
+    }
+  ]
+}

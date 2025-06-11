@@ -1,0 +1,50 @@
+{
+  "id": "cmbrp7ubn055koudb6x4sga40",
+  "originalName": "Island Organics Bali.pdf",
+  "fileSize": 1325387,
+  "mimeType": "application/pdf",
+  "status": "processing",
+  "supplierId": "cmbrlz6gk0003ouqmfw549wxc",
+  "extractedData": null,
+  "errorMessage": null,
+  "createdAt": "2025-06-11T08:39:18.851Z",
+  "updatedAt": "2025-06-11T08:39:31.543Z",
+  "fileName": "Island Organics Bali.pdf",
+  "processingDetails": null,
+  "url": "https://cdc1w79ssc4kg6xh.public.blob.vercel-storage.com/Island%20Organics%20Bali-BQvlYVcBEZgxB0CWQ0CjtuVm5wPNht.pdf",
+  "completenessRatio": null,
+  "processingCostUsd": null,
+  "processingTimeMs": null,
+  "sheetsProcessed": null,
+  "tokensUsed": null,
+  "totalRowsDetected": null,
+  "totalRowsProcessed": null,
+  "approvalStatus": "pending_review",
+  "approvedBy": null,
+  "approvedAt": null,
+  "rejectionReason": null,
+  "reviewNotes": null,
+  "autoApproved": false,
+  "supplier": {
+    "id": "cmbrlz6gk0003ouqmfw549wxc",
+    "name": "Retail",
+    "contactInfo": null,
+    "email": null,
+    "phone": null,
+    "address": null,
+    "createdAt": "2025-06-11T07:08:35.828Z",
+    "updatedAt": "2025-06-11T07:08:35.828Z"
+  },
+  "_count": {
+    "prices": 13
+  },
+  "processingMetrics": {
+    "completenessRatio": null,
+    "totalRows": null,
+    "processedRows": null,
+    "processingTimeMs": null,
+    "tokensUsed": null,
+    "costUsd": null,
+    "sheetsProcessed": null
+  }
+}

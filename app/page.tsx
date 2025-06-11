@@ -71,6 +71,7 @@ export default function Home() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [tokenUsage, setTokenUsage] = useState<{totalCostUsd: number; totalCostFormatted: string}>({totalCostUsd: 0, totalCostFormatted: '$0.0000'});
   const [pendingUploadsCount, setPendingUploadsCount] = useState<number>(0);
+  const [useAIMode, setUseAIMode] = useState<boolean>(false);
 
   // Debounce search query
   useEffect(() => {
@@ -203,6 +204,11 @@ export default function Home() {
       });
 
       let endpoint = '/api/upload-smart';
+      
+      // Use AI-powered upload if enabled
+      if (useAIMode) {
+        endpoint = '/api/upload-ai';
+      }
       
       // If user selected a specific supplier, use the original upload endpoint
       if (selectedSupplier) {
@@ -521,12 +527,32 @@ export default function Home() {
                     </p>
                   </div>
                   
+                  {/* AI Mode Toggle */}
+                  {!selectedSupplier && (
+                    <div className="flex items-center justify-between">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={useAIMode}
+                          onChange={(e) => setUseAIMode(e.target.checked)}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Use AI-powered extraction (more accurate)
+                        </span>
+                      </label>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        🤖 Beta
+                      </span>
+                    </div>
+                  )}
+                  
                   <button 
                     onClick={handleUpload}
                     disabled={uploading}
                     className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm font-medium w-full"
                   >
-                    {uploading ? 'Processing...' : selectedSupplier ? 'Process Files' : 'Smart Process Files'}
+                    {uploading ? 'Processing...' : selectedSupplier ? 'Process Files' : useAIMode ? 'AI Process Files' : 'Smart Process Files'}
                   </button>
                 </div>
               </div>

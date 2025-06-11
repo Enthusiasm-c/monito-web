@@ -4,6 +4,7 @@
  */
 
 import { tokenCostMonitor, type TokenUsage } from './tokenCostMonitor';
+import OpenAI from 'openai';
 
 interface SheetProcessingResult {
   name: string;
@@ -52,7 +53,7 @@ class EnhancedExcelExtractor {
     },
     maxFileSize: parseInt(process.env.MAX_FILE_SIZE_MB || '10') * 1024 * 1024,
     llmFallbackEnabled: process.env.LLM_FALLBACK_ENABLED === 'true',
-    llmModel: process.env.LLM_MODEL || 'gpt-o3-mini'
+    llmModel: process.env.LLM_MODEL || 'gpt-4o-mini'
   };
 
   public static getInstance(): EnhancedExcelExtractor {
@@ -175,6 +176,11 @@ class EnhancedExcelExtractor {
         // Process the sheet
         const sheetResult = await this.processSheet(nonEmptyRows, sheetName, supplierInfo);
         
+        console.log(`   ✅ Sheet "${sheetName}" processed: ${sheetResult.products.length} products extracted`);
+        if (sheetResult.products.length === 0 && sheetResult.errors.length > 0) {
+          console.log(`   ⚠️ Errors: ${sheetResult.errors.join('; ')}`);
+        }
+        
         allSheets.push(sheetResult);
         allProducts.push(...sheetResult.products);
         allErrors.push(...sheetResult.errors);
@@ -247,6 +253,7 @@ class EnhancedExcelExtractor {
     try {
       // Analyze sheet structure
       const structure = this.analyzeSheetStructure(rawData);
+      console.log(`   📋 Sheet structure: name=${structure.nameColumn}, price=${structure.priceColumn}, unit=${structure.unitColumn}, dataStart=${structure.dataStartRow}`);
       console.log(`   🔬 Sheet structure:`, structure);
 
       // Extract products based on detected structure
@@ -262,6 +269,11 @@ class EnhancedExcelExtractor {
         } catch (error) {
           errors.push(`Row ${i + 1}: ${error}`);
         }
+      }
+
+      console.log(`   📊 Extraction complete: ${products.length} products from ${processedRows}/${totalRows} rows`);
+      if (products.length === 0) {
+        console.log(`   ⚠️ No products extracted. Structure issues or data format not recognized.`);
       }
 
       // Check if we need LLM fallback
@@ -306,8 +318,8 @@ class EnhancedExcelExtractor {
       headerRow: -1
     };
 
-    // Find header row by looking for keyword patterns
-    for (let i = 0; i < Math.min(5, rawData.length); i++) {
+    // Find header row by looking for keyword patterns (check more rows for complex layouts)
+    for (let i = 0; i < Math.min(15, rawData.length); i++) {
       const row = rawData[i];
       if (!row) continue;
 
@@ -343,7 +355,7 @@ class EnhancedExcelExtractor {
   private calculateHeaderScore(row: any[]): number {
     if (!row || row.length === 0) return 0;
 
-    const keywords = ['name', 'nama', 'product', 'item', 'price', 'harga', 'unit', 'satuan', 'category', 'kategori'];
+    const keywords = ['name', 'nama', 'product', 'item', 'items', 'price', 'harga', 'unit', 'satuan', 'category', 'kategori', 'qty', 'quantity'];
     let score = 0;
 
     for (const cell of row) {
@@ -475,16 +487,79 @@ class EnhancedExcelExtractor {
     try {
       console.log(`   🤖 Starting LLM fallback for sheet "${sheetName}"`);
       
-      // TODO: Implement LLM fallback
-      // This would send the sheet structure to GPT for analysis
+      // Prepare sample data for LLM (first 30 rows)
+      const sampleRows = rawData.slice(0, Math.min(30, rawData.length));
+      const csvSample = sampleRows.map(row => 
+        row.map(cell => String(cell || '').replace(/,/g, ';')).join(',')
+      ).join('\n');
+      
+      const openai = new (await import('openai')).default({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+      
+      const response = await openai.chat.completions.create({
+        model: this.config.llmModel,
+        messages: [
+          {
+            role: 'system',
+            content: 'Extract products with prices from this spreadsheet data. Return JSON array with objects: {name, price, unit}. Only include items with clear prices.'
+          },
+          {
+            role: 'user',
+            content: `Extract products from this data:\n\n${csvSample}\n\nReturn only valid JSON array.`
+          }
+        ],
+        temperature: 0.1,
+        max_tokens: 2000
+      });
+      
+      const content = response.choices[0]?.message?.content || '[]';
+      let products: ExtractedProduct[] = [];
+      
+      try {
+        // Clean response
+        let cleanContent = content.trim();
+        if (cleanContent.startsWith('```json')) {
+          cleanContent = cleanContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+        }
+        
+        const parsed = JSON.parse(cleanContent);
+        products = Array.isArray(parsed) ? parsed : [];
+        
+        // Validate and clean products
+        products = products
+          .filter(p => p.name && p.price > 0)
+          .map((p, index) => ({
+            name: String(p.name).trim(),
+            price: Number(p.price),
+            unit: p.unit || 'pcs',
+            category: p.category,
+            sourceSheet: sheetName,
+            sourceRow: index + 1
+          }));
+          
+        console.log(`   ✅ LLM extracted ${products.length} products`);
+        
+      } catch (parseError) {
+        console.error(`   ❌ Failed to parse LLM response:`, parseError);
+      }
+      
+      const tokensUsed = response.usage?.total_tokens || 0;
+      const costUsd = (tokensUsed / 1000) * 0.0006; // gpt-4o-mini approximate cost
+      
+      tokenCostMonitor.trackUsage({
+        inputTokens: response.usage?.prompt_tokens || 0,
+        outputTokens: response.usage?.completion_tokens || 0,
+        model: this.config.llmModel
+      });
       
       return {
         name: sheetName,
         totalRows: rawData.length,
-        processedRows: 0,
-        products: [],
-        errors: ['LLM fallback not yet implemented'],
-        completenessRatio: 0
+        processedRows: products.length,
+        products,
+        errors: [],
+        completenessRatio: products.length / Math.max(rawData.length - 10, 1) // Assume 10 header rows
       };
       
     } catch (error) {
@@ -507,17 +582,22 @@ class EnhancedExcelExtractor {
     const name = sheetName.toLowerCase();
     
     // Skip obviously non-price sheets
-    if (name.includes('contact') || name.includes('info') || name.includes('instruction')) {
+    if (name.includes('contact') || name.includes('info') || name.includes('instruction') || 
+        name.includes('macro')) {
       return false;
     }
 
     // Require minimum data
     if (data.length < 3) return false;
 
-    // Look for price-like data in first few rows
-    for (let i = 0; i < Math.min(5, data.length); i++) {
+    // Look for price-like data in first 20 rows (might have header info)
+    for (let i = 0; i < Math.min(20, data.length); i++) {
       const row = data[i];
-      if (row && row.some(cell => this.parsePrice(String(cell)) > 0)) {
+      if (row && row.some(cell => {
+        const price = this.parsePrice(String(cell));
+        // Look for reasonable prices (100 - 1000000)
+        return price > 100 && price < 1000000;
+      })) {
         return true;
       }
     }
@@ -545,7 +625,7 @@ class EnhancedExcelExtractor {
    * Helper methods for column detection
    */
   private isNameColumn(header: string): boolean {
-    return /name|nama|product|item|barang|artikel/.test(header);
+    return /name|nama|product|item|items|barang|artikel|description|deskripsi/.test(header);
   }
 
   private isPriceColumn(header: string): boolean {

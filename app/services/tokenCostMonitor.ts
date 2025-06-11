@@ -25,6 +25,11 @@ class TokenCostMonitor {
 
   // Cost per 1K tokens in USD (from environment)
   private readonly costs = {
+    'gpt-4o-mini': {
+      input: parseFloat(process.env.OPENAI_GPT4OMINI_INPUT_COST_PER_1K || '0.00015'),
+      output: parseFloat(process.env.OPENAI_GPT4OMINI_OUTPUT_COST_PER_1K || '0.0006')
+    },
+    // Legacy model names for backward compatibility
     'gpt-o3': {
       input: parseFloat(process.env.OPENAI_GPTO3_INPUT_COST_PER_1K || '0.06'),
       output: parseFloat(process.env.OPENAI_GPTO3_OUTPUT_COST_PER_1K || '0.24')
@@ -50,35 +55,12 @@ class TokenCostMonitor {
     return TokenCostMonitor.instance;
   }
 
-  /**
-   * Calculate cost for token usage
-   */
-  calculateCost(usage: TokenUsage): CostCalculation {
-    const modelKey = this.normalizeModelName(usage.model);
-    const rates = this.costs[modelKey as keyof typeof this.costs];
-    
-    if (!rates) {
-      console.warn(`Unknown model: ${usage.model}, using gpt-o3-mini rates`);
-      const fallbackRates = this.costs['gpt-o3-mini'];
-      const inputCost = (usage.inputTokens / 1000) * fallbackRates.input;
-      const outputCost = (usage.outputTokens / 1000) * fallbackRates.output;
-      const totalCost = inputCost + outputCost;
-      
-      return { inputCost, outputCost, totalCost, currency: 'USD' };
-    }
-
-    const inputCost = (usage.inputTokens / 1000) * rates.input;
-    const outputCost = (usage.outputTokens / 1000) * rates.output;
-    const totalCost = inputCost + outputCost;
-
-    return { inputCost, outputCost, totalCost, currency: 'USD' };
-  }
 
   /**
    * Track token usage and add to totals
    */
   trackUsage(usage: TokenUsage): CostCalculation {
-    const cost = this.calculateCost(usage);
+    const cost = this.calculateCostDetailed(usage);
     
     // Add to total cost
     this.totalCostUsd += cost.totalCost;
@@ -146,9 +128,10 @@ class TokenCostMonitor {
    */
   private normalizeModelName(model: string): string {
     // Handle different model name variations
-    if (model.includes('gpt-o3-mini')) return 'gpt-o3-mini';
-    if (model.includes('gpt-o3')) return 'gpt-o3';
+    if (model.includes('gpt-4o-mini')) return 'gpt-4o-mini';
     if (model.includes('gpt-4o')) return 'gpt-4o';
+    if (model.includes('gpt-o3-mini')) return 'gpt-4o-mini'; // Map old model to new
+    if (model.includes('gpt-o3')) return 'gpt-4o'; // Map old model to new
     if (model.includes('gpt-4')) return 'gpt-4o'; // Default GPT-4 to gpt-4o rates
     if (model.includes('gpt-3.5')) return 'gpt-3.5-turbo';
     
@@ -165,6 +148,51 @@ class TokenCostMonitor {
       return `$${cost.toFixed(5)}`; // Show small costs with 5 decimal places
     }
     return `$${cost.toFixed(4)}`; // Standard 4 decimal places for larger costs
+  }
+
+  /**
+   * Simple cost calculation for a total token count
+   */
+  calculateCost(tokensOrUsage: number | TokenUsage, model: string = 'gpt-4o-mini'): number {
+    if (typeof tokensOrUsage === 'number') {
+      // Simple calculation assuming all tokens are output
+      const modelKey = this.normalizeModelName(model);
+      const rates = this.costs[modelKey as keyof typeof this.costs];
+      if (!rates) {
+        console.warn(`Unknown model: ${model}, using gpt-4o-mini rates`);
+        const fallbackRates = this.costs['gpt-4o-mini'] || this.costs['gpt-o3-mini'];
+        return (tokensOrUsage / 1000) * fallbackRates.output;
+      }
+      return (tokensOrUsage / 1000) * rates.output;
+    } else {
+      // Full calculation with input/output split
+      const calc = this.calculateCostDetailed(tokensOrUsage);
+      return calc.totalCost;
+    }
+  }
+
+  /**
+   * Detailed cost calculation with input/output breakdown
+   */
+  private calculateCostDetailed(usage: TokenUsage): CostCalculation {
+    const modelKey = this.normalizeModelName(usage.model);
+    const rates = this.costs[modelKey as keyof typeof this.costs];
+    
+    if (!rates) {
+      console.warn(`Unknown model: ${usage.model}, using gpt-4o-mini rates`);
+      const fallbackRates = this.costs['gpt-4o-mini'] || this.costs['gpt-o3-mini'];
+      const inputCost = (usage.inputTokens / 1000) * fallbackRates.input;
+      const outputCost = (usage.outputTokens / 1000) * fallbackRates.output;
+      const totalCost = inputCost + outputCost;
+      
+      return { inputCost, outputCost, totalCost, currency: 'USD' };
+    }
+
+    const inputCost = (usage.inputTokens / 1000) * rates.input;
+    const outputCost = (usage.outputTokens / 1000) * rates.output;
+    const totalCost = inputCost + outputCost;
+
+    return { inputCost, outputCost, totalCost, currency: 'USD' };
   }
 
   /**

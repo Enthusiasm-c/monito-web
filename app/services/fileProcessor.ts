@@ -47,17 +47,23 @@ export async function processFile(uploadId: string) {
 
     let extractedData: ExtractedData = { products: [] };
 
-    // Extract data based on file type
-    if (upload.mimeType?.includes('pdf')) {
+    // Extract data based on file type - check both MIME type and file extension
+    const fileName = upload.originalName?.toLowerCase() || '';
+    const mimeType = upload.mimeType?.toLowerCase() || '';
+    
+    if (mimeType.includes('pdf') || fileName.endsWith('.pdf')) {
       extractedData = await processPDF(upload.url || '');
-    } else if (upload.mimeType?.includes('excel') || upload.mimeType?.includes('sheet')) {
+    } else if (mimeType.includes('excel') || mimeType.includes('sheet') || 
+               fileName.endsWith('.xlsx') || fileName.endsWith('.xls') ||
+               mimeType === 'application/octet-stream' && (fileName.endsWith('.xlsx') || fileName.endsWith('.xls'))) {
       extractedData = await processExcel(upload.url || '');
-    } else if (upload.mimeType?.includes('csv')) {
+    } else if (mimeType.includes('csv') || fileName.endsWith('.csv') ||
+               mimeType === 'application/octet-stream' && fileName.endsWith('.csv')) {
       extractedData = await processCSV(upload.url || '');
-    } else if (upload.mimeType?.includes('image')) {
+    } else if (mimeType.includes('image') || fileName.match(/\.(jpg|jpeg|png|gif|bmp)$/i)) {
       extractedData = await processImage(upload.url || '');
     } else {
-      throw new Error(`Unsupported file type: ${upload.mimeType}`);
+      throw new Error(`Unsupported file type: ${upload.mimeType} (${fileName})`);
     }
 
     // Check if we detected a different supplier than expected
@@ -575,7 +581,7 @@ async function processImage(fileUrl: string): Promise<ExtractedData> {
       
       // Use OpenAI Vision API to process image directly
       const response = await openai.chat.completions.create({
-        model: "gpt-o3",
+        model: "gpt-4o-mini",
         max_tokens: 1500, // Ограничиваем токены для экономии
         messages: [
           {
@@ -1299,41 +1305,57 @@ async function findOrCreateSupplier(supplierData: { name: string; email?: string
 
 function extractSupplierFromFilename(filename: string): string | null {
   // Extract supplier name from filename patterns like:
-  // "Fresh_Foods_PriceList.xlsx" -> "Fresh Foods"
-  // "market-direct-2024.csv" -> "Market Direct"
-  // "green_valley_wholesale.pdf" -> "Green Valley Wholesale"
+  // "Island Organics Bali.pdf" -> "Island Organics Bali"
+  // "Oka veg supplier.xlsx" -> "Oka Veg Supplier"
+  // "bali boga.pdf" -> "Bali Boga"
   
   const basename = filename.split('/').pop()?.split('.')[0] || '';
   
-  // Common patterns to ignore
-  const ignorePatterns = [
-    /price.*list/i,
-    /wholesale/i,
+  // Common patterns to remove (but keep more of the name)
+  const removePatterns = [
+    /price\s*list/i,
+    /price\s*quotation/i,
+    /pricelist/i,
     /catalog/i,
-    /\d{4}/g, // years
-    /\d{1,2}[-\/]\d{1,2}/g, // dates
+    /\b\d{4}\b/g, // years like 2024
+    /\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}/g, // dates like 24/02/2025
+    /\d{1,2}\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{2,4}/gi, // dates like 24 Feb 2025
+    /\s+for\s+.+$/i, // remove "for EGGSTRA CAFE" etc
+    /\s*\(.+\)\s*$/i, // remove content in parentheses at the end
   ];
   
   let cleanName = basename
-    .replace(/[_-]/g, ' ')
-    .replace(/([a-z])([A-Z])/g, '$1 $2') // camelCase to spaces
-    .toLowerCase();
+    .replace(/[_-]/g, ' ') // Replace underscores and hyphens with spaces
+    .replace(/([a-z])([A-Z])/g, '$1 $2'); // camelCase to spaces
   
-  // Remove common patterns
-  ignorePatterns.forEach(pattern => {
+  // Remove patterns
+  removePatterns.forEach(pattern => {
     cleanName = cleanName.replace(pattern, '');
   });
   
-  // Clean up and capitalize
+  // Special handling for known patterns
   cleanName = cleanName
-    .trim()
-    .replace(/\s+/g, ' ')
+    .replace(/\bPT\.?\s*/i, 'PT. ') // Standardize PT.
+    .replace(/\s+supplier\s*$/i, '') // Remove "supplier" at the end
+    .replace(/\s+vegetables?\s*$/i, '') // Remove "vegetable(s)" at the end
+    .trim();
+  
+  // Clean up and capitalize properly
+  cleanName = cleanName
+    .replace(/\s+/g, ' ') // Multiple spaces to single
     .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .map(word => {
+      // Keep acronyms uppercase
+      if (word.toUpperCase() === word && word.length <= 3) {
+        return word;
+      }
+      // Capitalize first letter of each word
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
     .join(' ');
   
   // Return null if the result is too short or generic
-  if (cleanName.length < 3 || ['File', 'Document', 'List'].includes(cleanName)) {
+  if (cleanName.length < 3 || ['File', 'Document', 'List', 'Pdf', 'Xlsx', 'Csv'].includes(cleanName)) {
     return null;
   }
   

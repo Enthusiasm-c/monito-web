@@ -1,0 +1,50 @@
+{
+  "id": "cmbrp9c4i05k3oudbfem50e7r",
+  "originalName": "PT.Global Anugrah Pasifik (grocery item) 24 Feb 2025.pdf",
+  "fileSize": 2375863,
+  "mimeType": "application/pdf",
+  "status": "processing",
+  "supplierId": "cmbrnfjcu01booudb1ul90woo",
+  "extractedData": null,
+  "errorMessage": null,
+  "createdAt": "2025-06-11T08:40:28.578Z",
+  "updatedAt": "2025-06-11T08:40:37.284Z",
+  "fileName": "PT.Global Anugrah Pasifik (grocery item) 24 Feb 2025.pdf",
+  "processingDetails": null,
+  "url": "https://cdc1w79ssc4kg6xh.public.blob.vercel-storage.com/PT.Global%20Anugrah%20Pasifik%20%28grocery%20item%29%2024%20Feb%202025-OvR3gL0gmPNTiadHZ8HWwmJXhzklvn.pdf",
+  "completenessRatio": null,
+  "processingCostUsd": null,
+  "processingTimeMs": null,
+  "sheetsProcessed": null,
+  "tokensUsed": null,
+  "totalRowsDetected": null,
+  "totalRowsProcessed": null,
+  "approvalStatus": "pending_review",
+  "approvedBy": null,
+  "approvedAt": null,
+  "rejectionReason": null,
+  "reviewNotes": null,
+  "autoApproved": false,
+  "supplier": {
+    "id": "cmbrnfjcu01booudb1ul90woo",
+    "name": "PT.GLOBAL ANUGRAH PASIFIK",
+    "contactInfo": null,
+    "email": null,
+    "phone": null,
+    "address": null,
+    "createdAt": "2025-06-11T07:49:18.655Z",
+    "updatedAt": "2025-06-11T07:49:18.655Z"
+  },
+  "_count": {
+    "prices": 28
+  },
+  "processingMetrics": {
+    "completenessRatio": null,
+    "totalRows": null,
+    "processedRows": null,
+    "processingTimeMs": null,
+    "tokensUsed": null,
+    "costUsd": null,
+    "sheetsProcessed": null
+  }
+}

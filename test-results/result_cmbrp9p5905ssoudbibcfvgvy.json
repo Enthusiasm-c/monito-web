@@ -1,0 +1,72 @@
+{
+  "id": "cmbrp9p5905ssoudbibcfvgvy",
+  "originalName": "Pricelist - Global.pdf",
+  "fileSize": 291293,
+  "mimeType": "application/pdf",
+  "status": "completed",
+  "supplierId": "cmbrf0y8u0000ouv1saxzpw91",
+  "extractedData": {
+    "errors": [],
+    "costUsd": 0,
+    "products": [],
+    "supplier": null,
+    "tokensUsed": 0,
+    "processingTimeMs": 2368,
+    "completenessRatio": 0,
+    "extractionMethods": {
+      "bestMethod": "camelot_stream",
+      "pdfPlumber": {
+        "rows": 0,
+        "pages": 1
+      },
+      "camelotStream": {
+        "rows": 1,
+        "tables": 1
+      },
+      "camelotLattice": null
+    },
+    "totalRowsDetected": 1,
+    "totalRowsProcessed": 0
+  },
+  "errorMessage": null,
+  "createdAt": "2025-06-11T08:40:45.453Z",
+  "updatedAt": "2025-06-11T08:40:48.749Z",
+  "fileName": "Pricelist - Global.pdf",
+  "processingDetails": null,
+  "url": "https://cdc1w79ssc4kg6xh.public.blob.vercel-storage.com/Pricelist%20-%20Global-ZmFyZDEfkGDvuBs8Qxb8ddXuktdp9Q.pdf",
+  "completenessRatio": 0,
+  "processingCostUsd": 0,
+  "processingTimeMs": 2649,
+  "sheetsProcessed": null,
+  "tokensUsed": 0,
+  "totalRowsDetected": 1,
+  "totalRowsProcessed": 0,
+  "approvalStatus": "approved",
+  "approvedBy": null,
+  "approvedAt": null,
+  "rejectionReason": null,
+  "reviewNotes": null,
+  "autoApproved": true,
+  "supplier": {
+    "id": "cmbrf0y8u0000ouv1saxzpw91",
+    "name": "Temporary Processing",
+    "contactInfo": null,
+    "email": "temp@processing.com",
+    "phone": null,
+    "address": null,
+    "createdAt": "2025-06-11T03:54:01.182Z",
+    "updatedAt": "2025-06-11T03:54:01.182Z"
+  },
+  "_count": {
+    "prices": 0
+  },
+  "processingMetrics": {
+    "completenessRatio": 0,
+    "totalRows": 1,
+    "processedRows": 0,
+    "processingTimeMs": 2649,
+    "tokensUsed": 0,
+    "costUsd": 0,
+    "sheetsProcessed": null
+  }
+}

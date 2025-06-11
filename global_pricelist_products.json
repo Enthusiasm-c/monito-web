@@ -1,0 +1,333 @@
+{
+  "filename": "Pricelist - Global.pdf",
+  "extraction_method": "AI Vision OCR",
+  "products": [
+    {
+      "name": "Ciabatta",
+      "price": 116250,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Ciabatta",
+      "price": 72000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Bagette",
+      "price": 116250,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Bagette",
+      "price": 72000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Pita",
+      "price": 67500,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Pita",
+      "price": 49500,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Bagel Big",
+      "price": 116250,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Bagel Big",
+      "price": 72000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Sourdough Bun",
+      "price": 116250,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Sourdough Bun",
+      "price": 72000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Sourdough Baguette",
+      "price": 116250,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Sourdough Baguette",
+      "price": 72000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Burger Bun",
+      "price": 116250,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Burger Bun",
+      "price": 72000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Bistro Bun",
+      "price": 116250,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Bistro Bun",
+      "price": 72000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Hotdog Bun",
+      "price": 116250,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Hotdog Bun",
+      "price": 72000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "English Muffin",
+      "price": 116250,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "English Muffin",
+      "price": 72000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Pretzel",
+      "price": 116250,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Pretzel",
+      "price": 72000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Pizza Base",
+      "price": 116250,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Pizza Base",
+      "price": 72000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Almond Croissant",
+      "price": 44400,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Almond Croissant",
+      "price": 25000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Cinnamon Roll",
+      "price": 45500,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Cinnamon Roll",
+      "price": 25000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Sweet Toast",
+      "price": 45450,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Sweet Toast",
+      "price": 25000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Vegan Brioche",
+      "price": 45450,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Vegan Brioche",
+      "price": 25000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Wafer Ice-Cream",
+      "price": 45450,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "retail",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Wafer Ice-Cream",
+      "price": 25000,
+      "unit": "pcs",
+      "size": "1 pcs",
+      "price_type": "wholesale",
+      "notes": "",
+      "source_page": 1
+    },
+    {
+      "name": "Cookies",
+      "price": 54500,
+      "unit": "kg",
+      "size": "1 kg",
+      "price_type": "standard",
+      "notes": "",
+      "source_page": 1
+    }
+  ],
+  "metrics": {
+    "pages_processed": 1,
+    "total_pages": 1,
+    "products_extracted": 35,
+    "products_before_dedup": 35,
+    "tokens_used": 0,
+    "cost_usd": 0.0
+  },
+  "categories": {
+    "other": 29,
+    "bakery": 6
+  }
+}

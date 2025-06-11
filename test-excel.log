@@ -1,0 +1,18 @@
+🧪 Testing single file upload...
+📁 File: Oka veg supplier.xlsx
+📤 Uploading...
+Response: {"message":"Files uploaded successfully. AI is analyzing supplier information...","results":[{"id":"cmbrmylom0002ouqwtytutd8t","filename":"Oka veg supplier.xlsx","status":"uploaded","url":"https://cdc1w79ssc4kg6xh.public.blob.vercel-storage.com/Oka%20veg%20supplier-sbO31iZXTuQMAvceVN9D8Y5ed6ewPN.xlsx"}]}
+✅ Upload ID: cmbrmylom0002ouqwtytutd8t
+🔄 Checking status (attempt 1)...
+  Status: processing
+  Rows processed: null
+  Supplier: Temporary Processing
+  Error: none
+🔄 Checking status (attempt 2)...
+  Status: completed
+  Rows processed: 0
+  Supplier: Oka
+  Error: none
+🏁 Processing complete!
+📊 Extracted data sample:
+[]

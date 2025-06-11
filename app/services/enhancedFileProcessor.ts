@@ -10,6 +10,8 @@ import { tokenCostMonitor } from './tokenCostMonitor';
 import { dataNormalizer } from './dataNormalizer';
 import { embeddingService } from './embeddingService';
 import { createProductValidator, defaultValidationRules } from '../../middleware/productValidation';
+import { priceValidator } from './priceValidator';
+import { optimizedImageProcessor } from './optimizedImageProcessor';
 import OpenAI from 'openai';
 import fs from 'fs/promises';
 import path from 'path';
@@ -132,20 +134,90 @@ class EnhancedFileProcessor {
       // Update status to processing
       await this.updateUploadStatus(uploadId, 'processing', {});
 
-      // Extract data based on file type
+      // Extract data based on file type - check both MIME type and file extension
       let extractedData: ExcelExtractionResult | PdfExtractionResult;
+      const fileName = upload.originalName?.toLowerCase() || '';
+      const mimeType = upload.mimeType?.toLowerCase() || '';
       
-      if (upload.mimeType?.includes('pdf')) {
+      if (mimeType.includes('pdf') || fileName.endsWith('.pdf')) {
         extractedData = await enhancedPdfExtractor.extractFromPdf(upload.url || '', upload.originalName || '');
-      } else if (upload.mimeType?.includes('excel') || upload.mimeType?.includes('sheet') || upload.mimeType?.includes('csv')) {
+      } else if (mimeType.includes('excel') || mimeType.includes('sheet') || mimeType.includes('csv') ||
+                 fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.csv') ||
+                 (mimeType === 'application/octet-stream' && (fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.csv')))) {
         extractedData = await enhancedExcelExtractor.extractFromFile(upload.url || '', upload.originalName || '');
+      } else if (mimeType.includes('image') || fileName.match(/\.(jpg|jpeg|png|gif|bmp)$/i)) {
+        // Process image with OpenAI Vision API
+        // Use optimized image processor
+        const imageResult = await optimizedImageProcessor.processImage(upload.url || '', upload.originalName || '');
+        
+        // Convert to standard format
+        extractedData = {
+          supplier: imageResult.supplier,
+          products: imageResult.products,
+          totalRowsDetected: imageResult.totalRowsDetected,
+          totalRowsProcessed: imageResult.totalRowsProcessed,
+          completenessRatio: imageResult.totalRowsDetected > 0 
+            ? imageResult.totalRowsProcessed / imageResult.totalRowsDetected 
+            : 0,
+          processingTimeMs: imageResult.processingTimeMs,
+          tokensUsed: imageResult.tokensUsed,
+          costUsd: imageResult.costUsd,
+          errors: imageResult.errors,
+          sheets: null,
+          extractionMethods: {
+            optimizedVisionApi: {
+              productsExtracted: imageResult.products.length,
+              originalSize: imageResult.optimizations.originalSize,
+              optimizedSize: imageResult.optimizations.optimizedSize,
+              compressionRatio: imageResult.optimizations.compressionRatio
+            }
+          }
+        };
       } else {
-        throw new Error(`Unsupported file type: ${upload.mimeType}`);
+        throw new Error(`Unsupported file type: ${upload.mimeType} (${fileName})`);
       }
 
       // Track token usage
       metrics.totalTokensUsed += extractedData.tokensUsed;
       metrics.totalCostUsd += extractedData.costUsd;
+
+      // Validate extracted prices
+      if (extractedData.products.length > 0) {
+        console.log(`🔍 Validating ${extractedData.products.length} extracted products...`);
+        const validationResult = priceValidator.validateBatch(extractedData.products);
+        
+        console.log(`📊 Price validation summary:`);
+        console.log(`   Valid: ${validationResult.summary.validProducts}/${validationResult.summary.totalProducts}`);
+        console.log(`   Warnings: ${validationResult.summary.productsWithWarnings}`);
+        console.log(`   Errors: ${validationResult.summary.productsWithErrors}`);
+        console.log(`   Average confidence: ${(validationResult.summary.averageConfidence * 100).toFixed(1)}%`);
+        
+        // Log price distribution
+        const dist = validationResult.summary.priceDistribution;
+        console.log(`   Price distribution:`);
+        console.log(`     < 10k: ${dist.below10k}`);
+        console.log(`     10k-100k: ${dist.between10kAnd100k}`);
+        console.log(`     100k-1M: ${dist.between100kAnd1M}`);
+        console.log(`     > 1M: ${dist.above1M}`);
+        
+        // Add validation warnings to metrics
+        validationResult.results.forEach((result, index) => {
+          if (result.warnings.length > 0) {
+            const product = extractedData.products[index];
+            result.warnings.forEach(warning => {
+              metrics.errors.push(`⚠️ ${product.name}: ${warning}`);
+            });
+            
+            // Try to correct suspicious prices
+            const suggestedPrice = priceValidator.suggestPriceCorrection(product.price);
+            if (suggestedPrice) {
+              console.log(`💡 Suggesting price correction for ${product.name}: ${product.price} → ${suggestedPrice}`);
+              // Optionally update the price
+              // extractedData.products[index].price = suggestedPrice;
+            }
+          }
+        });
+      }
 
       // Determine final supplier
       let finalSupplierId = upload.supplierId;
@@ -583,7 +655,7 @@ class EnhancedFileProcessor {
       ).join('\n');
 
       const response = await openai.chat.completions.create({
-        model: process.env.LLM_MODEL || 'gpt-o3-mini',
+        model: process.env.LLM_MODEL || 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -851,6 +923,124 @@ class EnhancedFileProcessor {
     };
 
     return unitMap[normalized] || normalized;
+  }
+
+  /**
+   * Process image file using OpenAI Vision API
+   */
+  private async processImageWithVision(fileUrl: string, fileName: string): Promise<ExcelExtractionResult> {
+    const startTime = Date.now();
+    const errors: string[] = [];
+    
+    try {
+      console.log('🖼️ Processing image with Vision API:', fileName);
+      
+      // Use OpenAI Vision API to extract data from image
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        max_tokens: 2000,
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `Analyze this price list image and extract supplier and product information. Return a JSON object with:
+                {
+                  "supplier": {
+                    "name": "company name",
+                    "email": "email if found",
+                    "phone": "phone if found",
+                    "address": "address if found"
+                  },
+                  "products": [
+                    {
+                      "name": "product name",
+                      "price": numeric_price,
+                      "unit": "unit (kg, lb, each, etc.)",
+                      "category": "category if obvious",
+                      "description": "additional details"
+                    }
+                  ]
+                }
+                
+                Important:
+                - Extract supplier info from headers, logos, or contact sections
+                - Only include products with clear prices
+                - Standardize units (kg not kilograms)
+                - Clean product names
+                - Infer categories when possible
+                - Return valid JSON only`
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: fileUrl
+                }
+              }
+            ]
+          }
+        ],
+        temperature: 0.1,
+      });
+
+      const content = response.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('No response from Vision API');
+      }
+
+      // Clean and parse response
+      let cleanContent = content.trim();
+      if (cleanContent.startsWith('```json')) {
+        cleanContent = cleanContent.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+      } else if (cleanContent.startsWith('```')) {
+        cleanContent = cleanContent.replace(/^```\s*/, '').replace(/\s*```$/, '');
+      }
+
+      const extractedData = JSON.parse(cleanContent);
+      
+      // Track token usage
+      const tokensUsed = response.usage?.total_tokens || 0;
+      const costUsd = tokenCostMonitor.calculateCost(tokensUsed, 'gpt-4o-mini');
+      
+      console.log(`✅ Vision API extracted ${extractedData.products?.length || 0} products`);
+
+      // Convert to standard format
+      return {
+        supplier: extractedData.supplier,
+        products: extractedData.products || [],
+        totalRowsDetected: extractedData.products?.length || 0,
+        totalRowsProcessed: extractedData.products?.length || 0,
+        completenessRatio: 1.0, // Assume complete extraction from image
+        processingTimeMs: Date.now() - startTime,
+        tokensUsed,
+        costUsd,
+        errors,
+        sheets: null,
+        extractionMethods: {
+          visionApi: {
+            productsExtracted: extractedData.products?.length || 0
+          }
+        }
+      };
+
+    } catch (error) {
+      console.error('❌ Vision API processing failed:', error);
+      errors.push(error instanceof Error ? error.message : String(error));
+      
+      return {
+        supplier: null,
+        products: [],
+        totalRowsDetected: 0,
+        totalRowsProcessed: 0,
+        completenessRatio: 0,
+        processingTimeMs: Date.now() - startTime,
+        tokensUsed: 0,
+        costUsd: 0,
+        errors,
+        sheets: null
+      };
+    }
   }
 }
 

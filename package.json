@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -12,6 +12,7 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
     "@prisma/client": "^6.9.0",
+    "@upstash/redis": "^1.35.0",
     "@vercel/blob": "^1.1.1",
     "canvas": "^3.1.0",
     "csv-parser": "^3.2.0",
@@ -24,7 +25,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sharp": "^0.34.2",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zod": "^3.25.58"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

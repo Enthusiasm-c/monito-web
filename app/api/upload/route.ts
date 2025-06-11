@@ -87,8 +87,8 @@ async function processFileInBackground(uploadId: string) {
       data: { status: 'processing' }
     });
 
-    // Import the processing service
-    const { processFile } = await import('../../services/fileProcessor');
+    // Import the enhanced processing service
+    const { processFile } = await import('../../services/enhancedFileProcessor');
     await processFile(uploadId);
 
   } catch (error) {

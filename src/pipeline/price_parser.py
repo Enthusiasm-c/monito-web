@@ -552,6 +552,17 @@ class PriceParser:
                 else:
                     # Dot is decimal separator (US format)
                     cleaned = cleaned.replace(',', '')
+            elif '.' in cleaned:
+                # Only dot - check if it's a thousand separator (Indonesian format)
+                dot_pos = cleaned.rfind('.')
+                after_dot = cleaned[dot_pos + 1:]
+                if len(after_dot) == 3 and after_dot.isdigit():
+                    # Likely thousands separator (e.g., 316.350)
+                    cleaned = cleaned.replace('.', '')
+                elif len(after_dot) != 2 or not after_dot.isdigit():
+                    # Not a standard decimal format, likely thousands separator
+                    cleaned = cleaned.replace('.', '')
+                # else: keep dot as decimal separator
             elif ',' in cleaned:
                 # Only comma - could be thousands separator or decimal
                 comma_pos = cleaned.rfind(',')
