@@ -502,7 +502,7 @@ class EnhancedFileProcessor {
       ).join('\n');
 
       const response = await openai.chat.completions.create({
-        model: process.env.LLM_MODEL || 'gpt-4o',
+        model: process.env.LLM_MODEL || 'gpt-o3-mini',
         messages: [
           {
             role: 'system',
@@ -527,7 +527,7 @@ class EnhancedFileProcessor {
         const usage = tokenCostMonitor.trackUsage({
           inputTokens: response.usage.prompt_tokens,
           outputTokens: response.usage.completion_tokens,
-          model: process.env.LLM_MODEL || 'gpt-4o'
+          model: process.env.LLM_MODEL || 'gpt-o3-mini'
         });
         
         metrics.totalTokensUsed += response.usage.prompt_tokens + response.usage.completion_tokens;

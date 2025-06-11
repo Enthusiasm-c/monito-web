@@ -376,7 +376,7 @@ class EnhancedPdfExtractor {
                 tokenCostMonitor.recordTokenUsage({
                   inputTokens: totalInputTokens,
                   outputTokens: totalOutputTokens,
-                  model: 'gpt-4o'
+                  model: 'gpt-o3'
                 });
               }
             }

@@ -12,7 +12,7 @@ from typing import List, Dict, Any, Tuple
 import time
 
 class AIProductValidator:
-    def __init__(self, api_key: str, model: str = "gpt-4o-mini"):
+    def __init__(self, api_key: str, model: str = "gpt-o3-mini"):
         self.api_key = api_key
         self.model = model
         self.api_url = "https://api.openai.com/v1/chat/completions"

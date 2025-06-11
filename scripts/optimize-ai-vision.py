@@ -167,7 +167,7 @@ Use EXACT currency from document. Extract ALL visible products.""",
             }
             
             payload = {
-                "model": "gpt-4o",
+                "model": "gpt-o3",
                 "messages": [{
                     "role": "user",
                     "content": [

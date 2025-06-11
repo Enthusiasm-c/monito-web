@@ -517,7 +517,7 @@ class AICacheService:
         
         return stats
     
-    def warm_cache(self, data_samples: List[Dict[str, Any]], model: str = "gpt-4o") -> Dict[str, int]:
+    def warm_cache(self, data_samples: List[Dict[str, Any]], model: str = "gpt-o3") -> Dict[str, int]:
         """Pre-warm cache with sample data (for testing/development)"""
         
         if not self.enabled:
@@ -678,7 +678,7 @@ def main():
                 if api_command == 'get_ai_response':
                     data = cache_service.get_ai_response(
                         params.get('input_data'), 
-                        params.get('model', 'gpt-4o'),
+                        params.get('model', 'gpt-o3'),
                         **params.get('api_params', {})
                     )
                     result = {'success': data is not None, 'data': data}
@@ -687,7 +687,7 @@ def main():
                     success = cache_service.cache_ai_response(
                         params.get('input_data'),
                         params.get('response'),
-                        params.get('model', 'gpt-4o'),
+                        params.get('model', 'gpt-o3'),
                         params.get('ttl'),
                         **params.get('api_params', {})
                     )

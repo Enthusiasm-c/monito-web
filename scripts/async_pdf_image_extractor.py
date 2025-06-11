@@ -170,7 +170,7 @@ Extract ALL visible contact details and products."""
         }
         
         payload = {
-            "model": "gpt-4o",
+            "model": "gpt-o3",
             "messages": [{
                 "role": "user",
                 "content": [

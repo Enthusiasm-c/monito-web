@@ -141,7 +141,7 @@ IMPORTANT: Extract EVERY product visible - do not skip any items with prices."""
         }
         
         payload = {
-            "model": "gpt-4o",
+            "model": "gpt-o3",
             "messages": [{
                 "role": "user",
                 "content": [

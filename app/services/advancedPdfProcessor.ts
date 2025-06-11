@@ -417,7 +417,7 @@ export class AdvancedPdfProcessor {
   private async processPageImage(imageDataUrl: string, pageNumber: number): Promise<ExtractedData> {
     try {
       const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-o3",
         max_tokens: 2000,
         messages: [
           {
@@ -593,7 +593,7 @@ export class AdvancedPdfProcessor {
       console.log('👁️ Using Vision API for document analysis...');
       
       const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-o3",
         max_tokens: 2000,
         messages: [
           {

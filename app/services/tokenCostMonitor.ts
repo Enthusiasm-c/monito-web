@@ -25,6 +25,14 @@ class TokenCostMonitor {
 
   // Cost per 1K tokens in USD (from environment)
   private readonly costs = {
+    'gpt-o3': {
+      input: parseFloat(process.env.OPENAI_GPTO3_INPUT_COST_PER_1K || '0.06'),
+      output: parseFloat(process.env.OPENAI_GPTO3_OUTPUT_COST_PER_1K || '0.24')
+    },
+    'gpt-o3-mini': {
+      input: parseFloat(process.env.OPENAI_GPTO3MINI_INPUT_COST_PER_1K || '0.003'),
+      output: parseFloat(process.env.OPENAI_GPTO3MINI_OUTPUT_COST_PER_1K || '0.012')
+    },
     'gpt-4o': {
       input: parseFloat(process.env.OPENAI_GPT4O_INPUT_COST_PER_1K || '0.0025'),
       output: parseFloat(process.env.OPENAI_GPT4O_OUTPUT_COST_PER_1K || '0.01')
@@ -50,8 +58,8 @@ class TokenCostMonitor {
     const rates = this.costs[modelKey as keyof typeof this.costs];
     
     if (!rates) {
-      console.warn(`Unknown model: ${usage.model}, using gpt-3.5-turbo rates`);
-      const fallbackRates = this.costs['gpt-3.5-turbo'];
+      console.warn(`Unknown model: ${usage.model}, using gpt-o3-mini rates`);
+      const fallbackRates = this.costs['gpt-o3-mini'];
       const inputCost = (usage.inputTokens / 1000) * fallbackRates.input;
       const outputCost = (usage.outputTokens / 1000) * fallbackRates.output;
       const totalCost = inputCost + outputCost;
@@ -138,6 +146,8 @@ class TokenCostMonitor {
    */
   private normalizeModelName(model: string): string {
     // Handle different model name variations
+    if (model.includes('gpt-o3-mini')) return 'gpt-o3-mini';
+    if (model.includes('gpt-o3')) return 'gpt-o3';
     if (model.includes('gpt-4o')) return 'gpt-4o';
     if (model.includes('gpt-4')) return 'gpt-4o'; // Default GPT-4 to gpt-4o rates
     if (model.includes('gpt-3.5')) return 'gpt-3.5-turbo';

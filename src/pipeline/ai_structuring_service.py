@@ -804,7 +804,7 @@ def main():
     # Configuration from environment
     config = {
         "openai_api_key": os.getenv("OPENAI_API_KEY"),
-        "model": os.getenv("AI_MODEL", "gpt-4o"),
+        "model": os.getenv("AI_MODEL", "gpt-o3"),
         "max_tokens": int(os.getenv("MAX_TOKENS", "4000")),
         "batch_size": int(os.getenv("BATCH_SIZE", "10")),
         "min_confidence": float(os.getenv("MIN_CONFIDENCE", "0.7"))

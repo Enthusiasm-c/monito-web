@@ -153,7 +153,7 @@ Extract ALL products visible on this page, even if layout is complex or unusual.
         }
         
         payload = {
-            "model": "gpt-4o",
+            "model": "gpt-o3",
             "messages": [
                 {
                     "role": "user",

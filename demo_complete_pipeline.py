@@ -106,7 +106,7 @@ async def demo_complete_pipeline():
         # Cache some AI response data
         test_input = {
             'prompt': 'Extract products from this data',
-            'model': 'gpt-4o',
+            'model': 'gpt-o3',
             'data': ['Product 1: Rice - Rp 15,000/kg', 'Product 2: Milk - Rp 8,500/liter']
         }
         
@@ -119,11 +119,11 @@ async def demo_complete_pipeline():
         }
         
         # Cache the response
-        cache_service.cache_ai_response(test_input, test_response, model='gpt-4o')
+        cache_service.cache_ai_response(test_input, test_response, model='gpt-o3')
         print("💾 Cached AI response")
         
         # Retrieve from cache
-        cached_response = cache_service.get_ai_response(test_input, model='gpt-4o')
+        cached_response = cache_service.get_ai_response(test_input, model='gpt-o3')
         if cached_response:
             print("🎯 Retrieved from cache successfully")
             print(f"   Products: {len(cached_response['products'])}")

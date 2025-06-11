@@ -52,7 +52,7 @@ class EnhancedExcelExtractor {
     },
     maxFileSize: parseInt(process.env.MAX_FILE_SIZE_MB || '10') * 1024 * 1024,
     llmFallbackEnabled: process.env.LLM_FALLBACK_ENABLED === 'true',
-    llmModel: process.env.LLM_MODEL || 'gpt-4o'
+    llmModel: process.env.LLM_MODEL || 'gpt-o3-mini'
   };
 
   public static getInstance(): EnhancedExcelExtractor {

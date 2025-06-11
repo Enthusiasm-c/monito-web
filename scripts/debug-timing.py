@@ -146,7 +146,7 @@ Extract the EXACT currency from the document. Look for all products even in comp
         }
         
         payload = {
-            "model": "gpt-4o",
+            "model": "gpt-o3",
             "messages": [{
                 "role": "user",
                 "content": [
@@ -172,7 +172,7 @@ Extract the EXACT currency from the document. Look for all products even in comp
         step_start = time.time()
         print(f"🔄 Step 11: Sending to OpenAI Vision API...")
         print(f"   🌐 API URL: https://api.openai.com/v1/chat/completions")
-        print(f"   🎯 Model: gpt-4o")
+        print(f"   🎯 Model: gpt-o3")
         print(f"   📏 Detail: low")
         print(f"   ⏱️ Timeout: 90s")
         

@@ -575,7 +575,7 @@ async function processImage(fileUrl: string): Promise<ExtractedData> {
       
       // Use OpenAI Vision API to process image directly
       const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-o3",
         max_tokens: 1500, // Ограничиваем токены для экономии
         messages: [
           {
@@ -744,7 +744,7 @@ async function extractWithAI(text: string, fileType: string): Promise<ExtractedD
       await new Promise(resolve => setTimeout(resolve, 500));
       
       const response = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-o3',
         max_tokens: 2000, // Ограничиваем токены для экономии
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.1,
@@ -1005,7 +1005,7 @@ async function standardizeProductNameWithAI(rawName: string, category?: string):
         await new Promise(resolve => setTimeout(resolve, 500));
         
         const response = await openai.chat.completions.create({
-          model: 'gpt-4o',
+          model: 'gpt-o3',
           max_tokens: 50, // Ограничиваем токены для экономии
           messages: [{
             role: 'user',
