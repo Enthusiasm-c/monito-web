@@ -31,7 +31,7 @@ Monito-Web is a full-stack AI-powered supplier price comparison platform built w
 Frontend:  Next.js 15 + TypeScript + Tailwind CSS
 Backend:   Next.js API Routes + Prisma ORM
 Database:  PostgreSQL (Neon)
-AI:        OpenAI GPT-4o + Custom Embedding Service
+AI:        OpenAI GPT-o3 + Custom Embedding Service
 Storage:   Vercel Blob Storage
 Export:    XLSX.js for Excel/CSV exports
 ```

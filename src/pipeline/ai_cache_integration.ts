@@ -77,7 +77,7 @@ export class AICacheIntegration {
    */
   async getCachedAIResponse(
     inputData: any,
-    model: string = 'gpt-4o',
+    model: string = 'gpt-o3',
     apiParams: Record<string, any> = {}
   ): Promise<CacheResult> {
     if (!this.config.enabled) {
@@ -131,7 +131,7 @@ export class AICacheIntegration {
   async cacheAIResponse(
     inputData: any,
     response: any,
-    model: string = 'gpt-4o',
+    model: string = 'gpt-o3',
     ttl?: number,
     apiParams: Record<string, any> = {}
   ): Promise<boolean> {

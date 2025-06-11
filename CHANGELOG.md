@@ -55,7 +55,7 @@ All notable changes to the Monito-Web project will be documented in this file.
 - **Frontend**: Next.js 15 + TypeScript + Tailwind CSS
 - **Backend**: Next.js API Routes + Prisma ORM
 - **Database**: PostgreSQL (Neon) with optimized schema
-- **AI Integration**: OpenAI GPT-4o + custom embedding service
+- **AI Integration**: OpenAI GPT-o3 + custom embedding service
 - **File Storage**: Vercel Blob Storage
 - **Processing**: Python/Camelot for advanced PDF table extraction
 

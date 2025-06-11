@@ -1,6 +1,6 @@
 /**
  * AI Structuring Service
- * TypeScript wrapper for Python AI structuring with GPT-4o function calling
+ * TypeScript wrapper for Python AI structuring with GPT-o3 function calling
  */
 
 import { spawn } from 'child_process';
@@ -76,7 +76,7 @@ export class AIStructuringService {
   constructor(config?: AIStructuringConfig) {
     this.pythonScriptPath = path.join(__dirname, 'ai_structuring_service.py');
     this.defaultConfig = {
-      model: 'gpt-4o',
+      model: 'gpt-o3',
       maxTokens: 4000,
       temperature: 0.1,
       batchSize: 10,
@@ -387,8 +387,8 @@ export class AIStructuringService {
     const tokensPerRow = 150; // Average tokens per product row
     const estimatedTokens = estimatedRows * tokensPerRow;
     
-    // GPT-4o pricing (approximate)
-    const costPerToken = 0.00003; // $0.03 per 1K tokens
+    // GPT-o3 pricing (approximate)
+    const costPerToken = 0.00006; // $0.06 per 1K tokens (estimated for GPT-o3)
     const estimatedCost = estimatedTokens * costPerToken;
     
     // Processing time estimation
@@ -488,7 +488,7 @@ print("python:available")
   getOptimalConfig(documentType: 'price_list' | 'catalog' | 'invoice' | 'menu' | 'general'): AIStructuringConfig {
     const configs = {
       price_list: {
-        model: 'gpt-4o',
+        model: 'gpt-o3',
         batchSize: 15,
         minConfidence: 0.8,
         requirePrice: true,
@@ -496,7 +496,7 @@ print("python:available")
         temperature: 0.05 // Very deterministic for structured price lists
       },
       catalog: {
-        model: 'gpt-4o',
+        model: 'gpt-o3',
         batchSize: 10,
         minConfidence: 0.7,
         requirePrice: false,
@@ -504,7 +504,7 @@ print("python:available")
         temperature: 0.1 // Slightly more flexible for varied catalog formats
       },
       invoice: {
-        model: 'gpt-4o',
+        model: 'gpt-o3',
         batchSize: 20,
         minConfidence: 0.9,
         requirePrice: true,
@@ -512,7 +512,7 @@ print("python:available")
         temperature: 0.0 // Most deterministic for formal invoices
       },
       menu: {
-        model: 'gpt-4o',
+        model: 'gpt-o3',
         batchSize: 8,
         minConfidence: 0.6,
         requirePrice: false, // Menus often have unclear pricing
@@ -520,7 +520,7 @@ print("python:available")
         temperature: 0.2 // More creative for menu descriptions
       },
       general: {
-        model: 'gpt-4o',
+        model: 'gpt-o3',
         batchSize: 10,
         minConfidence: 0.7,
         requirePrice: false,

@@ -138,7 +138,7 @@ def analyze_pdf_to_images():
         print(f"   Prompt: {prompt_tokens:,} tokens")
         print(f"   Total input: {total_input_tokens:,} tokens")
         
-        # Cost estimation (GPT-4o pricing)
+        # Cost estimation (GPT-o3 pricing)
         input_cost = (total_input_tokens / 1000) * 0.005
         output_cost = (500 / 1000) * 0.015  # Estimated 500 output tokens
         total_cost = input_cost + output_cost

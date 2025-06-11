@@ -360,7 +360,7 @@ export class EnhancedProductProcessor {
     if (this.config.useCache) {
       const cached = await aiCacheIntegration.getCachedProcessedData(
         fileHash,
-        { structuring: true, model: 'gpt-4o' }
+        { structuring: true, model: 'gpt-o3' }
       );
       
       if (cached.cached && cached.data) {
@@ -380,7 +380,7 @@ export class EnhancedProductProcessor {
     if (this.config.useCache) {
       await aiCacheIntegration.cacheProcessedData(
         fileHash,
-        { structuring: true, model: 'gpt-4o' },
+        { structuring: true, model: 'gpt-o3' },
         { products: rawProducts }
       );
     }

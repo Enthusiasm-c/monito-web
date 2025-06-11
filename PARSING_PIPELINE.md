@@ -45,7 +45,7 @@ sequenceDiagram
     end
     
     Extractor->>AI: Raw table data
-    AI->>AI: GPT-4o function calling
+    AI->>AI: GPT-o3 function calling
     AI->>AI: Structure to JSON schema
     
     AI->>Normalizer: Structured JSON
@@ -198,7 +198,7 @@ def extract_tables_rule_based(file_path, file_type):
 ### Task 7: 📋 AI Structuring (PENDING)
 
 **Requirements**:
-- GPT-4o with function calling
+- GPT-o3 with function calling
 - Standardized JSON schema
 - Product/price/supplier extraction
 
@@ -309,7 +309,7 @@ def normalize_product(raw_product_name, master_catalog):
 ```env
 # AI Processing
 OPENAI_API_KEY=sk-proj-...              # OpenAI API for AI structuring
-LLM_MODEL=gpt-4o                        # Model for AI processing
+LLM_MODEL=gpt-o3                        # Model for AI processing
 
 # Caching
 REDIS_URL=redis://localhost:6379        # Redis for AI response caching

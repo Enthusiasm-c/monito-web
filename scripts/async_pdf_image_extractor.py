@@ -31,7 +31,7 @@ except ImportError:
 
 @dataclass
 class RateLimitConfig:
-    """OpenAI API rate limits for GPT-4o"""
+    """OpenAI API rate limits for GPT-o3"""
     requests_per_minute: int = 500  # TPM-based limit is usually higher
     tokens_per_minute: int = 30000  # Conservative estimate
     concurrent_requests: int = 10   # Max concurrent requests
@@ -258,11 +258,11 @@ Extract ALL visible contact details and products."""
                 return self.empty_result(page_num, api_time)
     
     def calculate_cost(self, usage: Dict) -> float:
-        """Calculate cost based on GPT-4o pricing"""
+        """Calculate cost based on GPT-o3 pricing"""
         input_tokens = usage.get('prompt_tokens', 0)
         output_tokens = usage.get('completion_tokens', 0)
         
-        # GPT-4o pricing (as of 2024)
+        # GPT-o3 pricing (as of 2024)
         input_cost = (input_tokens / 1000) * 0.005  # $0.005 per 1K input tokens
         output_cost = (output_tokens / 1000) * 0.015  # $0.015 per 1K output tokens
         

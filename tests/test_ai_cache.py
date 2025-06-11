@@ -80,8 +80,8 @@ class TestAICacheService:
         
         # Test with dict input
         input_data = {"prompt": "test", "context": "example"}
-        key1 = cache_service._generate_cache_key('ai_response', input_data, model='gpt-4o')
-        key2 = cache_service._generate_cache_key('ai_response', input_data, model='gpt-4o')
+        key1 = cache_service._generate_cache_key('ai_response', input_data, model='gpt-o3')
+        key2 = cache_service._generate_cache_key('ai_response', input_data, model='gpt-o3')
         key3 = cache_service._generate_cache_key('ai_response', input_data, model='gpt-3.5')
         
         # Same input should generate same key
@@ -143,7 +143,7 @@ class TestAICacheService:
         }
         
         # Test caching AI response
-        result = cache_service.cache_ai_response(input_data, ai_response, model='gpt-4o')
+        result = cache_service.cache_ai_response(input_data, ai_response, model='gpt-o3')
         assert result is True
         
         # Verify Redis setex was called
@@ -179,7 +179,7 @@ class TestAICacheService:
         input_data = {"prompt": "What is AI?", "context": "testing"}
         
         # Test retrieving AI response
-        result = cache_service.get_ai_response(input_data, model='gpt-4o')
+        result = cache_service.get_ai_response(input_data, model='gpt-o3')
         assert result == ai_response
         assert cache_service.stats['hits'] == 1
 
@@ -341,7 +341,7 @@ class TestAICacheService:
             pytest.skip("Cache service not available")
         
         input_data = {"prompt": "test", "data": [1, 2, 3]}
-        params = {"model": "gpt-4o", "temperature": 0.7}
+        params = {"model": "gpt-o3", "temperature": 0.7}
         
         # Generate keys multiple times
         keys = []
@@ -487,7 +487,7 @@ class TestAICachePerformance:
             "parameters": {"temperature": 0.7, "max_tokens": 100}
         }
         
-        result = benchmark(cache_service._generate_cache_key, 'ai_response', input_data, model='gpt-4o')
+        result = benchmark(cache_service._generate_cache_key, 'ai_response', input_data, model='gpt-o3')
         
         assert isinstance(result, str)
         assert len(result) > 10

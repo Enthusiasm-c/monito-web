@@ -51,7 +51,7 @@ The complete enhanced data extraction pipeline for the Monito-Web supplier price
 
 #### 2. **Data Extraction Layer**
 - **Table Extractor**: Rule-based extraction without AI dependency
-- **AI Structuring Service**: GPT-4o function calling for complex data
+- **AI Structuring Service**: GPT-o3 function calling for complex data
 - **Fallback Mechanisms**: Multiple extraction strategies with confidence scoring
 
 #### 3. **Data Processing Layer**
@@ -81,7 +81,7 @@ The complete enhanced data extraction pipeline for the Monito-Web supplier price
 
 ### Processing Features
 - ✅ **Multi-format Support**: PDF, Excel, CSV, Images, Text
-- ✅ **AI Integration**: GPT-4o function calling for complex structures
+- ✅ **AI Integration**: GPT-o3 function calling for complex structures
 - ✅ **Fallback Systems**: Multiple extraction strategies
 - ✅ **Batch Processing**: High-throughput concurrent processing
 - ✅ **Real-time Monitoring**: Live performance metrics

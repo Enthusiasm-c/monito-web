@@ -287,7 +287,7 @@ LLM_FALLBACK_ENABLED=false
 
 # Keep only validation (cheap)
 AI_VALIDATION_ENABLED=true
-AI_VALIDATION_MODEL=gpt-4o-mini
+AI_VALIDATION_MODEL=gpt-o3-mini
 
 # Strict limits
 MAX_AI_STANDARDIZATION_PRODUCTS=0

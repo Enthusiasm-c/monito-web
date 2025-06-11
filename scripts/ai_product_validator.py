@@ -188,8 +188,8 @@ Return ONLY the JSON, no explanations."""
         return products, {"tokens_used": 0, "cost_usd": 0.0, "validation_failed": True}
     
     def calculate_cost(self, tokens: int) -> float:
-        """Calculate cost for GPT-4o-mini"""
-        # GPT-4o-mini pricing: $0.00015 per 1K input tokens, $0.0006 per 1K output tokens
+        """Calculate cost for GPT-o3-mini"""
+        # GPT-o3-mini pricing: $0.00015 per 1K input tokens, $0.0006 per 1K output tokens
         # Assume 80% input, 20% output tokens
         input_tokens = int(tokens * 0.8)
         output_tokens = int(tokens * 0.2)

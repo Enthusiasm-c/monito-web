@@ -25,8 +25,8 @@ AI_STANDARDIZATION_ENABLED=false        # Enable AI product name standardization
 AI_VALIDATION_ENABLED=false             # Enable AI product data validation
 
 # AI Model Configuration
-LLM_MODEL=gpt-4o                        # Primary AI model for standardization
-AI_VALIDATION_MODEL=gpt-4o-mini         # Cost-effective model for validation
+LLM_MODEL=gpt-o3                        # Primary AI model for standardization
+AI_VALIDATION_MODEL=gpt-o3-mini         # Cost-effective model for validation
 ```
 
 ### Quality & Performance Thresholds
@@ -82,8 +82,8 @@ MAX_PRODUCTS_FOR_AI_STANDARDIZATION=100 # Skip AI for large files
 AI_VALIDATION_BATCH_SIZE=200            # Efficient batching
 
 # Models - Cost-Effective
-LLM_MODEL=gpt-4o-mini                   # Use cheaper model where possible
-AI_VALIDATION_MODEL=gpt-4o-mini         # Cheap validation
+LLM_MODEL=gpt-o3-mini                   # Use cheaper model where possible
+AI_VALIDATION_MODEL=gpt-o3-mini         # Cheap validation
 ```
 
 **Expected Cost**: ~$0.01-0.05 per file
@@ -110,8 +110,8 @@ MAX_PRODUCTS_FOR_AI_STANDARDIZATION=150 # Allow larger files
 AI_VALIDATION_BATCH_SIZE=100            # Smaller batches for testing
 
 # Models - High Quality
-LLM_MODEL=gpt-4o                        # Best model for testing
-AI_VALIDATION_MODEL=gpt-4o-mini         # Still cost-effective for validation
+LLM_MODEL=gpt-o3                        # Best model for testing
+AI_VALIDATION_MODEL=gpt-o3-mini         # Still cost-effective for validation
 ```
 
 **Expected Cost**: ~$0.05-0.20 per file
@@ -206,7 +206,7 @@ MAX_FILE_SIZE_MB=5                      # Smaller files only
 
 **When Enabled**:
 - PDFs converted to images for complex layout analysis
-- GPT-4o Vision API processes images
+- GPT-o3 Vision API processes images
 - Can extract from catalogs, complex tables, multi-column layouts
 - High cost per page (~$0.01-0.05 per page)
 
@@ -219,7 +219,7 @@ MAX_FILE_SIZE_MB=5                      # Smaller files only
 ### AI Standardization (`AI_STANDARDIZATION_ENABLED`)
 
 **When Enabled**:
-- Product names standardized using GPT-4o
+- Product names standardized using GPT-o3
 - Better matching between suppliers
 - Removes brand names, standardizes formats
 - Moderate cost per product (~$0.0001-0.001 per product)
@@ -233,7 +233,7 @@ MAX_FILE_SIZE_MB=5                      # Smaller files only
 ### AI Validation (`AI_VALIDATION_ENABLED`)
 
 **When Enabled**:
-- Extracted data validated using GPT-4o-mini
+- Extracted data validated using GPT-o3-mini
 - Invalid products filtered out
 - Product names cleaned and corrected
 - Low cost per product (~$0.00001-0.0001 per product)

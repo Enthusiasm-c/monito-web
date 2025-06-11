@@ -225,7 +225,7 @@ Extract ALL products visible on this page, even if layout is complex or unusual.
         input_tokens = usage.get('prompt_tokens', 0)
         output_tokens = usage.get('completion_tokens', 0)
         
-        # GPT-4o pricing (as of 2024)
+        # GPT-o3 pricing (as of 2024)
         input_cost = (input_tokens / 1000) * 0.005  # $0.005 per 1K input tokens
         output_cost = (output_tokens / 1000) * 0.015  # $0.015 per 1K output tokens
         

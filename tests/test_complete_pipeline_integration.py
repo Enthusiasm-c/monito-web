@@ -232,14 +232,14 @@ class TestCompletePipelineIntegration:
         cache_service = AICacheService(pipeline_config['cache_config'])
         
         # Test basic caching
-        test_data = {'prompt': 'test prompt', 'model': 'gpt-4o'}
+        test_data = {'prompt': 'test prompt', 'model': 'gpt-o3'}
         test_response = {'choices': [{'text': 'test response'}]}
         
         # Cache response
-        cache_service.cache_ai_response(test_data, test_response, model='gpt-4o')
+        cache_service.cache_ai_response(test_data, test_response, model='gpt-o3')
         
         # Retrieve from cache
-        cached_response = cache_service.get_ai_response(test_data, model='gpt-4o')
+        cached_response = cache_service.get_ai_response(test_data, model='gpt-o3')
         
         assert cached_response is not None
         assert cached_response['choices'][0]['text'] == 'test response'

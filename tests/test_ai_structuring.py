@@ -34,7 +34,7 @@ class TestAIStructuringService:
         
         config = {
             'openai_api_key': 'test-key',  # Mock key for testing
-            'model': 'gpt-4o',
+            'model': 'gpt-o3',
             'max_tokens': 1000,
             'batch_size': 5,
             'min_confidence': 0.7
@@ -123,7 +123,7 @@ class TestAIStructuringService:
         if ai_service is None:
             pytest.skip("AI service not available")
             
-        assert ai_service.model == 'gpt-4o'
+        assert ai_service.model == 'gpt-o3'
         assert ai_service.max_tokens == 1000
         assert ai_service.batch_size == 5
         assert ai_service.min_confidence == 0.7
@@ -460,7 +460,7 @@ class TestAIStructuringIntegration:
         
         config = {
             'openai_api_key': os.getenv('OPENAI_API_KEY'),
-            'model': 'gpt-4o',
+            'model': 'gpt-o3',
             'batch_size': 2,  # Small batch for testing
             'min_confidence': 0.6
         }

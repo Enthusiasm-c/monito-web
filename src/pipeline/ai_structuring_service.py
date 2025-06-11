@@ -4,7 +4,7 @@ AI Structuring Service with Function Calling
 Implements Task 7: AI structuring with function calling
 
 Features:
-- GPT-4o integration with structured function calling
+- GPT-o3 integration with structured function calling
 - Standardized JSON schema for product data
 - Intelligent data validation and correction
 - Batch processing for efficiency
@@ -24,7 +24,7 @@ from datetime import datetime
 import asyncio
 import aiohttp
 
-# OpenAI for GPT-4o function calling
+# OpenAI for GPT-o3 function calling
 try:
     import openai
     from openai import OpenAI
@@ -104,14 +104,14 @@ else:
 
 
 class AIStructuringService:
-    """AI service for structuring extracted data using GPT-4o function calling"""
+    """AI service for structuring extracted data using GPT-o3 function calling"""
     
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         
         # Configuration
         self.api_key = self.config.get('openai_api_key') or os.getenv('OPENAI_API_KEY')
-        self.model = self.config.get('model', 'gpt-4o')
+        self.model = self.config.get('model', 'gpt-o3')
         self.max_tokens = self.config.get('max_tokens', 4000)
         self.temperature = self.config.get('temperature', 0.1)
         self.batch_size = self.config.get('batch_size', 10)

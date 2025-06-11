@@ -30,7 +30,7 @@ Monito-Web is a comprehensive supplier price comparison platform that extracts p
 │  └── Uploads (with processing metrics)                          │
 ├─────────────────────────────────────────────────────────────────┤
 │  External Services                                              │
-│  ├── OpenAI API (GPT-4o, GPT-4o-mini)                         │
+│  ├── OpenAI API (GPT-o3, GPT-o3-mini)                         │
 │  ├── Vercel Blob Storage                                        │
 │  └── Neon Database (PostgreSQL)                                │
 └─────────────────────────────────────────────────────────────────┘
@@ -132,7 +132,7 @@ The PDF extraction system employs a sophisticated cascade of extraction methods:
   - No products found by traditional methods
   - Completeness ratio < 85%
   - Product count < minimum threshold (50 by default)
-- **Process**: PDF → Images → GPT-4o Vision analysis
+- **Process**: PDF → Images → GPT-o3 Vision analysis
 - **Cost Control**: Limited to 8 pages maximum
 
 ### Column Detection Algorithm
@@ -259,7 +259,7 @@ private shouldUseAiFallback(
 
 ### 1. AI Vision Fallback
 
-**Model**: GPT-4o  
+**Model**: GPT-o3  
 **Purpose**: Extract product data from complex PDF layouts  
 **Input**: PDF pages converted to images (JPEG, optimized)  
 **Output**: Structured JSON with products and prices
@@ -282,7 +282,7 @@ def optimize_image_for_ai(self, image_path: str) -> str:
 
 ### 2. AI Product Validation
 
-**Model**: GPT-4o-mini (cost-effective)  
+**Model**: GPT-o3-mini (cost-effective)  
 **Purpose**: Validate and clean extracted product data  
 **Batch Size**: Up to 200 products per API call
 
@@ -297,7 +297,7 @@ def optimize_image_for_ai(self, image_path: str) -> str:
 
 ### 3. AI Product Standardization
 
-**Model**: GPT-4o  
+**Model**: GPT-o3  
 **Purpose**: Standardize product names for better matching  
 **Batch Size**: Limited to 20 products (cost control)  
 **Fallback**: Simple text normalization for remaining products
@@ -356,11 +356,11 @@ interface TokenUsage {
 
 // Model pricing (as of 2024)
 const MODEL_COSTS = {
-  'gpt-4o': {
+  'gpt-o3': {
     input: 0.005,   // $0.005 per 1K tokens
     output: 0.015   // $0.015 per 1K tokens
   },
-  'gpt-4o-mini': {
+  'gpt-o3-mini': {
     input: 0.00015, // $0.00015 per 1K tokens  
     output: 0.0006  // $0.0006 per 1K tokens
   }
@@ -512,7 +512,7 @@ await prisma.upload.update({
 
 - **Smart AI Usage**: AI only triggered when necessary
 - **Batch Processing**: Multiple products processed in single API calls
-- **Model Selection**: GPT-4o-mini for validation, GPT-4o for complex tasks
+- **Model Selection**: GPT-o3-mini for validation, GPT-o3 for complex tasks
 - **Image Optimization**: PDF images optimized before AI processing
 
 ### 3. Database Optimizations

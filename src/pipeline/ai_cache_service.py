@@ -209,7 +209,7 @@ class AICacheService:
             # Legacy format, assume pickle
             return pickle.loads(data)
     
-    def get_ai_response(self, input_data: Dict[str, Any], model: str = "gpt-4o", 
+    def get_ai_response(self, input_data: Dict[str, Any], model: str = "gpt-o3", 
                        **api_params) -> Optional[Dict[str, Any]]:
         """Get cached AI response or return None if not found"""
         
@@ -246,7 +246,7 @@ class AICacheService:
             return None
     
     def cache_ai_response(self, input_data: Dict[str, Any], response: Dict[str, Any], 
-                         model: str = "gpt-4o", ttl: Optional[int] = None, **api_params) -> bool:
+                         model: str = "gpt-o3", ttl: Optional[int] = None, **api_params) -> bool:
         """Cache AI response with metadata"""
         
         if not self.enabled or not self.cache_ai_responses:
