@@ -9,6 +9,7 @@ import { enhancedPdfExtractor, type PdfExtractionResult } from './enhancedPdfExt
 import { tokenCostMonitor } from './tokenCostMonitor';
 import { dataNormalizer } from './dataNormalizer';
 import { embeddingService } from './embeddingService';
+import { createProductValidator, defaultValidationRules } from '../../middleware/productValidation';
 import OpenAI from 'openai';
 import fs from 'fs/promises';
 import path from 'path';
@@ -55,6 +56,25 @@ class EnhancedFileProcessor {
   constructor() {
     this.processingLogger = new ProcessingLogger();
   }
+  
+  /**
+   * Automatic cleanup before processing
+   */
+  private async performAutomaticCleanup(): Promise<void> {
+    try {
+      const validator = createProductValidator(prisma, {
+        ...defaultValidationRules,
+        autoCleanup: true
+      });
+      
+      const cleanup = await validator.cleanupOrphanProducts();
+      if (cleanup.deletedProducts > 0 || cleanup.deletedSuppliers > 0) {
+        console.log(`🧹 Auto-cleanup: removed ${cleanup.deletedProducts} orphan products, ${cleanup.deletedSuppliers} empty suppliers`);
+      }
+    } catch (error) {
+      console.warn('⚠️ Auto-cleanup failed:', error);
+    }
+  }
 
   /**
    * Main file processing entry point
@@ -69,6 +89,9 @@ class EnhancedFileProcessor {
 
     try {
       console.log(`🚀 Enhanced processing starting for upload: ${uploadId}`);
+      
+      // Perform automatic cleanup before processing
+      await this.performAutomaticCleanup();
       
       // Get upload record
       const upload = await prisma.upload.findUnique({
@@ -306,7 +329,7 @@ class EnhancedFileProcessor {
           
         const standardizedUnit = this.standardizeUnit(normalizedProduct.unit);
 
-        // Find or create product
+        // Find or create product with validation
         const product = await this.findOrCreateProduct({
           rawName: originalItem.name,
           name: normalizedProduct.name,
@@ -316,6 +339,27 @@ class EnhancedFileProcessor {
           standardizedUnit,
           description: normalizedProduct.description
         });
+
+        // Skip if product creation failed validation
+        if (!product) {
+          console.warn(`⚠️ Skipping product due to validation failure: ${normalizedProduct.name}`);
+          continue;
+        }
+
+        // Validate price data before creation
+        const validator = createProductValidator(prisma);
+        const priceValidation = validator.validatePriceData({
+          amount: normalizedProduct.price,
+          unit: normalizedProduct.unit,
+          supplierId: supplierId,
+          productId: product.id,
+          uploadId: uploadId
+        });
+
+        if (!priceValidation.valid) {
+          console.warn(`⚠️ Skipping invalid price for ${normalizedProduct.name}: ${priceValidation.errors.join(', ')}`);
+          continue;
+        }
 
         // Deactivate old prices for this product and supplier
         await prisma.price.updateMany({
@@ -457,9 +501,18 @@ class EnhancedFileProcessor {
   }
 
   /**
-   * Find or create product
+   * Find or create product with validation
    */
   private async findOrCreateProduct(productData: any) {
+    // Validate product data
+    const validator = createProductValidator(prisma);
+    const validation = validator.validateProductData(productData);
+    
+    if (!validation.valid) {
+      console.warn(`⚠️ Skipping invalid product: ${validation.errors.join(', ')}`);
+      return null;
+    }
+
     // Try to find existing product
     const existing = await prisma.product.findFirst({
       where: {
@@ -472,10 +525,23 @@ class EnhancedFileProcessor {
       return existing;
     }
 
-    // Create new product
-    return await prisma.product.create({
-      data: productData
-    });
+    // Create new product with validation
+    try {
+      return await prisma.product.create({
+        data: {
+          name: productData.name.trim(),
+          rawName: productData.rawName?.trim() || productData.name.trim(),
+          standardizedName: productData.standardizedName.trim(),
+          category: productData.category?.trim(),
+          unit: productData.unit.trim(),
+          standardizedUnit: productData.standardizedUnit?.trim() || productData.unit.trim(),
+          description: productData.description?.trim()
+        }
+      });
+    } catch (error) {
+      console.error(`❌ Failed to create product: ${productData.name}`, error);
+      return null;
+    }
   }
 
   /**

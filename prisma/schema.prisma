@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -22,82 +16,71 @@ model Supplier {
   address     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
   prices      Price[]
   uploads     Upload[]
-  
+
   @@map("suppliers")
 }
 
 model Product {
   id               String   @id @default(cuid())
-  rawName          String   // Original name from supplier
-  name             String   // Cleaned original name
-  standardizedName String   // AI-standardized name for matching
+  rawName          String
+  name             String
+  standardizedName String
   category         String?
   unit             String
   standardizedUnit String
   description      String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-  
   prices           Price[]
-  
+
   @@unique([standardizedName, standardizedUnit])
   @@map("products")
 }
 
 model Price {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   amount     Decimal
   unit       String
-  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   supplierId String
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId  String
-  upload     Upload?  @relation(fields: [uploadId], references: [id])
   uploadId   String?
-  validFrom  DateTime @default(now())
+  validFrom  DateTime  @default(now())
   validTo    DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  supplier   Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  upload     Upload?   @relation(fields: [uploadId], references: [id])
+
   @@unique([supplierId, productId, validFrom])
   @@map("prices")
 }
 
 model Upload {
-  id                    String   @id @default(cuid())
-  fileName              String?
-  originalName          String?
-  fileSize              Int?
-  mimeType              String?
-  url                   String?
-  status                String   @default("pending") // pending, processing, completed, completed_with_errors, failed, too_large, pending_ocr, pending_large
-  supplier              Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  supplierId            String
-  extractedData         Json?
-  processingDetails     String?
-  errorMessage          String?
+  id                 String   @id @default(cuid())
+  originalName       String?
+  fileSize           Int?
+  mimeType           String?
+  status             String   @default("pending")
+  supplierId         String
+  extractedData      Json?
+  errorMessage       String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  fileName           String?
+  processingDetails  String?
+  url                String?
+  completenessRatio  Float?
+  processingCostUsd  Float?
+  processingTimeMs   Int?
+  sheetsProcessed    Json?
+  tokensUsed         Int?
+  totalRowsDetected  Int?
+  totalRowsProcessed Int?
+  prices             Price[]
+  supplier           Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 
-  // Document classification fields
-  fileHash              String?  @unique // SHA-256 hash for deduplication
-  documentType          String?  // pdf_structured, pdf_scanned, excel_multi, etc.
-  classificationResult  Json?    // Full classification metadata
-  
-  // New processing metrics
-  totalRowsDetected     Int?
-  totalRowsProcessed    Int?
-  completenessRatio     Float?
-  sheetsProcessed       Json?     // [{name: "Sheet1", rows: 25, processed: 23}]
-  processingTimeMs      Int?
-  tokensUsed            Int?
-  processingCostUsd     Float?
-  
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-  
-  prices                Price[]
-  
   @@map("uploads")
 }
