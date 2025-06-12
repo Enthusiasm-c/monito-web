@@ -1,0 +1,257 @@
+"""OCR Pipeline for invoice processing using OpenAI Vision API"""
+
+import base64
+import io
+import json
+from datetime import datetime
+from typing import Dict, Any, Optional, List
+
+import openai
+from PIL import Image
+from loguru import logger
+
+from ..config import settings
+
+
+class OCRPipeline:
+    """Main OCR pipeline for processing invoices"""
+    
+    def __init__(self):
+        self.client = openai.OpenAI(api_key=settings.openai_api_key)
+        self.model = settings.openai_model
+    
+    async def process_invoice(self, image: Image.Image) -> Dict[str, Any]:
+        """
+        Process invoice image and extract structured data
+        
+        Args:
+            image: PIL Image object
+            
+        Returns:
+            Dictionary with extracted invoice data
+        """
+        start_time = datetime.now()
+        
+        try:
+            # Preprocess image
+            processed_image = self._preprocess_image(image)
+            
+            # Convert to base64
+            image_base64 = self._image_to_base64(processed_image)
+            
+            # Extract data using OpenAI Vision
+            result = await self._extract_with_vision(image_base64)
+            
+            # Calculate processing time
+            processing_time = (datetime.now() - start_time).total_seconds()
+            result['processing_time'] = processing_time
+            
+            logger.info(f"OCR completed in {processing_time:.2f}s")
+            return result
+            
+        except Exception as e:
+            logger.error(f"OCR pipeline error: {e}")
+            return {
+                'error': str(e),
+                'products': [],
+                'processing_time': (datetime.now() - start_time).total_seconds()
+            }
+    
+    def _preprocess_image(self, image: Image.Image) -> Image.Image:
+        """Basic image preprocessing"""
+        # Convert to RGB if needed
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+        
+        # Resize if too large (max 2048x2048 for OpenAI)
+        max_size = 2048
+        if image.width > max_size or image.height > max_size:
+            image.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+        
+        return image
+    
+    def _image_to_base64(self, image: Image.Image) -> str:
+        """Convert PIL Image to base64 string"""
+        buffer = io.BytesIO()
+        image.save(buffer, format='JPEG', quality=95)
+        image_bytes = buffer.getvalue()
+        return base64.b64encode(image_bytes).decode('utf-8')
+    
+    async def _extract_with_vision(self, image_base64: str) -> Dict[str, Any]:
+        """Extract invoice data using OpenAI Vision API"""
+        prompt = """
+        Extract invoice information from this image. Focus on:
+        1. Supplier/vendor name
+        2. Invoice date
+        3. Product list with names, quantities, unit prices, and total prices
+        
+        IMPORTANT for Indonesian invoices:
+        - Dots (.) are thousand separators (e.g., 1.500 = 1500)
+        - Commas (,) are decimal separators
+        - Common units: kg, gr, ltr, pcs, dus, pak
+        
+        Return a JSON object with this structure:
+        {
+            "supplier_name": "string",
+            "date": "YYYY-MM-DD",
+            "products": [
+                {
+                    "name": "product name",
+                    "quantity": number,
+                    "unit": "string",
+                    "unit_price": number,
+                    "total_price": number
+                }
+            ],
+            "confidence": 0.0-1.0
+        }
+        """
+        
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/jpeg;base64,{image_base64}"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                max_tokens=2000,
+                temperature=0.1
+            )
+            
+            # Parse response
+            content = response.choices[0].message.content
+            
+            # Try to extract JSON from response
+            try:
+                # If response is wrapped in markdown code blocks
+                if "```json" in content:
+                    json_start = content.find("```json") + 7
+                    json_end = content.find("```", json_start)
+                    content = content[json_start:json_end].strip()
+                elif "```" in content:
+                    json_start = content.find("```") + 3
+                    json_end = content.find("```", json_start)
+                    content = content[json_start:json_end].strip()
+                
+                result = json.loads(content)
+                
+                # Validate and clean data
+                result = self._validate_and_clean_result(result)
+                
+                return result
+                
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse JSON response: {e}")
+                logger.debug(f"Raw response: {content}")
+                
+                # Try to extract products manually
+                return self._fallback_extraction(content)
+                
+        except Exception as e:
+            logger.error(f"OpenAI Vision API error: {e}")
+            raise
+    
+    def _validate_and_clean_result(self, result: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate and clean extracted data"""
+        # Ensure required fields
+        result.setdefault('supplier_name', 'Unknown Supplier')
+        result.setdefault('date', datetime.now().strftime('%Y-%m-%d'))
+        result.setdefault('products', [])
+        result.setdefault('confidence', 0.8)
+        
+        # Clean products
+        cleaned_products = []
+        for product in result.get('products', []):
+            if not product.get('name'):
+                continue
+            
+            # Parse Indonesian number format
+            unit_price = self._parse_indonesian_number(
+                str(product.get('unit_price', 0))
+            )
+            total_price = self._parse_indonesian_number(
+                str(product.get('total_price', unit_price))
+            )
+            
+            cleaned_product = {
+                'name': product['name'].strip(),
+                'quantity': float(product.get('quantity', 1)),
+                'unit': product.get('unit', 'pcs').lower(),
+                'unit_price': unit_price,
+                'total_price': total_price
+            }
+            
+            cleaned_products.append(cleaned_product)
+        
+        result['products'] = cleaned_products
+        return result
+    
+    def _parse_indonesian_number(self, number_str: str) -> float:
+        """Parse Indonesian number format"""
+        if not number_str:
+            return 0.0
+        
+        # Remove currency symbols and spaces
+        number_str = number_str.replace('Rp', '').replace('IDR', '').strip()
+        
+        # Handle Indonesian format (dots as thousands, comma as decimal)
+        if ',' in number_str and '.' in number_str:
+            # Both separators present
+            number_str = number_str.replace('.', '').replace(',', '.')
+        elif '.' in number_str:
+            # Only dots - check if it's thousands separator
+            parts = number_str.split('.')
+            if len(parts) > 1 and len(parts[-1]) == 3:
+                # Dots are thousands separators
+                number_str = number_str.replace('.', '')
+            # else: dot is decimal separator, keep as is
+        elif ',' in number_str:
+            # Only comma - decimal separator
+            number_str = number_str.replace(',', '.')
+        
+        try:
+            return float(number_str)
+        except ValueError:
+            logger.warning(f"Failed to parse number: {number_str}")
+            return 0.0
+    
+    def _fallback_extraction(self, text: str) -> Dict[str, Any]:
+        """Fallback extraction when JSON parsing fails"""
+        logger.warning("Using fallback extraction method")
+        
+        # Try to extract basic information from text
+        products = []
+        lines = text.split('\n')
+        
+        for line in lines:
+            # Look for price patterns
+            if any(indicator in line for indicator in ['Rp', 'IDR', '000']):
+                # This might be a product line
+                # Very basic extraction - would need improvement
+                parts = line.split()
+                if len(parts) >= 2:
+                    products.append({
+                        'name': ' '.join(parts[:-1]),
+                        'quantity': 1,
+                        'unit': 'pcs',
+                        'unit_price': 0,
+                        'total_price': 0
+                    })
+        
+        return {
+            'supplier_name': 'Unknown Supplier',
+            'date': datetime.now().strftime('%Y-%m-%d'),
+            'products': products[:20],  # Limit to prevent spam
+            'confidence': 0.3,
+            'warning': 'Fallback extraction used - results may be inaccurate'
+        }
