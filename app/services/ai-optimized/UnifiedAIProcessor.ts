@@ -32,14 +32,14 @@ export type ExtractedData = z.infer<typeof ExtractedDataSchema>;
 
 interface ProcessOptions {
   maxProducts?: number;
-  model?: 'gpt-4o' | 'gpt-o3' | 'gpt-o3-mini';
+  model?: 'gpt-4o' | 'gpt-4o-mini' | 'gpt-3.5-turbo';
   includeMetadata?: boolean;
   preferredLanguage?: string;
 }
 
 export class UnifiedAIProcessor {
   private openai: OpenAI;
-  private defaultModel = 'o3'; // Мощная модель для извлечения данных
+  private defaultModel = 'gpt-4o-mini'; // Оптимальная модель для извлечения данных
 
   constructor() {
     this.openai = new OpenAI({
@@ -84,17 +84,44 @@ export class UnifiedAIProcessor {
     model: string,
     options: ProcessOptions
   ): Promise<ExtractedData> {
-    const base64Image = imageBuffer.toString('base64');
-    const imageUrl = `data:image/jpeg;base64,${base64Image}`;
+    let base64Image: string;
+    let mimeType = 'image/jpeg';
+    
+    // Для PDF файлов нужна специальная обработка
+    if (fileName.toLowerCase().endsWith('.pdf')) {
+      console.log('Converting PDF to images for Vision API...');
+      const convertedImages = await this.convertPdfToImage(imageBuffer);
+      
+      // Для многостраничных PDF используем специальный подход
+      if (convertedImages.images && convertedImages.images.length > 1) {
+        console.log(`Processing ${convertedImages.images.length} PDF pages...`);
+        return await this.processPdfPages(convertedImages.images, fileName, model, options);
+      } else {
+        base64Image = convertedImages.images[0];
+        mimeType = 'image/jpeg';
+      }
+    } else {
+      base64Image = imageBuffer.toString('base64');
+    }
+    
+    const imageUrl = `data:${mimeType};base64,${base64Image}`;
 
     const prompt = this.buildExtractionPrompt(options);
 
     const response = await this.openai.chat.completions.create({
-      model: model === 'o3' ? 'o3' : model, // Vision использует ту же модель o3
+      model: model,
       messages: [
         {
           role: 'system',
-          content: `You must respond with a valid JSON object matching this schema:\n${JSON.stringify(ExtractedDataSchema.shape, null, 2)}`
+          content: `You are an expert at extracting structured product data from images. You must respond ONLY with valid JSON (no markdown). EVERY product MUST have a confidence score. Example response:
+{
+  "documentType": "price_list",
+  "supplierName": "Company Name",
+  "supplierContact": {"email": "test@example.com", "phone": "+123456", "address": "123 Street"},
+  "products": [{"name": "Product 1", "price": 100, "unit": "kg", "category": "Food", "confidence": 0.95}],
+  "extractionQuality": 0.9,
+  "metadata": {"totalPages": 1, "language": "en", "currency": "USD"}
+}`
         },
         {
           role: 'user',
@@ -104,17 +131,52 @@ export class UnifiedAIProcessor {
           ]
         }
       ],
-      response_format: { type: 'json_object' },
-      max_completion_tokens: 4000
+      temperature: 0.1,
+      max_tokens: 4000
     });
 
     const content = response.choices[0].message.content;
     if (!content) {
       throw new Error('No response content');
     }
-    const parsed = JSON.parse(content) as ExtractedData;
-
-    return this.enhanceExtractedData(parsed, fileName);
+    
+    console.log('AI Response:', content);
+    console.log('Response length:', content.length);
+    
+    // Clean response if wrapped in markdown code blocks
+    let cleanContent = content;
+    if (content.includes('```json')) {
+      cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    } else if (content.includes('```')) {
+      cleanContent = content.replace(/```\n?/g, '').trim();
+    }
+    
+    // Parse and validate with Zod
+    let rawData = JSON.parse(cleanContent);
+    console.log('Parsed data - supplierName:', rawData.supplierName);
+    console.log('Parsed data - products count:', rawData.products?.length || 0);
+    
+    // Fix common AI response issues
+    if (rawData.documentType === 'price list') {
+      rawData.documentType = 'price_list';
+    }
+    
+    // Ensure supplierContact exists
+    if (!rawData.supplierContact) {
+      rawData.supplierContact = {
+        email: null,
+        phone: null,
+        address: null
+      };
+    } else {
+      // Convert "not provided" strings to null
+      if (rawData.supplierContact.email === 'not provided') rawData.supplierContact.email = null;
+      if (rawData.supplierContact.address === 'not provided') rawData.supplierContact.address = null;
+      if (rawData.supplierContact.phone === 'not provided') rawData.supplierContact.phone = null;
+    }
+    
+    const validated = ExtractedDataSchema.parse(rawData);
+    return this.enhanceExtractedData(validated, fileName);
   }
 
   /**
@@ -128,29 +190,42 @@ export class UnifiedAIProcessor {
   ): Promise<ExtractedData> {
     const prompt = this.buildExtractionPrompt(options);
     
+    console.log('Processing text document:', fileName);
+    console.log('Document preview:', text.substring(0, 200));
+    
     const response = await this.openai.chat.completions.create({
       model,
       messages: [
         {
           role: 'system',
-          content: `You are an expert at extracting structured data from documents. Focus on accuracy and completeness. You must respond with a valid JSON object matching this schema:\n${JSON.stringify(ExtractedDataSchema.shape, null, 2)}`
+          content: `You are an expert at extracting structured product data from text documents. You must respond ONLY with valid JSON (no markdown). Example response:
+{
+  "documentType": "price_list",
+  "supplierName": "Company Name",
+  "supplierContact": {"email": "test@example.com", "phone": "+123456", "address": "123 Street"},
+  "products": [{"name": "Product 1", "price": 100, "unit": "kg", "category": "Food", "confidence": 0.95}],
+  "extractionQuality": 0.9,
+  "metadata": {"totalPages": 1, "language": "en", "currency": "USD"}
+}`
         },
         {
           role: 'user',
           content: `${prompt}\n\nDocument content:\n${text.substring(0, 15000)}` // Ограничиваем размер
         }
       ],
-      response_format: { type: 'json_object' },
-      max_completion_tokens: 4000
+      temperature: 0.1,
+      max_tokens: 4000
     });
 
     const content = response.choices[0].message.content;
     if (!content) {
       throw new Error('No response content');
     }
-    const parsed = JSON.parse(content) as ExtractedData;
-
-    return this.enhanceExtractedData(parsed, fileName);
+    
+    // Parse and validate with Zod
+    const rawData = JSON.parse(content);
+    const validated = ExtractedDataSchema.parse(rawData);
+    return this.enhanceExtractedData(validated, fileName);
   }
 
   /**
@@ -160,26 +235,32 @@ export class UnifiedAIProcessor {
     const maxProducts = options.maxProducts || 1000;
     const language = options.preferredLanguage || 'English';
 
-    return `Extract all information from this document:
+    return `You are analyzing a document image. Extract all product information visible in this image.
 
-1. Identify document type (price list, invoice, catalog, order)
-2. Extract supplier information (name, contact details)
-3. Extract ALL products with:
-   - Name (standardized to ${language}, singular form)
-   - Price (numeric value only)
-   - Unit (standardized: kg, pcs, l, ml, g, etc)
-   - Category (if identifiable)
-   - Confidence score for each product
+IMPORTANT: This might be a price list, catalog, invoice or order form. Look for:
+- Tables with products and prices
+- Lists of items with costs
+- Any product names with associated numbers
 
-Important:
+Extract:
+1. Document type - MUST be one of: "price_list", "invoice", "catalog", "order", "unknown" (use underscore, not space)
+2. Supplier/Company name (look at headers, logos, titles)
+3. ALL products you can see with:
+   - name (exactly as written, then standardize to ${language})
+   - price (numeric value, look for numbers near product names)
+   - unit (kg, pcs, l, ml, g, pack, box, etc - look for unit indicators)
+   - category (if visible or can be inferred)
+   - confidence (number between 0 and 1, how confident you are about this product)
+
+Rules:
 - Extract up to ${maxProducts} products
-- Normalize product names to be consistent
-- Convert all prices to numbers
-- Standardize units
-- Skip headers, totals, and non-product lines
-- Set high confidence for clear data, low for ambiguous
+- Include ALL products you can see, even if price is unclear
+- If you see a table, extract EVERY row that looks like a product
+- Convert all prices to numbers (remove currency symbols)
+- If unit is not clear, use "pcs" as default
+- Set confidence based on clarity of information
 
-Return structured data according to the schema.`;
+Focus on extracting as many products as possible from the image.`;
   }
 
   /**
@@ -209,8 +290,215 @@ Return structured data according to the schema.`;
    * Проверка, является ли файл изображением
    */
   private isImageFile(fileName: string): boolean {
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.pdf'];
     return imageExtensions.some(ext => fileName.toLowerCase().endsWith(ext));
+  }
+
+  /**
+   * Конвертация PDF в изображение для обработки через Vision API
+   */
+  private async convertPdfToImage(pdfBuffer: Buffer): Promise<{ images: string[], page_count?: number }> {
+    const { spawn } = require('child_process');
+    const path = require('path');
+    const fs = require('fs').promises;
+    const os = require('os');
+    
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'pdf-convert-'));
+    const pdfPath = path.join(tempDir, 'input.pdf');
+    const outputPath = path.join(tempDir, 'output.png');
+    
+    try {
+      // Сохраняем PDF во временный файл
+      await fs.writeFile(pdfPath, pdfBuffer);
+      
+      // Используем Python скрипт для конвертации
+      const pythonScript = path.join(process.cwd(), 'scripts', 'pdf_to_image_converter.py');
+      
+      return new Promise((resolve, reject) => {
+        const python = spawn('python3', [
+          pythonScript,
+          pdfPath,
+          '--output-format', 'base64',
+          '--single-page'
+        ]);
+        
+        let output = '';
+        let error = '';
+        
+        python.stdout.on('data', (data) => {
+          output += data.toString();
+        });
+        
+        python.stderr.on('data', (data) => {
+          error += data.toString();
+        });
+        
+        python.on('close', async (code) => {
+          // Очищаем временные файлы
+          try {
+            await fs.rmdir(tempDir, { recursive: true });
+          } catch {}
+          
+          if (code !== 0) {
+            console.error('PDF conversion error:', error);
+            reject(new Error(`PDF conversion failed: ${error}`));
+          } else {
+            try {
+              const result = JSON.parse(output);
+              if (result.images && result.images.length > 0) {
+                resolve({ images: result.images, page_count: result.page_count });
+              } else {
+                reject(new Error('No images extracted from PDF'));
+              }
+            } catch (parseError) {
+              reject(new Error(`Failed to parse conversion result: ${parseError}`));
+            }
+          }
+        });
+      });
+    } catch (error) {
+      // Очищаем временные файлы в случае ошибки
+      try {
+        await fs.rmdir(tempDir, { recursive: true });
+      } catch {}
+      throw error;
+    }
+  }
+
+  /**
+   * Обработка многостраничного PDF
+   */
+  private async processPdfPages(
+    pageImages: string[],
+    fileName: string,
+    model: string,
+    options: ProcessOptions
+  ): Promise<ExtractedData> {
+    console.log(`Processing ${pageImages.length} pages from PDF...`);
+    
+    const allProducts: any[] = [];
+    let supplierName: string | null = null;
+    let supplierContact: any = null;
+    let documentType = 'price_list';
+    
+    // Обрабатываем первые 2 страницы для моделей gpt-4o (более дорогие)
+    const pagesToProcess = model === 'gpt-4o' ? Math.min(pageImages.length, 2) : Math.min(pageImages.length, 4);
+    
+    // ОПТИМИЗАЦИЯ: Параллельная обработка страниц
+    const pagePromises = [];
+    
+    for (let i = 0; i < pagesToProcess; i++) {
+      console.log(`Queuing page ${i + 1}/${pagesToProcess} for parallel processing...`);
+      
+      // Определяем формат изображения (после оптимизации это JPEG)
+      const imageUrl = `data:image/jpeg;base64,${pageImages[i]}`;
+      const prompt = this.buildExtractionPrompt(options);
+      
+      // Создаем промис для каждой страницы
+      const pagePromise = (async (pageIndex: number) => {
+        try {
+          const response = await this.openai.chat.completions.create({
+            model: model,
+            messages: [
+              {
+                role: 'system',
+                content: `You are an expert at extracting structured product data from images. This is page ${pageIndex + 1} of a multi-page document. Extract ALL products you can see. EVERY product MUST have a confidence score. Example response:
+{
+  "documentType": "price_list",
+  "supplierName": "Company Name",
+  "supplierContact": {"email": "test@example.com", "phone": "+123456", "address": "123 Street"},
+  "products": [{"name": "Product 1", "price": 100, "unit": "kg", "category": "Food", "confidence": 0.95}],
+  "extractionQuality": 0.9,
+  "metadata": {"totalPages": 1, "language": "en", "currency": "USD"}
+}`
+              },
+              {
+                role: 'user',
+                content: [
+                  { type: 'text', text: prompt + `\n\nThis is page ${pageIndex + 1} of ${pageImages.length}. Focus on extracting ALL products visible on this page.` },
+                  { type: 'image_url', image_url: { url: imageUrl } }
+                ]
+              }
+            ],
+            temperature: 0.1,
+            max_tokens: 4000
+          });
+          
+          const content = response.choices[0].message.content;
+          if (content) {
+            console.log(`Page ${pageIndex + 1} AI Response received`);
+            
+            // Clean response if wrapped in markdown
+            let cleanContent = content;
+            if (content.includes('```json')) {
+              cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+            }
+            
+            let pageData = JSON.parse(cleanContent);
+            console.log(`Page ${pageIndex + 1} - Supplier: ${pageData.supplierName}, Products: ${pageData.products?.length || 0}`);
+            
+            // Fix common issues
+            if (pageData.documentType === 'price list') {
+              pageData.documentType = 'price_list';
+            }
+            
+            return { pageIndex, pageData, success: true };
+          }
+          
+          return { pageIndex, success: false };
+        } catch (error) {
+          console.error(`Error processing page ${pageIndex + 1}:`, error);
+          return { pageIndex, success: false };
+        }
+      })(i);
+      
+      pagePromises.push(pagePromise);
+    }
+    
+    // Ждем завершения всех страниц параллельно
+    console.log(`Processing ${pagesToProcess} pages in parallel...`);
+    const startParallel = Date.now();
+    const pageResults = await Promise.all(pagePromises);
+    console.log(`Parallel processing completed in ${((Date.now() - startParallel) / 1000).toFixed(1)}s`);
+    
+    // Обрабатываем результаты в правильном порядке
+    pageResults.sort((a, b) => a.pageIndex - b.pageIndex);
+    
+    pageResults.forEach((result) => {
+      if (result.success && result.pageData) {
+        // Collect supplier info from first page
+        if (result.pageIndex === 0) {
+          supplierName = result.pageData.supplierName;
+          supplierContact = result.pageData.supplierContact;
+          documentType = result.pageData.documentType;
+        }
+        
+        // Collect all products
+        if (result.pageData.products && Array.isArray(result.pageData.products)) {
+          console.log(`Found ${result.pageData.products.length} products on page ${result.pageIndex + 1}`);
+          allProducts.push(...result.pageData.products);
+        }
+      }
+    });
+    
+    console.log(`Total products extracted from PDF: ${allProducts.length}`);
+    
+    // Build final result
+    const result: ExtractedData = {
+      documentType: documentType as any,
+      supplierName: supplierName,
+      supplierContact: supplierContact || { email: null, phone: null, address: null },
+      products: allProducts,
+      extractionQuality: allProducts.length > 0 ? 0.85 : 0,
+      metadata: {
+        totalPages: pageImages.length,
+        language: 'en',
+        currency: 'IDR',
+        dateExtracted: new Date().toISOString()
+      }
+    };
+    
+    return result;
   }
 
   /**
@@ -240,10 +528,10 @@ Return structured data according to the schema.`;
    */
   selectOptimalModel(documentType: string, complexity: 'low' | 'medium' | 'high'): string {
     // Умный выбор модели для экономии
-    if (complexity === 'low') return 'gpt-o3-mini';
-    if (complexity === 'medium') return 'gpt-o3';
+    if (complexity === 'low') return 'gpt-4o-mini';
+    if (complexity === 'medium') return 'gpt-4o-mini';
     if (documentType === 'complex_pdf' || complexity === 'high') return 'gpt-4o';
-    return 'gpt-o3-mini';
+    return 'gpt-4o-mini';
   }
 }
 

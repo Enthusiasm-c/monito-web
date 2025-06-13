@@ -1,0 +1,500 @@
+  415 |           if (pageData.documentType === 'price list') {
+Processing page 2/2...
+Error processing page 2: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:412:30)
+    at async UnifiedAIProcessor.processWithVision (app/services/ai-optimized/UnifiedAIProcessor.ts:98:15)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  410 |         const content = response.choices[0].message.content;
+  411 |         if (content) {
+> 412 |           let pageData = JSON.parse(content);
+      |                              ^
+  413 |           
+  414 |           // Fix common issues
+  415 |           if (pageData.documentType === 'price list') {
+Total products extracted from PDF: 0
+❌ Pipeline error: Error: Unable to determine supplier name
+    at UnifiedAIPipeline.resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:193:12)
+    at resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:87:34)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  191 |
+  192 |     if (!extractedName) {
+> 193 |       throw new Error('Unable to determine supplier name');
+      |            ^
+  194 |     }
+  195 |
+  196 |     // Поиск существующего поставщика
+❌ AI upload processing error: Error: Processing failed: Unable to determine supplier name
+    at UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:171:12)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  169 |     } catch (error) {
+  170 |       console.error('❌ Pipeline error:', error);
+> 171 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  172 |     }
+  173 |   }
+  174 |
+ POST /api/upload-ai 500 in 53399ms
+[be43d2d4-7179-4415-ab71-1b9cbcc683a3] POST http://localhost:3000/api/upload-ai
+🚀 Starting AI-optimized upload processing
+📄 Extracting data from document...
+Converting PDF to images for Vision API...
+Processing 4 PDF pages...
+Processing 4 pages from PDF...
+Processing page 1/2...
+Error processing page 1: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:412:30)
+    at async UnifiedAIProcessor.processWithVision (app/services/ai-optimized/UnifiedAIProcessor.ts:98:15)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  410 |         const content = response.choices[0].message.content;
+  411 |         if (content) {
+> 412 |           let pageData = JSON.parse(content);
+      |                              ^
+  413 |           
+  414 |           // Fix common issues
+  415 |           if (pageData.documentType === 'price list') {
+Processing page 2/2...
+Error processing page 2: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:412:30)
+    at async UnifiedAIProcessor.processWithVision (app/services/ai-optimized/UnifiedAIProcessor.ts:98:15)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  410 |         const content = response.choices[0].message.content;
+  411 |         if (content) {
+> 412 |           let pageData = JSON.parse(content);
+      |                              ^
+  413 |           
+  414 |           // Fix common issues
+  415 |           if (pageData.documentType === 'price list') {
+Total products extracted from PDF: 0
+❌ Pipeline error: Error: Unable to determine supplier name
+    at UnifiedAIPipeline.resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:193:12)
+    at resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:87:34)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  191 |
+  192 |     if (!extractedName) {
+> 193 |       throw new Error('Unable to determine supplier name');
+      |            ^
+  194 |     }
+  195 |
+  196 |     // Поиск существующего поставщика
+❌ AI upload processing error: Error: Processing failed: Unable to determine supplier name
+    at UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:171:12)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  169 |     } catch (error) {
+  170 |       console.error('❌ Pipeline error:', error);
+> 171 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  172 |     }
+  173 |   }
+  174 |
+ POST /api/upload-ai 500 in 64634ms
+[24dbc5a8-5ec2-4ff8-904f-23591c93cac0] POST http://localhost:3000/api/upload-ai
+🚀 Starting AI-optimized upload processing
+📄 Extracting data from document...
+AI Response: ```json
+{
+  "documentType": "price_list",
+  "supplierName": "Munch Cakes & Cookies",
+  "supplierContact": {
+    "email": "munchcookiesbali@gmail.com",
+    "phone": "081236434479",
+    "address": "Perumahan Umasari A5, Petitenget - Bali"
+  },
+  "products": [
+    {"name": "Plain Croissants 85gr/Frozen", "price": 17, "unit": "pcs", "category": "Croissants", "confidence": 0.95},
+    {"name": "Almond Croissants", "price": 25, "unit": "pcs", "category": "Croissants", "confidence": 0.95},
+    {"name": "Pain au Chocolat 70gr/Frozen", "price": 17, "unit": "pcs", "category": "Croissants", "confidence": 0.95},
+    {"name": "Chocolate Caramel", "price": 20, "unit": "pcs", "category": "Croissants", "confidence": 0.95},
+    {"name": "Mini Plain 50gr/Frozen", "price": 12, "unit": "pcs", "category": "Croissants", "confidence": 0.95},
+    {"name": "Mini Pain au Chocolat 45gr/Frozen", "price": 10, "unit": "pcs", "category": "Croissants", "confidence": 0.95},
+    {"name": "White Bread Loaf", "price": 50, "unit": "pcs", "category": "Bread", "confidence": 0.95},
+    {"name": "Burger Bun 75gr", "price": 7, "unit": "pcs", "category": "Bread", "confidence": 0.95},
+    {"name": "Hotdog Bun 75gr", "price": 7, "unit": "pcs", "category": "Bread", "confidence": 0.95},
+    {"name": "Mille Crepes @18cm Oreo", "price": 22, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Mille Crepes @18cm Red Velvet", "price": 22, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Mille Crepes @18cm Nutella", "price": 25, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Mille Crepes @18cm Tiramisu", "price": 25, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Mille Crepes @18cm Matcha", "price": 25, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Mille Crepes @18cm Lotus Biscoff", "price": 27, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Baked Cheesecake @20cm Original", "price": 400, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Baked Cheesecake @20cm Strawberry", "price": 420, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Baked Cheesecake @20cm Blueberry", "price": 420, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "No-Baked Cheesecake @18cm Red Velvet", "price": 250, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "No-Baked Cheesecake @18cm Chocolate", "price": 250, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "No-Baked Cheesecake @18cm Oreo", "price": 250, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Carrot Cakes @18cm", "price": 270, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Banana Loaf Cakes", "price": 100, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Fudgy Chocolate Cake 20x20", "price": 270, "unit": "pcs", "category": "Cakes", "confidence": 0.95},
+    {"name": "Cinnamon Rolls 9pcs/Box", "price": 120, "unit": "box", "category": "Cakes", "confidence": 0.95},
+    {"name": "Donuts 25gr", "price": 36, "unit": "pcs", "category": "Bites", "confidence": 0.95},
+    {"name": "Bomboloni 35gr", "price": 72, "unit": "pcs", "category": "Bites", "confidence": 0.95},
+    {"name": "Pies 5cm", "price": 110, "unit": "pcs", "category": "Bites", "confidence": 0.95},
+    {"name": "Cupcakes 5cm", "price": 110, "unit": "pcs", "category": "Bites", "confidence": 0.95},
+    {"name": "Brownies 20x20cm", "price": 150, "unit": "pcs", "category": "Bites", "confidence": 0.95},
+    {"name": "Chocochips Cookies 50gr", "price": 150, "unit": "pcs", "category": "Bites", "confidence": 0.95},
+    {"name": "Chocochips Cookies 10gr", "price": 90, "unit": "pcs", "category": "Bites", "confidence": 0.95}
+  ],
+  "extractionQuality": 0.95,
+  "metadata": {
+    "totalPages": 1,
+    "language": "en",
+    "currency": "IDR"
+  }
+}
+```
+Error processing document: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:146:23)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  144 |     
+  145 |     // Parse and validate with Zod
+> 146 |     let rawData = JSON.parse(content);
+      |                       ^
+  147 |     
+  148 |     // Fix common AI response issues
+  149 |     if (rawData.documentType === 'price list') {
+❌ Pipeline error: Error: Failed to process document: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:74:12)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  72 |     } catch (error) {
+  73 |       console.error('Error processing document:', error);
+> 74 |       throw new Error(`Failed to process document: ${error instanceof Error ? error.message : 'Unknown error'}`);
+     |            ^
+  75 |     }
+  76 |   }
+  77 |
+❌ AI upload processing error: Error: Processing failed: Failed to process document: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:171:12)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  169 |     } catch (error) {
+  170 |       console.error('❌ Pipeline error:', error);
+> 171 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  172 |     }
+  173 |   }
+  174 |
+ POST /api/upload-ai 500 in 79543ms
+[f1e1d498-a9e0-4482-96f8-36b5039245a9] POST http://localhost:3000/api/upload-ai
+🚀 Starting AI-optimized upload processing
+📄 Extracting data from document...
+Processing text document: sai fresh.xlsx
+Document preview: PK  .��Z               xl/drawings/drawing1.xml��ێ�0�����~q�KZ��U�h�J�Ѣ�pc�	��!�ͩO�q�˲�Y������ȿG�%�X'�����47���1Y�z���y�K&��19�#���Ci�����+��������s=Ӏ�le�b]���e{$+I���#u�V��O�9
+Error processing document: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:215:25)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:65:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  213 |     
+  214 |     // Parse and validate with Zod
+> 215 |     const rawData = JSON.parse(content);
+      |                         ^
+  216 |     const validated = ExtractedDataSchema.parse(rawData);
+  217 |     return this.enhanceExtractedData(validated, fileName);
+  218 |   }
+❌ Pipeline error: Error: Failed to process document: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:74:12)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  72 |     } catch (error) {
+  73 |       console.error('Error processing document:', error);
+> 74 |       throw new Error(`Failed to process document: ${error instanceof Error ? error.message : 'Unknown error'}`);
+     |            ^
+  75 |     }
+  76 |   }
+  77 |
+❌ AI upload processing error: Error: Processing failed: Failed to process document: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:171:12)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  169 |     } catch (error) {
+  170 |       console.error('❌ Pipeline error:', error);
+> 171 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  172 |     }
+  173 |   }
+  174 |
+ POST /api/upload-ai 500 in 3492ms
+ ✓ Compiled in 81ms (328 modules)
+[0d990283-1a47-4210-901c-acfe89dcc6fa] POST http://localhost:3000/api/upload-ai
+🚀 Starting AI-optimized upload processing
+📄 Extracting data from document...
+Converting PDF to images for Vision API...
+Processing 6 PDF pages...
+Processing 6 pages from PDF...
+Processing page 1/2...
+Error processing page 1: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:420:30)
+    at async UnifiedAIProcessor.processWithVision (app/services/ai-optimized/UnifiedAIProcessor.ts:98:15)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  418 |         const content = response.choices[0].message.content;
+  419 |         if (content) {
+> 420 |           let pageData = JSON.parse(content);
+      |                              ^
+  421 |           
+  422 |           // Fix common issues
+  423 |           if (pageData.documentType === 'price list') {
+Processing page 2/2...
+Error processing page 2: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:420:30)
+    at async UnifiedAIProcessor.processWithVision (app/services/ai-optimized/UnifiedAIProcessor.ts:98:15)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  418 |         const content = response.choices[0].message.content;
+  419 |         if (content) {
+> 420 |           let pageData = JSON.parse(content);
+      |                              ^
+  421 |           
+  422 |           // Fix common issues
+  423 |           if (pageData.documentType === 'price list') {
+Total products extracted from PDF: 0
+❌ Pipeline error: Error: Unable to determine supplier name
+    at UnifiedAIPipeline.resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:193:12)
+    at resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:87:34)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  191 |
+  192 |     if (!extractedName) {
+> 193 |       throw new Error('Unable to determine supplier name');
+      |            ^
+  194 |     }
+  195 |
+  196 |     // Поиск существующего поставщика
+❌ AI upload processing error: Error: Processing failed: Unable to determine supplier name
+    at UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:171:12)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  169 |     } catch (error) {
+  170 |       console.error('❌ Pipeline error:', error);
+> 171 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  172 |     }
+  173 |   }
+  174 |
+ POST /api/upload-ai 500 in 52447ms
+[1538e8b2-1e5e-4fdb-9d29-c7805bbfb08a] POST http://localhost:3000/api/upload-ai
+🚀 Starting AI-optimized upload processing
+📄 Extracting data from document...
+Converting PDF to images for Vision API...
+Processing 6 PDF pages...
+Processing 6 pages from PDF...
+Processing page 1/2...
+Error processing page 1: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:420:30)
+    at async UnifiedAIProcessor.processWithVision (app/services/ai-optimized/UnifiedAIProcessor.ts:98:15)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  418 |         const content = response.choices[0].message.content;
+  419 |         if (content) {
+> 420 |           let pageData = JSON.parse(content);
+      |                              ^
+  421 |           
+  422 |           // Fix common issues
+  423 |           if (pageData.documentType === 'price list') {
+Processing page 2/2...
+Error processing page 2: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:420:30)
+    at async UnifiedAIProcessor.processWithVision (app/services/ai-optimized/UnifiedAIProcessor.ts:98:15)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  418 |         const content = response.choices[0].message.content;
+  419 |         if (content) {
+> 420 |           let pageData = JSON.parse(content);
+      |                              ^
+  421 |           
+  422 |           // Fix common issues
+  423 |           if (pageData.documentType === 'price list') {
+Total products extracted from PDF: 0
+❌ Pipeline error: Error: Unable to determine supplier name
+    at UnifiedAIPipeline.resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:193:12)
+    at resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:87:34)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  191 |
+  192 |     if (!extractedName) {
+> 193 |       throw new Error('Unable to determine supplier name');
+      |            ^
+  194 |     }
+  195 |
+  196 |     // Поиск существующего поставщика
+❌ AI upload processing error: Error: Processing failed: Unable to determine supplier name
+    at UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:171:12)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  169 |     } catch (error) {
+  170 |       console.error('❌ Pipeline error:', error);
+> 171 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  172 |     }
+  173 |   }
+  174 |
+ POST /api/upload-ai 500 in 47648ms
+[b4b07535-eee7-477f-aff0-55025728b667] POST http://localhost:3000/api/upload-ai
+🚀 Starting AI-optimized upload processing
+📄 Extracting data from document...
+Converting PDF to images for Vision API...
+Processing 4 PDF pages...
+Processing 4 pages from PDF...
+Processing page 1/2...
+ POST /api/upload-ai 200 in 9694ms
+ ✓ Compiled in 78ms (328 modules)
+Error processing page 1: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:420:30)
+    at async UnifiedAIProcessor.processWithVision (app/services/ai-optimized/UnifiedAIProcessor.ts:98:15)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  418 |         const content = response.choices[0].message.content;
+  419 |         if (content) {
+> 420 |           let pageData = JSON.parse(content);
+      |                              ^
+  421 |           
+  422 |           // Fix common issues
+  423 |           if (pageData.documentType === 'price list') {
+Processing page 2/2...
+ ✓ Compiled in 41ms (328 modules)
+[cce01ba9-afe0-4ed5-9c62-cfa60e990a72] POST http://localhost:3000/api/upload-ai
+🚀 Starting AI-optimized upload processing
+📄 Extracting data from document...
+Converting PDF to images for Vision API...
+Processing 6 PDF pages...
+Processing 6 pages from PDF...
+Processing page 1/2...
+Error processing page 1: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:423:30)
+    at async UnifiedAIProcessor.processWithVision (app/services/ai-optimized/UnifiedAIProcessor.ts:98:15)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  421 |         const content = response.choices[0].message.content;
+  422 |         if (content) {
+> 423 |           let pageData = JSON.parse(content);
+      |                              ^
+  424 |           
+  425 |           // Fix common issues
+  426 |           if (pageData.documentType === 'price list') {
+Processing page 2/2...
+Error processing page 2: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at UnifiedAIProcessor.processPdfPages (app/services/ai-optimized/UnifiedAIProcessor.ts:419:8)
+    at async UnifiedAIProcessor.processWithVision (app/services/ai-optimized/UnifiedAIProcessor.ts:98:15)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  417 |           temperature: 0.1,
+  418 |           max_tokens: 4000
+> 419 |         });
+      |        ^
+  420 |         
+  421 |         const content = response.choices[0].message.content;
+  422 |         if (content) {
+Total products extracted from PDF: 0
+❌ Pipeline error: Error: Unable to determine supplier name
+    at UnifiedAIPipeline.resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:193:12)
+    at resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:87:34)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  191 |
+  192 |     if (!extractedName) {
+> 193 |       throw new Error('Unable to determine supplier name');
+      |            ^
+  194 |     }
+  195 |
+  196 |     // Поиск существующего поставщика
+❌ AI upload processing error: Error: Processing failed: Unable to determine supplier name
+    at UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:171:12)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  169 |     } catch (error) {
+  170 |       console.error('❌ Pipeline error:', error);
+> 171 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  172 |     }
+  173 |   }
+  174 |
+Error processing page 2: SyntaxError: Unexpected token '`', "```json
+{
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at parse (app/services/ai-optimized/UnifiedAIProcessor.ts:423:30)
+    at async UnifiedAIProcessor.processWithVision (app/services/ai-optimized/UnifiedAIProcessor.ts:98:15)
+    at async UnifiedAIProcessor.processDocument (app/services/ai-optimized/UnifiedAIProcessor.ts:63:15)
+    at async UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:80:24)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  421 |         const content = response.choices[0].message.content;
+  422 |         if (content) {
+> 423 |           let pageData = JSON.parse(content);
+      |                              ^
+  424 |           
+  425 |           // Fix common issues
+  426 |           if (pageData.documentType === 'price list') {
+Total products extracted from PDF: 0
+❌ Pipeline error: Error: Unable to determine supplier name
+    at UnifiedAIPipeline.resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:193:12)
+    at resolveSupplier (app/services/ai-optimized/UnifiedAIPipeline.ts:87:34)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  191 |
+  192 |     if (!extractedName) {
+> 193 |       throw new Error('Unable to determine supplier name');
+      |            ^
+  194 |     }
+  195 |
+  196 |     // Поиск существующего поставщика
+❌ AI upload processing error: Error: Processing failed: Unable to determine supplier name
+    at UnifiedAIPipeline.processUpload (app/services/ai-optimized/UnifiedAIPipeline.ts:171:12)
+    at async POST (app/api/upload-ai/route.ts:40:19)
+  169 |     } catch (error) {
+  170 |       console.error('❌ Pipeline error:', error);
+> 171 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  172 |     }
+  173 |   }
+  174 |
+ POST /api/upload-ai 500 in 38741ms

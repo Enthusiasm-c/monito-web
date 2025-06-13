@@ -1,0 +1,49 @@
+{
+  "testDate": "2025-06-13T06:39:40.666Z",
+  "models": {
+    "gpt-4o-mini": {
+      "files": [
+        {
+          "fileName": "milk up.pdf",
+          "fileSize": 2548943,
+          "success": true,
+          "productsExtracted": 44,
+          "newProducts": 38,
+          "updatedProducts": 0,
+          "errors": 6,
+          "processingTime": 122.555,
+          "cost": 0.00099,
+          "supplier": "Milk Up",
+          "error": null
+        },
+        {
+          "fileName": "bali boga.pdf",
+          "fileSize": 667826,
+          "success": true,
+          "productsExtracted": 79,
+          "newProducts": 51,
+          "updatedProducts": 0,
+          "errors": 12,
+          "processingTime": 229.578,
+          "cost": 0.0017774999999999998,
+          "supplier": "PT. BALI BOGA SEJATI",
+          "error": null
+        },
+        {
+          "fileName": "VALENTA cheese supplier.pdf",
+          "fileSize": 563304,
+          "success": true,
+          "productsExtracted": 47,
+          "newProducts": 37,
+          "updatedProducts": 0,
+          "errors": 11,
+          "processingTime": 161.328,
+          "cost": 0.0010575,
+          "supplier": "Valenta Cheese",
+          "error": null
+        }
+      ],
+      "summary": {}
+    }
+  }
+}

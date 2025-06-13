@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Get processing log for this upload
-      const logEntry = await this.getProcessingLogEntry(uploadId);
+      const logEntry = null; // TODO: Implement log retrieval if needed
 
       return NextResponse.json({
         upload: {
@@ -130,30 +130,5 @@ export async function GET(request: NextRequest) {
       { error: 'Failed to fetch processing logs' },
       { status: 500 }
     );
-  }
-
-  // Helper method to get processing log entry
-  async getProcessingLogEntry(uploadId: string) {
-    try {
-      const logFile = path.join(process.cwd(), 'logs', 'processing.log');
-      const logContent = await fs.readFile(logFile, 'utf-8');
-      const lines = logContent.split('\n').filter(line => line.trim());
-      
-      // Find log entry for this upload
-      for (const line of lines.reverse()) {
-        try {
-          const entry = JSON.parse(line);
-          if (entry.uploadId === uploadId) {
-            return entry;
-          }
-        } catch {
-          continue;
-        }
-      }
-      
-      return null;
-    } catch {
-      return null;
-    }
   }
 }

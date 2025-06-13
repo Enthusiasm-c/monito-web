@@ -85,20 +85,20 @@ export default function AdminPage() {
 
       if (response.ok) {
         const result = await response.json();
-        alert(`✅ Upload approved! Created ${result.productsCreated} products.`);
+        alert(`Upload approved! Created ${result.productsCreated} products.`);
         fetchPendingUploads();
         setApprovalModal(null);
       } else {
         const error = await response.json();
-        alert(`❌ Error: ${error.error}`);
+        alert(`Error: ${error.error}`);
       }
     } catch (error) {
       console.error('Error approving upload:', error);
-      alert('❌ Failed to approve upload');
+      alert('Failed to approve upload');
     }
   };
 
-  const handleReject = async (upload: PendingUpload, reason: string) => {
+  const handleReject = async (upload: PendingUpload) => {
     try {
       const response = await fetch('/api/uploads/reject', {
         method: 'POST',
@@ -106,22 +106,59 @@ export default function AdminPage() {
         body: JSON.stringify({
           uploadId: upload.id,
           rejectedBy: adminName,
-          reason
+          reason: 'Rejected by admin'
         })
       });
 
       if (response.ok) {
-        alert('✅ Upload rejected successfully');
+        alert('Upload rejected successfully');
         fetchPendingUploads();
         setApprovalModal(null);
       } else {
         const error = await response.json();
-        alert(`❌ Error: ${error.error}`);
+        alert(`Error: ${error.error}`);
       }
     } catch (error) {
       console.error('Error rejecting upload:', error);
-      alert('❌ Failed to reject upload');
+      alert('Failed to reject upload');
     }
+  };
+
+  const handleRejectAll = async () => {
+    if (pendingUploads.length === 0) return;
+    
+    const confirmed = confirm(`Are you sure you want to reject all ${pendingUploads.length} pending uploads?`);
+    if (!confirmed) return;
+    
+    setLoading(true);
+    let successCount = 0;
+    let errorCount = 0;
+    
+    for (const upload of pendingUploads) {
+      try {
+        const response = await fetch('/api/uploads/reject', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uploadId: upload.id,
+            rejectedBy: adminName,
+            reason: 'Bulk rejected by admin'
+          })
+        });
+        
+        if (response.ok) {
+          successCount++;
+        } else {
+          errorCount++;
+        }
+      } catch (error) {
+        errorCount++;
+      }
+    }
+    
+    alert(`Rejected ${successCount} uploads${errorCount > 0 ? `, ${errorCount} failed` : ''}`);
+    fetchPendingUploads();
+    setLoading(false);
   };
 
   const formatFileSize = (bytes?: number) => {
@@ -146,7 +183,7 @@ export default function AdminPage() {
             <div className="flex items-center space-x-4">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Panel</h1>
               <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                {pendingUploads.length} pending approval
+                {pendingUploads.length} pending
               </span>
             </div>
             <div className="flex items-center space-x-4">
@@ -169,12 +206,24 @@ export default function AdminPage() {
         <div className="px-4 sm:px-0">
           <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
             <div className="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">
-                Pending Uploads for Review
-              </h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-                Review extracted data and approve or reject uploads before they are added to the database.
-              </p>
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">
+                    Pending Uploads for Review
+                  </h3>
+                  <p className="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
+                    Review extracted data and approve or reject uploads before they are added to the database.
+                  </p>
+                </div>
+                {pendingUploads.length > 0 && (
+                  <button
+                    onClick={handleRejectAll}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                  >
+                    Reject All
+                  </button>
+                )}
+              </div>
             </div>
 
             {loading ? (
@@ -183,7 +232,7 @@ export default function AdminPage() {
               </div>
             ) : pendingUploads.length === 0 ? (
               <div className="px-6 py-8 text-center">
-                <div className="text-gray-400 text-6xl mb-4">✅</div>
+                <div className="text-gray-400 text-6xl mb-4">✓</div>
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                   No uploads pending review
                 </h3>
@@ -201,7 +250,7 @@ export default function AdminPage() {
                           <div className="flex-shrink-0">
                             <div className="w-10 h-10 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center">
                               <span className="text-yellow-600 dark:text-yellow-400 font-medium">
-                                {upload.mimeType?.includes('pdf') ? '📄' : '📊'}
+                                {upload.mimeType?.includes('pdf') ? 'PDF' : 'XLS'}
                               </span>
                             </div>
                           </div>
@@ -243,19 +292,19 @@ export default function AdminPage() {
                           }}
                           className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800 px-3 py-2 rounded-md text-sm font-medium"
                         >
-                          👁️ Preview
+                          Preview
                         </button>
                         <button
                           onClick={() => setApprovalModal({ upload, action: 'approve' })}
                           className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-800 px-3 py-2 rounded-md text-sm font-medium"
                         >
-                          ✅ Approve
+                          Approve
                         </button>
                         <button
                           onClick={() => setApprovalModal({ upload, action: 'reject' })}
                           className="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800 px-3 py-2 rounded-md text-sm font-medium"
                         >
-                          ❌ Reject
+                          Reject
                         </button>
                       </div>
                     </div>
@@ -337,7 +386,7 @@ export default function AdminPage() {
                   }}
                   className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                 >
-                  ✕
+                  ×
                 </button>
               </div>
 
@@ -420,7 +469,7 @@ export default function AdminPage() {
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
             <div className="mt-3">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                {approvalModal.action === 'approve' ? '✅ Approve Upload' : '❌ Reject Upload'}
+                {approvalModal.action === 'approve' ? 'Approve Upload' : 'Reject Upload'}
               </h3>
               
               <div className="mb-4">
@@ -443,28 +492,33 @@ export default function AdminPage() {
                 if (approvalModal.action === 'approve') {
                   handleApprove(approvalModal.upload, notes);
                 } else {
-                  if (!notes.trim()) {
-                    alert('Rejection reason is required');
-                    return;
-                  }
-                  handleReject(approvalModal.upload, notes);
+                  handleReject(approvalModal.upload);
                 }
               }}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {approvalModal.action === 'approve' ? 'Review Notes (Optional)' : 'Rejection Reason *'}
-                  </label>
-                  <textarea
-                    name="notes"
-                    rows={3}
-                    required={approvalModal.action === 'reject'}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                    placeholder={approvalModal.action === 'approve' 
-                      ? 'Optional notes about this approval...' 
-                      : 'Please explain why this upload is being rejected...'
-                    }
-                  />
-                </div>
+                {approvalModal.action === 'approve' && (
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Review Notes (Optional)
+                    </label>
+                    <textarea
+                      name="notes"
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="Optional notes about this approval..."
+                    />
+                  </div>
+                )}
+                
+                {approvalModal.action === 'reject' && (
+                  <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-md">
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      Are you sure you want to reject this upload?
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      This will prevent the products from being added to the database.
+                    </p>
+                  </div>
+                )}
                 
                 <div className="flex justify-end space-x-3">
                   <button

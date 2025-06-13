@@ -16,6 +16,9 @@
     "@vercel/blob": "^1.1.1",
     "canvas": "^3.1.0",
     "csv-parser": "^3.2.0",
+    "dotenv": "^16.5.0",
+    "eventsource": "^4.0.0",
+    "exceljs": "^4.4.0",
     "multer": "^2.0.1",
     "next": "15.1.6",
     "openai": "^5.1.1",
@@ -26,7 +29,7 @@
     "react-dom": "^19.0.0",
     "sharp": "^0.34.2",
     "xlsx": "^0.18.5",
-    "zod": "^3.25.58"
+    "zod": "^3.25.63"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -35,6 +38,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
+    "form-data": "^4.0.3",
+    "node-fetch": "^2.7.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

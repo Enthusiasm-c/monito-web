@@ -1,0 +1,84 @@
+{
+  "model": "gpt-4o",
+  "timestamp": "2025-06-13T05:57:28.651Z",
+  "testDuration": "0.0s",
+  "summary": {
+    "filesProcessed": 5,
+    "successfulFiles": 0,
+    "totalProducts": 0,
+    "totalNewProducts": 0,
+    "totalTime": 0,
+    "totalCost": 0,
+    "avgTimePerFile": 0,
+    "avgProductsPerFile": 0,
+    "avgCostPerFile": 0,
+    "costPerProduct": 0
+  },
+  "files": [
+    {
+      "fileName": "milk up.pdf",
+      "fileSize": 2548943,
+      "success": false,
+      "productsExtracted": 0,
+      "newProducts": 0,
+      "updatedProducts": 0,
+      "errors": 0,
+      "processingTime": 45.41,
+      "cost": 0,
+      "supplier": "Unknown",
+      "error": "Failed to process upload"
+    },
+    {
+      "fileName": "bali boga.pdf",
+      "fileSize": 667826,
+      "success": false,
+      "productsExtracted": 0,
+      "newProducts": 0,
+      "updatedProducts": 0,
+      "errors": 0,
+      "processingTime": 53.408,
+      "cost": 0,
+      "supplier": "Unknown",
+      "error": "Failed to process upload"
+    },
+    {
+      "fileName": "VALENTA cheese supplier.pdf",
+      "fileSize": 563304,
+      "success": false,
+      "productsExtracted": 0,
+      "newProducts": 0,
+      "updatedProducts": 0,
+      "errors": 0,
+      "processingTime": 64.642,
+      "cost": 0,
+      "supplier": "Unknown",
+      "error": "Failed to process upload"
+    },
+    {
+      "fileName": "munch bakery.jpg",
+      "fileSize": 133890,
+      "success": false,
+      "productsExtracted": 0,
+      "newProducts": 0,
+      "updatedProducts": 0,
+      "errors": 0,
+      "processingTime": 79.552,
+      "cost": 0,
+      "supplier": "Unknown",
+      "error": "Failed to process upload"
+    },
+    {
+      "fileName": "sai fresh.xlsx",
+      "fileSize": 110196,
+      "success": false,
+      "productsExtracted": 0,
+      "newProducts": 0,
+      "updatedProducts": 0,
+      "errors": 0,
+      "processingTime": 3.507,
+      "cost": 0,
+      "supplier": "Unknown",
+      "error": "Failed to process upload"
+    }
+  ]
+}

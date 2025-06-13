@@ -1,0 +1,582 @@
+{
+  "supplier": {
+    "name": "Retail"
+  },
+  "products": [
+    {
+      "name": "pcs (wholesale)",
+      "price": 3.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (wholesale)",
+      "price": 20000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (retail)",
+      "price": 25000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (wholesale)",
+      "price": 3.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (wholesale)",
+      "price": 35000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (retail)",
+      "price": 35000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (wholesale)",
+      "price": 2.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (wholesale)",
+      "price": 70000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (retail)",
+      "price": 70000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "kgr (wholesale)",
+      "price": 5.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "kgr (wholesale)",
+      "price": 20000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "kgr (retail)",
+      "price": 20000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (retail)",
+      "price": 5000.0,
+      "unit": "ltr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (retail)",
+      "price": 7000.0,
+      "unit": "ltr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_3_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "40 gr /pax (standard)",
+      "price": 5.0,
+      "unit": "ltr",
+      "price_type": "standard",
+      "sourceMethod": "pdfplumber_page_4_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "40 gr /pax (wholesale)",
+      "price": 10.0,
+      "unit": "ltr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_4_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "40 gr /pax (wholesale)",
+      "price": 125000.0,
+      "unit": "ltr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_4_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "40 gr /pax (retail)",
+      "price": 40.0,
+      "unit": "ltr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_4_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "40 gr /pax (retail)",
+      "price": 30000.0,
+      "unit": "ltr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_4_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Pcs (wholesale)",
+      "price": 25000.0,
+      "unit": "pcs",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Pcs (retail)",
+      "price": 25000.0,
+      "unit": "pcs",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Pcs (wholesale)",
+      "price": 15000.0,
+      "unit": "ltr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Pcs (retail)",
+      "price": 15000.0,
+      "unit": "ltr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Pcs (wholesale)",
+      "price": 55000.0,
+      "unit": "ltr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Pcs (retail)",
+      "price": 55000.0,
+      "unit": "ltr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "fan (standard)",
+      "price": 3.0,
+      "unit": "gr",
+      "price_type": "standard",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "fan (wholesale)",
+      "price": 90000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "fan (retail)",
+      "price": 35000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "fan (standard)",
+      "price": 3.0,
+      "unit": "gr",
+      "price_type": "standard",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "fan (wholesale)",
+      "price": 90000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "fan (retail)",
+      "price": 35000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Pcs (wholesale)",
+      "price": 40000.0,
+      "unit": "pcs",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Pcs (retail)",
+      "price": 40000.0,
+      "unit": "pcs",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (wholesale)",
+      "price": 5.0,
+      "unit": "ltr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (wholesale)",
+      "price": 10000.0,
+      "unit": "ltr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "pcs (retail)",
+      "price": 25000.0,
+      "unit": "ltr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 230.0,
+      "unit": "ltr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 90000.0,
+      "unit": "ltr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (retail)",
+      "price": 90000.0,
+      "unit": "ltr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_5_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 115.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 50000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (retail)",
+      "price": 50000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 230.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 90000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (retail)",
+      "price": 90000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 115.0,
+      "unit": "ltr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 50000.0,
+      "unit": "ltr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (retail)",
+      "price": 50000.0,
+      "unit": "ltr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 230.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 90000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (retail)",
+      "price": 90000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 115.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 50000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (retail)",
+      "price": 50000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 230.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 90000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (retail)",
+      "price": 90000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 115.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (wholesale)",
+      "price": 50000.0,
+      "unit": "gr",
+      "price_type": "wholesale",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Btl (retail)",
+      "price": 50000.0,
+      "unit": "gr",
+      "price_type": "retail",
+      "sourceMethod": "pdfplumber_page_6_table_1",
+      "category": "other",
+      "description": null
+    },
+    {
+      "name": "Micro Greens",
+      "price": 23.0,
+      "unit": "micro greens",
+      "sourceMethod": "pdfplumber_page_8_table_1",
+      "category": null,
+      "description": null
+    },
+    {
+      "name": "WhatsApp / Call +62812-3787-6584",
+      "price": 62812.0,
+      "unit": "pcs",
+      "sourceMethod": "pdfplumber_page_8_table_3",
+      "category": null,
+      "description": null
+    }
+  ],
+  "errors": [],
+  "metrics": {
+    "totalRowsDetected": 351,
+    "totalRowsProcessed": 62,
+    "tokensUsed": 0,
+    "costUsd": 0.0
+  },
+  "extractionMethods": {
+    "camelotLattice": null,
+    "camelotStream": {
+      "tables": 10,
+      "rows": 391
+    },
+    "pdfPlumber": {
+      "pages": 8,
+      "rows": 351
+    },
+    "bestMethod": "pdfplumber"
+  }
+}

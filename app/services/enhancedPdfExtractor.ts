@@ -227,21 +227,50 @@ class EnhancedPdfExtractor {
         };
       }
 
-      // Fallback: try to parse as simple JSON
-      console.log(`⚠️ No enhanced JSON marker found, trying simple parse...`);
-      const simpleJson = JSON.parse(stdout);
+      // Fallback: Find JSON in stdout (last line that starts with {)
+      console.log(`⚠️ No enhanced JSON marker found, looking for JSON line...`);
+      const lines = stdout.split('\n');
+      let jsonLine = '';
+      
+      // Look for the last line that looks like JSON
+      for (let i = lines.length - 1; i >= 0; i--) {
+        const line = lines[i].trim();
+        if (line.startsWith('{') && line.endsWith('}')) {
+          jsonLine = line;
+          break;
+        }
+      }
+      
+      if (!jsonLine) {
+        // Try to parse the entire stdout in case it's all JSON
+        const simpleJson = JSON.parse(stdout);
+        return {
+          supplier: simpleJson.supplier,
+          products: simpleJson.products || [],
+          totalRowsDetected: simpleJson.metrics?.totalRowsDetected || (simpleJson.products || []).length,
+          totalRowsProcessed: simpleJson.metrics?.totalRowsProcessed || (simpleJson.products || []).length,
+          completenessRatio: 0,
+          processingTimeMs: 0,
+          tokensUsed: simpleJson.metrics?.tokensUsed || 0,
+          costUsd: simpleJson.metrics?.costUsd || 0,
+          errors: simpleJson.errors || [],
+          extractionMethods: simpleJson.extractionMethods || { bestMethod: 'python' }
+        };
+      }
+      
+      const jsonData = JSON.parse(jsonLine);
       
       return {
-        supplier: simpleJson.supplier,
-        products: simpleJson.products || [],
-        totalRowsDetected: (simpleJson.products || []).length,
-        totalRowsProcessed: (simpleJson.products || []).length,
+        supplier: jsonData.supplier,
+        products: jsonData.products || [],
+        totalRowsDetected: jsonData.metrics?.totalRowsDetected || 0,
+        totalRowsProcessed: jsonData.metrics?.totalRowsProcessed || 0,
         completenessRatio: 0,
         processingTimeMs: 0,
-        tokensUsed: 0,
-        costUsd: 0,
-        errors: [],
-        extractionMethods: { bestMethod: 'legacy' }
+        tokensUsed: jsonData.metrics?.tokensUsed || 0,
+        costUsd: jsonData.metrics?.costUsd || 0,
+        errors: jsonData.errors || [],
+        extractionMethods: jsonData.extractionMethods || { bestMethod: 'python' }
       };
 
     } catch (error) {

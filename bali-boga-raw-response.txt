@@ -1,0 +1,1021 @@
+```json
+{
+  "documentType": "price_list",
+  "supplierName": "Bali Boga",
+  "supplierContact": {
+    "email": "order@metzgerbali.com",
+    "phone": "0361 3354 280",
+    "address": "Jl. Poh Gading 1A, Jimbaran - Bali"
+  },
+  "products": [
+    {
+      "name": "beef pepperoni classic *",
+      "price": 20550,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef salami \"cooked\" *",
+      "price": 13100,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "roast beef *",
+      "price": 28200,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef pastrami *",
+      "price": 45250,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "cooked beef *",
+      "price": 38000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "ny deli style braised australian beef brisket *",
+      "price": 27150,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "ny deli style braised australian beef brisket *",
+      "price": 18100,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "sandwich smoked beef *",
+      "price": 13100,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "smoked beef *",
+      "price": 39250,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "buffet beef rasher *",
+      "price": 60500,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "smoked beef rasher *",
+      "price": 33500,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "usa beef rasher *",
+      "price": 37750,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef bockwurst *",
+      "price": 13100,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef bratwurst *",
+      "price": 10160,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef bratwurst *",
+      "price": 15240,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef cocktail *",
+      "price": 2975,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef cocktail *",
+      "price": 4165,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef frankfurter *",
+      "price": 12700,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef nuernberger *",
+      "price": 4410,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef sausage classic fine *",
+      "price": 2975,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "classic bbq beef sausage *",
+      "price": 11280,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "cheese beef bockwurst sausage *",
+      "price": 12080,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "chorizo beef *",
+      "price": 5425,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "chorizo beef *",
+      "price": 12400,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "jumbo beef smoked sausage *",
+      "price": 9170,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "jumbo beef smoked sausage *",
+      "price": 13100,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "jumbo beef smoked sausage *",
+      "price": 18340,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "polish beef krakauer *",
+      "price": 4585,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium polish beef kielbasa sausage *",
+      "price": 15030,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "smoked beef frank *",
+      "price": 9170,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "tex - mex jalapeno cheese sausage *",
+      "price": 17000,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "tex - mex jalapeno cheese sausage *",
+      "price": 34000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "veal bratwurst (swiss style) *",
+      "price": 12080,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "wagyu beef frank's *",
+      "price": 10290,
+      "unit": "pcs",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef fillet **",
+      "price": 40500,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef fillet **",
+      "price": 48600,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef fillet **",
+      "price": 54000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef fillet **",
+      "price": 67500,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef fillet **",
+      "price": 75600,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef fillet **",
+      "price": 81000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef fillet **",
+      "price": 135000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef fillet center cut **",
+      "price": 48600,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef fillet center cut **",
+      "price": 54000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef fillet medallion **",
+      "price": 48600,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef fillet medallion **",
+      "price": 54000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef gyudon **",
+      "price": 50000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef gyutan **",
+      "price": 46000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef kalbi **",
+      "price": 63000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef kebab (beef fillet cube) **",
+      "price": 43750,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef satay **",
+      "price": 46000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef satay **",
+      "price": 69000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef semur lidah sapi **",
+      "price": 46000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef steak single **",
+      "price": 37500,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef steak single **",
+      "price": 43750,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef steak single **",
+      "price": 50000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef steak double **",
+      "price": 50000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef steak xl \"thin cut\" **",
+      "price": 25000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef scaloppini **",
+      "price": 37500,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef stroganoff \"stripes\" **",
+      "price": 25000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef stroganoff \"stripes\" **",
+      "price": 37500,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef stroganoff \"stripes\" **",
+      "price": 43750,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef tenderloin cut select **",
+      "price": 44250,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef tenderloin cut select **",
+      "price": 53100,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef tenderloin cut select **",
+      "price": 59000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef tenderloin cut select **",
+      "price": 73750,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef ox tail **",
+      "price": 330000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "jumbo rump steak **",
+      "price": 65000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "jumbo rump steak **",
+      "price": 78000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "jumbo rump steak **",
+      "price": 91000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "karubi short ribs **",
+      "price": 50000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "ossobucco \"prime cut\" **",
+      "price": 45000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium sirloin steak **",
+      "price": 39000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium sirloin steak **",
+      "price": 46800,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium sirloin steak **",
+      "price": 52000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium sirloin steak **",
+      "price": 65000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium sirloin steak **",
+      "price": 78000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium sirloin steak with fat cap **",
+      "price": 26000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium sirloin steak with fat cap **",
+      "price": 52000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium sirloin steak with fat cap **",
+      "price": 78000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium rib eye steak **",
+      "price": 55000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "rib eye steak (aussie scotch fillet) **",
+      "price": 32500,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "rib eye steak (aussie scotch fillet) **",
+      "price": 39000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "rib eye steak (aussie scotch fillet) **",
+      "price": 46800,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "rib eye steak (aussie scotch fillet) **",
+      "price": 52000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "shabu shabu \"premium chuck \"**",
+      "price": 38000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "tender beef cube **",
+      "price": 76200,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "tender beef medallion extra marbled **",
+      "price": 48600,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "tender beef medallion extra marbled **",
+      "price": 54000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "80 / 20 steak burger **",
+      "price": 11900,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "80 / 20 steak burger **",
+      "price": 17850,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "80 / 20 premium wagyu beef patty **",
+      "price": 16610,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef patty **",
+      "price": 22800,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef patty **",
+      "price": 28500,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "pitmaster beef patty **",
+      "price": 17125,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "pitmaster beef patty **",
+      "price": 20550,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium black angus beef patty **",
+      "price": 24150,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "premium black angus beef patty **",
+      "price": 28980,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "steak burger **",
+      "price": 7140,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "steak burger **",
+      "price": 9520,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "steak burger **",
+      "price": 17850,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "steak burger **",
+      "price": 21420,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "texas burger (**) (***)",
+      "price": 12900,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "texas burger (**) (***)",
+      "price": 16125,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "texas burger (**) (***)",
+      "price": 19350,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "texas burger (**) (***)",
+      "price": 23220,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "texas burger (**) (***)",
+      "price": 32250,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "texas burger \" precooked \" *",
+      "price": 33360,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "texas burger with cheese (**) (***)",
+      "price": 20850,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "80 / 20 minced beef **",
+      "price": 58500,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "80 / 20 minced wagyu **",
+      "price": 70500,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef blade / schaufelbraten **",
+      "price": 180000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef marrow bones (cut ± 3 - 4 cm/pcs) **",
+      "price": 59000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef marrow bones \"tulang sapi sumsum\"(cut ± 2.5 cm/pcs ) **",
+      "price": 104400,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef rouladen **",
+      "price": 250000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef steak whole **",
+      "price": 230000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef shank cube **",
+      "price": 180000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef tenderloin whole clean **",
+      "price": 162000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef top side cubes **",
+      "price": 180000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef top side whole **",
+      "price": 540000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef top side scaloppini (for rendang) **",
+      "price": 90000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "minced beef **",
+      "price": 117000,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "ossobucco \"pre cut\" **",
+      "price": 217100,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "beef schnitzel *",
+      "price": 29400,
+      "unit": "pack",
+      "category": "beef",
+      "confidence": 0.9
+    },
+    {
+      "name": "lamb burger **",
+      "price": 35250,
+      "unit": "pack",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "lamb kebab ( cevapcici ) (**) (***)",
+      "price": 28800,
+      "unit": "pack",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "lamb medallion (**) (***)",
+      "price": 47520,
+      "unit": "pack",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "lamb satay **",
+      "price": 50800,
+      "unit": "pack",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "lamb satay **",
+      "price": 76200,
+      "unit": "pack",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "lamb shank **",
+      "price": 105000,
+      "unit": "pack",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "lamb steak - boneless (**) (***)",
+      "price": 45720,
+      "unit": "pack",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "lamb steak - boneless (**) (***)",
+      "price": 38100,
+      "unit": "pack",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "lamb steak - boneless (**) (***)",
+      "price": 25400,
+      "unit": "pack",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "minced lamb **",
+      "price": 42750,
+      "unit": "pack",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "lamb sausage *",
+      "price": 5775,
+      "unit": "pcs",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "merguez (moroccan / french ) - lamb & beef meat *",
+      "price": 10260,
+      "unit": "pcs",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "mixed grill - lamb lover *",
+      "price": 64200,
+      "unit": "pack",
+      "category": "lamb",
+      "confidence": 0.9
+    },
+    {
+      "name": "chicken lyoner mushroom *",
+      "price": 33750,
+      "unit": "pack",
+      "category": "chicken",
+      "confidence": 0.9
+    },
+    {
+      "name": "chicken meat loaf *",
+      "price": 12500,
+      "unit": "pack",
+      "category": "chicken",
+      "confidence": 0.9
+    },
+    {
+      "name": "chicken breast \"cooked \" *",
+      "price": 31250,
+      "unit": "pack",
+      "category": "chicken",
+      "confidence": 0.9
+    },
+    {
+      "name": "classic smoked chicken breast *",
+      "price": 33750,
+      "unit": "pack",
+      "category": "chicken",
+      "confidence": 0.9
+    },
+    {
+      "name": "classic smoked chicken breast \"bs \" *",
+      "price": 27000,
+      "unit": "pack",
+      "category": "chicken",
+      "confidence": 0.9
+    },
+    {
+      "name": "deli style chicken pastrami *",
+      "price": 13900,
+      "unit": "pack",
+      "category": "chicken",
+      "confidence": 0.9
+    },
+    {
+      "name": "smoked chicken breast *",
+      "price": 25000,
+      "unit": "pack",
+      "category": "chicken",
+      "confidence": 0.9
+    },
+    {
+      "name": "smoked chicken rasher *",
+      "price": 30750,
+      "unit": "pack",
+      "category": "chicken",
+      "confidence": 0.9
+    },
+    {
+      "name": "chicken burger (**) (***)",
+      "price": 28250,

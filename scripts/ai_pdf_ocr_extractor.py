@@ -232,17 +232,44 @@ EXTRACT EVERY PRODUCT VISIBLE, even if partially shown."""
             }
             
     def deduplicate_products(self, products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Remove duplicate products"""
-        seen = set()
-        unique = []
+        """Remove duplicate products, keeping best price when multiple price types exist"""
+        # Group products by name and size (ignoring price_type)
+        product_groups = {}
         
         for product in products:
-            # Create unique key
-            key = f"{product['name']}_{product['price']}_{product.get('unit', '')}_{product.get('price_type', '')}"
+            # Create grouping key (name + size, ignore price_type)
+            name = product['name'].strip()
+            size = product.get('size', '').strip()
+            unit = product.get('unit', '').strip()
             
-            if key not in seen:
-                seen.add(key)
-                unique.append(product)
+            group_key = f"{name}_{size}_{unit}".lower()
+            
+            if group_key not in product_groups:
+                product_groups[group_key] = []
+            product_groups[group_key].append(product)
+        
+        # For each group, select the best product (prefer recommended retail > standard > retail)
+        unique = []
+        price_type_priority = {
+            'recommended retail': 3,
+            'standard': 2, 
+            'retail': 1,
+            '': 0
+        }
+        
+        for group_key, group_products in product_groups.items():
+            if len(group_products) == 1:
+                unique.append(group_products[0])
+            else:
+                # Multiple products with same name+size - pick the best price type
+                best_product = max(group_products, 
+                                 key=lambda p: price_type_priority.get(p.get('price_type', '').lower(), 0))
+                unique.append(best_product)
+                
+                # Log deduplication for debugging
+                if len(group_products) > 1:
+                    price_types = [p.get('price_type', 'unknown') for p in group_products]
+                    self.log(f"🔄 Deduplicated {len(group_products)} variants of '{group_products[0]['name']}' ({', '.join(price_types)}) -> kept {best_product.get('price_type', 'unknown')}")
                 
         return unique
         

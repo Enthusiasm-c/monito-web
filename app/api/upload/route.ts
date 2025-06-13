@@ -36,12 +36,14 @@ export async function POST(request: NextRequest) {
         // Create upload record in database
         const upload = await prisma.upload.create({
           data: {
-            filename: blob.url,
+            fileName: file.name,
+            url: blob.url,
             originalName: file.name,
             fileSize: file.size,
             mimeType: file.type,
             supplierId: supplierId,
-            status: 'pending'
+            status: 'pending',
+            approvalStatus: 'pending_review'
           }
         });
 

@@ -136,7 +136,7 @@ export class AIProductMatcher {
       category: p.category,
       unit: p.unit,
       brand: p.brand,
-      attributes: p.attributes?.join(', ')
+      attributes: Array.isArray(p.attributes) ? p.attributes.join(', ') : p.attributes || ''
     }));
 
     const existingProductsData = existingProducts.map(p => ({
@@ -175,6 +175,12 @@ ${JSON.stringify(existingProductsData, null, 2)}`
         throw new Error('No response content');
       }
       const parsed = JSON.parse(content) as BatchMatchResult;
+
+      // Проверяем, что matches существует и является массивом
+      if (!parsed.matches || !Array.isArray(parsed.matches)) {
+        console.error('Invalid AI response: matches is not an array');
+        return this.fallbackMatching(newProducts);
+      }
 
       // Заменяем временные ID на реальные
       parsed.matches = parsed.matches.map((match, idx) => ({

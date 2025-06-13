@@ -1,15 +1,685 @@
 
 > vercel-marketplace-neon@0.1.0 dev
-> next dev --turbopack
+> next dev
 
  ⚠ Port 3000 is in use, trying 3001 instead.
-   ▲ Next.js 15.1.6 (Turbopack)
+   ▲ Next.js 15.1.6
    - Local:        http://localhost:3001
-   - Network:      http://192.168.0.122:3001
+   - Network:      http://192.168.0.195:3001
    - Environments: .env
 
  ✓ Starting...
- ✓ Ready in 586ms
- ✓ Compiled /api/suppliers in 439ms
- GET /api/suppliers 200 in 1033ms
-[?25h
+ ✓ Ready in 1268ms
+ ✓ Compiled /middleware in 90ms (98 modules)
+[1fd0e6e2-0b31-4cc9-9889-94a7fd64d9fa] GET http://localhost:3001/api/stats
+ ○ Compiling /api/stats ...
+ ✓ Compiled /api/stats in 544ms (331 modules)
+ GET /api/stats 200 in 1399ms
+[93cb909e-d6f7-4baf-899e-c3cb954e3ec8] POST http://localhost:3001/api/upload-gemini
+ ✓ Compiled /api/upload-gemini in 213ms (477 modules)
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: munch bakery.jpg, type: image/jpeg, size: 133890 bytes
+[GeminiPipeline] Starting processing of munch bakery.jpg
+[GeminiProcessor] Processing munch bakery.jpg with model gemini-2.0-flash-exp
+[GeminiProcessor] Direct processing for image/jpeg
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: binary
+[GeminiProcessor] Response received in 15036ms
+[GeminiProcessor] Parsing response, length: 7228
+[GeminiPipeline] Processing completed in 22849ms
+[Upload-Gemini] Processing completed successfully: {
+  uploadId: 'upload_1749812845781_morpud4gt',
+  products: 48,
+  processingTime: 22849
+}
+ POST /api/upload-gemini 200 in 23282ms
+ ✓ Compiled in 10ms
+[03ad1aed-7837-48ce-932a-6c1dea0f15eb] POST http://localhost:3001/api/upload-gemini
+ ✓ Compiled /api/upload-gemini in 84ms (226 modules)
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: Oka veg supplier.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 1253352 bytes
+[GeminiPipeline] Starting processing of Oka veg supplier.xlsx
+[GeminiProcessor] Processing Oka veg supplier.xlsx with model gemini-2.0-flash-exp
+[GeminiProcessor] Preprocessing Excel/CSV file: Oka veg supplier.xlsx
+[GeminiProcessor] Reading Excel file: Oka veg supplier.xlsx
+[GeminiProcessor] Using sheet: Sheet1 with 1000 rows
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
+[GeminiProcessor] Response received in 39152ms
+[GeminiProcessor] Parsing response, length: 20122
+[GeminiProcessor] Parse error: SyntaxError: Unterminated string in JSON at position 20114 (line 987 column 8)
+    at JSON.parse (<anonymous>)
+    at parse (app/services/gemini/GeminiUnifiedProcessor.ts:316:27)
+    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
+    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  314 |     
+  315 |     try {
+> 316 |       const rawData = JSON.parse(cleanContent);
+      |                           ^
+  317 |       
+  318 |       // Fix common issues
+  319 |       if (rawData.documentType === 'price list') {
+[GeminiProcessor] Failed content preview: {
+  "documentType": "price_list",
+  "supplierName": "UD OKA'S",
+  "supplierContact": {
+    "email": "Okassuplier@gmail.com",
+    "phone": "082144328997",
+    "address": "PENEBEL-TABANAN-BALI"
+  },
+  "products": [
+    {
+      "name": "asparagus",
+      "price": 90000.0,
+      "unit": "kg",
+      "category": "VEGETABLE",
+      "confidence": 0.95
+    },
+    {
+      "name": "baby beans",
+      "price": 60000.0,
+      "unit": "kg",
+      "category": "VEGETABLE",
+      "confidence": 0.95
+    },
+    {
+
+[GeminiProcessor] API call failed: Error: Failed to parse Gemini response: Unterminated string in JSON at position 20114 (line 987 column 8)
+    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
+    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
+    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  356 |       console.error('[GeminiProcessor] Parse error:', error);
+  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
+> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  359 |     }
+  360 |   }
+  361 |
+[GeminiProcessor] Error: Error: Failed to parse Gemini response: Unterminated string in JSON at position 20114 (line 987 column 8)
+    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
+    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
+    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  356 |       console.error('[GeminiProcessor] Parse error:', error);
+  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
+> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  359 |     }
+  360 |   }
+  361 |
+[GeminiPipeline] Processing error: Error: Failed to process document: Failed to parse Gemini response: Unterminated string in JSON at position 20114 (line 987 column 8)
+    at GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:48:12)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  46 |     } catch (error) {
+  47 |       console.error('[GeminiProcessor] Error:', error);
+> 48 |       throw new Error(`Failed to process document: ${error instanceof Error ? error.message : 'Unknown error'}`);
+     |            ^
+  49 |     }
+  50 |   }
+  51 |
+[Upload-Gemini] Processing error: Error: Processing failed: Failed to process document: Failed to parse Gemini response: Unterminated string in JSON at position 20114 (line 987 column 8)
+    at GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:139:12)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  137 |     } catch (error) {
+  138 |       console.error('[GeminiPipeline] Processing error:', error);
+> 139 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  140 |     }
+  141 |   }
+  142 |   
+ POST /api/upload-gemini 500 in 39871ms
+[9671a68b-0744-4c38-a81d-7975fe0488fd] POST http://localhost:3001/api/upload-gemini
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: sri 2 vegetables supplier.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 16083 bytes
+[GeminiPipeline] Starting processing of sri 2 vegetables supplier.xlsx
+[GeminiProcessor] Processing sri 2 vegetables supplier.xlsx with model gemini-2.0-flash-exp
+[GeminiProcessor] Preprocessing Excel/CSV file: sri 2 vegetables supplier.xlsx
+[GeminiProcessor] Reading Excel file: sri 2 vegetables supplier.xlsx
+[GeminiProcessor] Using sheet: Sheet1 with 1002 rows
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
+[GeminiProcessor] Response received in 37890ms
+[GeminiProcessor] Parsing response, length: 20363
+[GeminiProcessor] Parse error: SyntaxError: Unterminated string in JSON at position 20355 (line 1042 column 18)
+    at JSON.parse (<anonymous>)
+    at parse (app/services/gemini/GeminiUnifiedProcessor.ts:316:27)
+    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
+    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  314 |     
+  315 |     try {
+> 316 |       const rawData = JSON.parse(cleanContent);
+      |                           ^
+  317 |       
+  318 |       // Fix common issues
+  319 |       if (rawData.documentType === 'price list') {
+[GeminiProcessor] Failed content preview: {
+  "documentType": "price_list",
+  "supplierName": "SRI SEDANA",
+  "supplierContact": {
+    "email": null,
+    "phone": "085 934 330 999",
+    "address": "Br, Babakan, Sukawati, Gianyar"
+  },
+  "products": [
+    {
+      "name": "Avocado",
+      "price": 45000.0,
+      "unit": "kg",
+      "category": null,
+      "confidence": 1.0
+    },
+    {
+      "name": "Anggur Red import",
+      "price": 85000.0,
+      "unit": "kg",
+      "category": null,
+      "confidence": 1.0
+    },
+    {
+      "name": "
+[GeminiProcessor] API call failed: Error: Failed to parse Gemini response: Unterminated string in JSON at position 20355 (line 1042 column 18)
+    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
+    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
+    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  356 |       console.error('[GeminiProcessor] Parse error:', error);
+  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
+> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  359 |     }
+  360 |   }
+  361 |
+[GeminiProcessor] Error: Error: Failed to parse Gemini response: Unterminated string in JSON at position 20355 (line 1042 column 18)
+    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
+    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
+    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  356 |       console.error('[GeminiProcessor] Parse error:', error);
+  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
+> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  359 |     }
+  360 |   }
+  361 |
+[GeminiPipeline] Processing error: Error: Failed to process document: Failed to parse Gemini response: Unterminated string in JSON at position 20355 (line 1042 column 18)
+    at GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:48:12)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  46 |     } catch (error) {
+  47 |       console.error('[GeminiProcessor] Error:', error);
+> 48 |       throw new Error(`Failed to process document: ${error instanceof Error ? error.message : 'Unknown error'}`);
+     |            ^
+  49 |     }
+  50 |   }
+  51 |
+[Upload-Gemini] Processing error: Error: Processing failed: Failed to process document: Failed to parse Gemini response: Unterminated string in JSON at position 20355 (line 1042 column 18)
+    at GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:139:12)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  137 |     } catch (error) {
+  138 |       console.error('[GeminiPipeline] Processing error:', error);
+> 139 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  140 |     }
+  141 |   }
+  142 |   
+ POST /api/upload-gemini 500 in 38016ms
+[1d47a196-b5f9-4fc9-ba81-5dface3cdd83] POST http://localhost:3001/api/upload-gemini
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: plaga farm bali.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 135064 bytes
+[GeminiPipeline] Starting processing of plaga farm bali.xlsx
+[GeminiProcessor] Processing plaga farm bali.xlsx with model gemini-2.0-flash-exp
+[GeminiProcessor] Preprocessing Excel/CSV file: plaga farm bali.xlsx
+[GeminiProcessor] Reading Excel file: plaga farm bali.xlsx
+[GeminiProcessor] Using sheet: 1 with 1000 rows
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
+[GeminiProcessor] Response received in 14820ms
+[GeminiProcessor] Parsing response, length: 7666
+[GeminiPipeline] Processing completed in 22800ms
+[Upload-Gemini] Processing completed successfully: {
+  uploadId: 'upload_1749813080325_970fhn6tl',
+  products: 48,
+  processingTime: 22800
+}
+ POST /api/upload-gemini 200 in 22861ms
+[5789c8f2-51b1-4868-82a6-2de8e1dd3077] POST http://localhost:3001/api/upload-gemini
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: widi wiguna.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 90810 bytes
+[GeminiPipeline] Starting processing of widi wiguna.xlsx
+[GeminiProcessor] Processing widi wiguna.xlsx with model gemini-2.0-flash-exp
+[GeminiProcessor] Preprocessing Excel/CSV file: widi wiguna.xlsx
+[GeminiProcessor] Reading Excel file: widi wiguna.xlsx
+[GeminiProcessor] Using sheet: Sheet1 with 1000 rows
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
+[GeminiProcessor] Response received in 38262ms
+[GeminiProcessor] Parsing response, length: 20776
+[GeminiProcessor] Parse error: SyntaxError: Expected double-quoted property name in JSON at position 20761 (line 1075 column 34)
+    at JSON.parse (<anonymous>)
+    at parse (app/services/gemini/GeminiUnifiedProcessor.ts:316:27)
+    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
+    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  314 |     
+  315 |     try {
+> 316 |       const rawData = JSON.parse(cleanContent);
+      |                           ^
+  317 |       
+  318 |       // Fix common issues
+  319 |       if (rawData.documentType === 'price list') {
+[GeminiProcessor] Failed content preview: {
+  "documentType": "price_list",
+  "supplierName": "UD Widi Wiguna",
+  "supplierContact": {
+    "email": null,
+    "phone": null,
+    "address": null
+  },
+  "products": [
+    {
+      "name": "ares",
+      "price": 12000.0,
+      "unit": "kg",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "asparagus",
+      "price": 95000.0,
+      "unit": "kg",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "bean sprout long",
+      "price": 10000.0,
+     
+[GeminiProcessor] API call failed: Error: Failed to parse Gemini response: Expected double-quoted property name in JSON at position 20761 (line 1075 column 34)
+    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
+    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
+    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  356 |       console.error('[GeminiProcessor] Parse error:', error);
+  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
+> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  359 |     }
+  360 |   }
+  361 |
+[GeminiProcessor] Error: Error: Failed to parse Gemini response: Expected double-quoted property name in JSON at position 20761 (line 1075 column 34)
+    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
+    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
+    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  356 |       console.error('[GeminiProcessor] Parse error:', error);
+  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
+> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  359 |     }
+  360 |   }
+  361 |
+[GeminiPipeline] Processing error: Error: Failed to process document: Failed to parse Gemini response: Expected double-quoted property name in JSON at position 20761 (line 1075 column 34)
+    at GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:48:12)
+    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  46 |     } catch (error) {
+  47 |       console.error('[GeminiProcessor] Error:', error);
+> 48 |       throw new Error(`Failed to process document: ${error instanceof Error ? error.message : 'Unknown error'}`);
+     |            ^
+  49 |     }
+  50 |   }
+  51 |
+[Upload-Gemini] Processing error: Error: Processing failed: Failed to process document: Failed to parse Gemini response: Expected double-quoted property name in JSON at position 20761 (line 1075 column 34)
+    at GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:139:12)
+    at async POST (app/api/upload-gemini/route.ts:61:19)
+  137 |     } catch (error) {
+  138 |       console.error('[GeminiPipeline] Processing error:', error);
+> 139 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      |            ^
+  140 |     }
+  141 |   }
+  142 |   
+ POST /api/upload-gemini 500 in 38411ms
+[d110ffaa-6549-481f-ab3f-3e949e9e78f3] POST http://localhost:3001/api/upload-gemini
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: sai fresh.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 110196 bytes
+[GeminiPipeline] Starting processing of sai fresh.xlsx
+[GeminiProcessor] Processing sai fresh.xlsx with model gemini-2.0-flash-exp
+[GeminiProcessor] Preprocessing Excel/CSV file: sai fresh.xlsx
+[GeminiProcessor] Reading Excel file: sai fresh.xlsx
+[GeminiProcessor] Using sheet: Sheet1 with 1000 rows
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
+[GeminiProcessor] Response received in 34332ms
+[GeminiProcessor] Parsing response, length: 18399
+ POST /api/upload-gemini 200 in 40871ms
+[GeminiPipeline] Processing completed in 54426ms
+[Upload-Gemini] Processing completed successfully: {
+  uploadId: 'upload_1749813162373_ca33cwooi',
+  products: 132,
+  processingTime: 54426
+}
+ ✓ Compiled in 12ms
+[c7f1b786-4aa7-42c8-a211-798778551719] POST http://localhost:3001/api/upload-gemini
+ ✓ Compiled /api/upload-gemini in 80ms (226 modules)
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: bali boga.pdf, type: application/pdf, size: 667826 bytes
+[GeminiPipeline] Starting processing of bali boga.pdf
+[GeminiProcessor] Processing bali boga.pdf with model gemini-2.0-flash-exp
+[GeminiProcessor] Direct processing for application/pdf
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: binary
+[GeminiProcessor] Response received in 42424ms
+[GeminiProcessor] Parsing response, length: 20548
+[GeminiProcessor] Response appears truncated, attempting to fix...
+[GeminiProcessor] Successfully parsed 252 products from compact format
+[GeminiPipeline] Processing completed in 75963ms
+[Upload-Gemini] Processing completed successfully: {
+  uploadId: 'upload_1749813320637_1ubgqbxcf',
+  products: 252,
+  processingTime: 75963
+}
+ POST /api/upload-gemini 200 in 76194ms
+[46b736ae-b0ca-4ff1-8629-764cfc733d0e] POST http://localhost:3001/api/upload-gemini
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: VALENTA cheese supplier.pdf, type: application/pdf, size: 563304 bytes
+[GeminiPipeline] Starting processing of VALENTA cheese supplier.pdf
+[GeminiProcessor] Processing VALENTA cheese supplier.pdf with model gemini-2.0-flash-exp
+[GeminiProcessor] Direct processing for application/pdf
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: binary
+[GeminiProcessor] Response received in 10440ms
+[GeminiProcessor] Parsing response, length: 3152
+[GeminiProcessor] Successfully parsed 47 products from compact format
+[GeminiPipeline] Processing completed in 17957ms
+[Upload-Gemini] Processing completed successfully: {
+  uploadId: 'upload_1749813363849_gotmtrlmf',
+  products: 47,
+  processingTime: 17957
+}
+ POST /api/upload-gemini 200 in 18014ms
+[5f27be83-d7e9-4ec8-83d3-4846b8a58967] POST http://localhost:3001/api/upload-gemini
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: milk up.pdf, type: application/pdf, size: 2548943 bytes
+[GeminiPipeline] Starting processing of milk up.pdf
+[GeminiProcessor] Processing milk up.pdf with model gemini-2.0-flash-exp
+[GeminiProcessor] Direct processing for application/pdf
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: binary
+[GeminiProcessor] Response received in 17781ms
+[GeminiProcessor] Parsing response, length: 5499
+[GeminiProcessor] Successfully parsed 73 products from compact format
+[GeminiPipeline] Processing completed in 30123ms
+[Upload-Gemini] Processing completed successfully: {
+  uploadId: 'upload_1749813390371_bxvyuj6cp',
+  products: 73,
+  processingTime: 30123
+}
+ POST /api/upload-gemini 200 in 30182ms
+[7e13f3b7-93de-489c-9928-fd4a9fa410e1] POST http://localhost:3001/api/upload-gemini
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: munch bakery.jpg, type: image/jpeg, size: 133890 bytes
+[GeminiPipeline] Starting processing of munch bakery.jpg
+[GeminiProcessor] Processing munch bakery.jpg with model gemini-2.0-flash-exp
+[GeminiProcessor] Direct processing for image/jpeg
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: binary
+[GeminiProcessor] Response received in 15394ms
+[GeminiProcessor] Parsing response, length: 7295
+[GeminiPipeline] Processing completed in 20806ms
+[Upload-Gemini] Processing completed successfully: {
+  uploadId: 'upload_1749813416399_01qq57lrf',
+  products: 48,
+  processingTime: 20806
+}
+ POST /api/upload-gemini 200 in 20868ms
+[89da7570-3cfd-4ce1-8bc7-79233b155163] POST http://localhost:3001/api/upload-gemini
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: Oka veg supplier.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 1253352 bytes
+[GeminiPipeline] Starting processing of Oka veg supplier.xlsx
+[GeminiProcessor] Processing Oka veg supplier.xlsx with model gemini-2.0-flash-exp
+[GeminiProcessor] Preprocessing Excel/CSV file: Oka veg supplier.xlsx
+[GeminiProcessor] Reading Excel file: Oka veg supplier.xlsx
+[GeminiProcessor] Using sheet: Sheet1 with 1000 rows
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
+[GeminiProcessor] Response received in 29234ms
+[GeminiProcessor] Parsing response, length: 13421
+[GeminiProcessor] Successfully parsed 216 products from compact format
+[GeminiPipeline] Processing completed in 60802ms
+[Upload-Gemini] Processing completed successfully: {
+  uploadId: 'upload_1749813453141_thldmbxay',
+  products: 216,
+  processingTime: 60802
+}
+ POST /api/upload-gemini 200 in 60957ms
+[5cd99549-88c6-43eb-93cb-987b15b206fe] POST http://localhost:3001/api/upload-gemini
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: sri 2 vegetables supplier.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 16083 bytes
+[GeminiPipeline] Starting processing of sri 2 vegetables supplier.xlsx
+[GeminiProcessor] Processing sri 2 vegetables supplier.xlsx with model gemini-2.0-flash-exp
+[GeminiProcessor] Preprocessing Excel/CSV file: sri 2 vegetables supplier.xlsx
+[GeminiProcessor] Reading Excel file: sri 2 vegetables supplier.xlsx
+[GeminiProcessor] Using sheet: Sheet1 with 1002 rows
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
+[GeminiProcessor] Response received in 33511ms
+[GeminiProcessor] Parsing response, length: 13897
+[GeminiProcessor] Successfully parsed 237 products from compact format
+[GeminiPipeline] Processing completed in 64980ms
+[Upload-Gemini] Processing completed successfully: {
+  uploadId: 'upload_1749813516185_w88h8owu4',
+  products: 237,
+  processingTime: 64980
+}
+ POST /api/upload-gemini 200 in 65089ms
+[6c7f0832-2193-4525-85c5-8b17f1034964] POST http://localhost:3001/api/upload-gemini
+[Upload-Gemini] Processing upload request
+[Upload-Gemini] Processing file: plaga farm bali.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 135064 bytes
+[GeminiPipeline] Starting processing of plaga farm bali.xlsx
+[GeminiProcessor] Processing plaga farm bali.xlsx with model gemini-2.0-flash-exp
+[GeminiProcessor] Preprocessing Excel/CSV file: plaga farm bali.xlsx
+[GeminiProcessor] Reading Excel file: plaga farm bali.xlsx
+[GeminiProcessor] Using sheet: 1 with 1000 rows
+[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
+[GeminiProcessor] Response received in 7925ms
+[GeminiProcessor] Parsing response, length: 3722
+[GeminiProcessor] Successfully parsed 52 products from compact format
+[GeminiPipeline] Processing completed in 14469ms
+[Upload-Gemini] Processing completed successfully: {
+  uploadId: 'upload_1749813556072_wcbn6mk1g',
+  products: 52,
+  processingTime: 14469
+}
+ POST /api/upload-gemini 200 in 14529ms
+[8a09fc3e-9de6-43ae-843c-54b71eae0269] GET http://localhost:3001/api/stats
+ ✓ Compiled /api/stats in 111ms (228 modules)
+ GET /api/stats 200 in 1373ms
+[27190cc7-24f8-4635-8b86-67bbe9992944] GET http://localhost:3001/
+ ○ Compiling / ...
+ ✓ Compiled / in 1582ms (620 modules)
+ GET / 200 in 1664ms
+[19281d2c-efeb-4012-a55a-515f4be67d46] GET http://localhost:3001/
+ ✓ Compiled in 159ms (597 modules)
+ GET / 200 in 104ms
+ GET /_next/static/webpack/523275fc0604a974.webpack.hot-update.json 404 in 1791ms
+[2e099d9e-715c-44f9-8421-c2b07a4043e5] GET http://localhost:3001/
+ GET / 200 in 19ms
+[4fe48095-eba5-4c46-a5be-72f16edee419] GET http://localhost:3001/
+ GET / 200 in 9ms
+[a818bf0a-b209-4301-9ec4-5115d0709474] GET http://localhost:3001/api/products?category=All+Categories&limit=50&page=1&sortBy=name&sortOrder=asc&search=
+[fa14ef1a-4e43-45a6-ac51-16fe6d6997fd] GET http://localhost:3001/api/suppliers
+[df8f9f02-48f7-4b9a-aac0-da143d88d4c8] GET http://localhost:3001/api/stats
+[7bcf448f-dc99-49e2-ba4a-da81a04ca23d] GET http://localhost:3001/api/uploads/status?limit=5
+[aed2b5a1-1d90-40f8-8f90-a84a3d319628] GET http://localhost:3001/api/token-usage
+[6245ed4f-f668-4f33-9294-00053e72ed6e] GET http://localhost:3001/api/uploads/pending-count
+ ✓ Compiled /api/uploads/pending-count in 157ms (626 modules)
+ GET /api/token-usage 200 in 200ms
+ GET /api/suppliers 200 in 635ms
+ GET /api/uploads/pending-count 200 in 636ms
+ GET /api/uploads/status?limit=5 200 in 893ms
+ GET /api/stats 200 in 1316ms
+ GET /api/products?category=All%20Categories&limit=50&page=1&sortBy=name&sortOrder=asc&search= 200 in 1969ms
+ ✓ Compiled in 84ms (297 modules)
+[a442b0d8-2e13-469a-8f3c-7c25b35794c5] GET http://localhost:3001/
+ ⨯ Error: Cannot find module './5994.js'
+Require stack:
+- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
+- /Users/denisdomashenko/monito-web/.next/server/app/api/suppliers/route.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
+    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
+    at <unknown> (.next/server/webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
+    at <unknown> (.next/server/app/page.js:1:47103)
+    at Object.<anonymous> (.next/server/app/page.js:1:47155) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ ✓ Compiled /_error in 406ms (868 modules)
+ GET / 500 in 716ms
+[2dadda4a-4ce6-46bc-aac8-0a7515da33eb] GET http://localhost:3001/
+ ⨯ Error: Cannot find module './5994.js'
+Require stack:
+- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
+- /Users/denisdomashenko/monito-web/.next/server/pages/_document.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
+    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
+    at <unknown> (.next/server/webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
+    at <unknown> (.next/server/app/page.js:1:47103)
+    at Object.<anonymous> (.next/server/app/page.js:1:47155) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ GET / 500 in 228ms
+[045dbf90-7990-4946-b4e4-6a600264f838] GET http://localhost:3001/
+ ⨯ Error: Cannot find module './5994.js'
+Require stack:
+- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
+- /Users/denisdomashenko/monito-web/.next/server/pages/_document.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
+    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
+    at <unknown> (.next/server/webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
+    at <unknown> (.next/server/app/page.js:1:47103)
+    at Object.<anonymous> (.next/server/app/page.js:1:47155) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ GET / 500 in 229ms
+[d52855e8-3b21-4247-8f9d-92b5b5eaa936] GET http://localhost:3001/
+ ⨯ Error: Cannot find module './5994.js'
+Require stack:
+- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
+- /Users/denisdomashenko/monito-web/.next/server/pages/_document.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
+    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
+    at <unknown> (.next/server/webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
+    at <unknown> (.next/server/app/page.js:1:47103)
+    at Object.<anonymous> (.next/server/app/page.js:1:47155) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/'
+}
+ GET / 500 in 229ms
+ ⨯ Error: Cannot find module './5994.js'
+Require stack:
+- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
+- /Users/denisdomashenko/monito-web/.next/server/pages/_document.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
+    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
+    at <unknown> (.next/server/webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
+    at <unknown> (.next/server/app/_not-found/page.js:1:2832)
+    at Object.<anonymous> (.next/server/app/_not-found/page.js:1:2879) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ ⨯ Error: Cannot find module './5994.js'
+Require stack:
+- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
+- /Users/denisdomashenko/monito-web/.next/server/pages/_document.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
+- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
+    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
+    at <unknown> (.next/server/webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
+    at <unknown> (.next/server/app/_not-found/page.js:1:2832)
+    at Object.<anonymous> (.next/server/app/_not-found/page.js:1:2879) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ GET /_next/static/chunks/app-pages-internals.js 500 in 268ms
+ GET /_next/static/chunks/app/page.js 500 in 249ms
+ ✓ Compiled in 78ms (494 modules)
+ ✓ Compiled in 86ms (490 modules)

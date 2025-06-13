@@ -54,6 +54,7 @@ export default function Home() {
   const [categoryFilter, setCategoryFilter] = useState<string>('All Categories');
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string>('');
   const [showSupplierModal, setShowSupplierModal] = useState(false);
   const [recentUploads, setRecentUploads] = useState<Upload[]>([]);
   const [productsPerPage, setProductsPerPage] = useState<number>(50);
@@ -71,7 +72,7 @@ export default function Home() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [tokenUsage, setTokenUsage] = useState<{totalCostUsd: number; totalCostFormatted: string}>({totalCostUsd: 0, totalCostFormatted: '$0.0000'});
   const [pendingUploadsCount, setPendingUploadsCount] = useState<number>(0);
-  const [useAIMode, setUseAIMode] = useState<boolean>(false);
+  // AI mode is now always enabled
 
   // Debounce search query
   useEffect(() => {
@@ -197,25 +198,27 @@ export default function Home() {
     }
 
     setUploading(true);
+    setUploadStatus('Uploading files...');
+    
     try {
       const formData = new FormData();
       selectedFiles.forEach(file => {
         formData.append('files', file);
       });
 
-      let endpoint = '/api/upload-smart';
+      // Use new Gemini-powered endpoint
+      let endpoint = '/api/upload-gemini';
       
-      // Use AI-powered upload if enabled
-      if (useAIMode) {
-        endpoint = '/api/upload-ai';
-      }
+      // Add model selection (default to free experimental model)
+      formData.append('model', 'gemini-2.0-flash-exp');
       
-      // If user selected a specific supplier, use the original upload endpoint
+      // Add supplier ID if selected (AI will use it as a hint)
       if (selectedSupplier) {
         formData.append('supplierId', selectedSupplier);
-        endpoint = '/api/upload';
       }
 
+      setUploadStatus('Processing with AI... This may take 20-30 seconds...');
+      
       const response = await fetch(endpoint, {
         method: 'POST',
         body: formData
@@ -224,23 +227,26 @@ export default function Home() {
       if (response.ok) {
         const result = await response.json();
         console.log('Upload successful:', result);
+        setUploadStatus(`Success! Extracted ${result.stats?.totalExtracted || 0} products.`);
         setSelectedFiles([]);
         setSelectedSupplier('');
         
         // Refresh data after upload
         await fetchData();
         
-        if (selectedSupplier) {
-          alert('Files uploaded and processing started!');
-        } else {
-          alert('Files uploaded! AI is analyzing supplier information and will create/match suppliers automatically.');
-        }
+        setTimeout(() => {
+          setUploadStatus('');
+        }, 3000);
       } else {
-        throw new Error('Upload failed');
+        const error = await response.json();
+        throw new Error(error.message || 'Upload failed');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Upload failed. Please try again.');
+      setUploadStatus(`Error: ${error instanceof Error ? error.message : 'Upload failed'}`);
+      setTimeout(() => {
+        setUploadStatus('');
+      }, 5000);
     } finally {
       setUploading(false);
     }
@@ -342,7 +348,7 @@ export default function Home() {
 
     // Validate required fields
     if (!editingSupplierData.name || editingSupplierData.name.trim().length === 0) {
-      alert('❌ Supplier name is required');
+      alert('Supplier name is required');
       return;
     }
 
@@ -350,7 +356,7 @@ export default function Home() {
     if (editingSupplierData.email && editingSupplierData.email.trim()) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(editingSupplierData.email.trim())) {
-        alert('❌ Please enter a valid email address');
+        alert('Please enter a valid email address');
         return;
       }
     }
@@ -392,17 +398,17 @@ export default function Home() {
         
         setIsEditingSupplier(false);
         setEditingSupplierData(null);
-        alert('✅ Supplier information updated successfully!');
+        alert('Supplier information updated successfully!');
         
         // Refresh data to ensure consistency
         await fetchData();
       } else {
         const errorData = await response.json();
-        alert('❌ ' + (errorData.error || 'Failed to update supplier information'));
+        alert('Error: ' + (errorData.error || 'Failed to update supplier information'));
       }
     } catch (error) {
       console.error('Error updating supplier:', error);
-      alert('❌ Network error. Please check your connection and try again.');
+      alert('Network error. Please check your connection and try again.');
     }
   };
 
@@ -527,22 +533,14 @@ export default function Home() {
                     </p>
                   </div>
                   
-                  {/* AI Mode Toggle */}
+                  {/* AI-powered extraction is always enabled */}
                   {!selectedSupplier && (
-                    <div className="flex items-center justify-between">
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={useAIMode}
-                          onChange={(e) => setUseAIMode(e.target.checked)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Use AI-powered extraction (more accurate)
-                        </span>
-                      </label>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        🤖 Beta
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        AI-powered extraction enabled
+                      </span>
+                      <span className="text-xs text-green-600 dark:text-green-400">
+                        Active
                       </span>
                     </div>
                   )}
@@ -552,8 +550,21 @@ export default function Home() {
                     disabled={uploading}
                     className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md text-sm font-medium w-full"
                   >
-                    {uploading ? 'Processing...' : selectedSupplier ? 'Process Files' : useAIMode ? 'AI Process Files' : 'Smart Process Files'}
+                    {uploading ? 'Processing...' : 'AI Process Files'}
                   </button>
+                  
+                  {/* Upload Status */}
+                  {uploadStatus && (
+                    <div className={`mt-2 p-2 rounded text-sm text-center ${
+                      uploadStatus.includes('Error') 
+                        ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
+                        : uploadStatus.includes('Success') 
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                          : 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400'
+                    }`}>
+                      {uploadStatus}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -622,7 +633,7 @@ export default function Home() {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-emerald-500 rounded-md flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">💰</span>
+                    <span className="text-white text-sm font-medium">$</span>
                   </div>
                 </div>
                 <div className="ml-5 w-0 flex-1">
@@ -1274,14 +1285,14 @@ export default function Home() {
                           className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800 px-3 py-1 rounded-md text-sm font-medium transition-colors"
                           title="Edit supplier information"
                         >
-                          ✏️ Edit Information
+                          Edit Information
                         </button>
                       </div>
                       
                       <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md p-3 mb-4">
                         <div className="flex">
                           <div className="flex-shrink-0">
-                            <span className="text-yellow-400 text-sm">⚠️</span>
+                            <span className="text-yellow-400 text-sm">!</span>
                           </div>
                           <div className="ml-2">
                             <p className="text-sm text-yellow-800 dark:text-yellow-200">

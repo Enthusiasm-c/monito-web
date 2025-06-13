@@ -4,31 +4,8 @@ const prisma = new PrismaClient();
 
 async function fixStuckUpload() {
   try {
-    const uploadId = 'cmbp2b4jr0002ou8mc90ouuej';
-    console.log(`🔧 Fixing stuck upload: ${uploadId}`);
-    
-    // Update the upload status to failed with an informative message
-    const updatedUpload = await prisma.upload.update({
-      where: {
-        id: uploadId
-      },
-      data: {
-        status: 'failed',
-        errorMessage: 'Processing timed out during AI Vision extraction. Server hung and was restarted. PDF contains 138 rows but traditional extraction found 0 products. Camelot extraction found 3 products. Manual reprocessing required.',
-        processingDetails: 'Traditional extraction: 138 rows, 0 products. Camelot extraction: 3 products (Plain Yogurt, Raw Milk Cow Glass, etc.). AI Vision processing hung during page-by-page conversion.',
-        totalRowsDetected: 138,
-        totalRowsProcessed: 0,
-        completenessRatio: 0.0,
-        updatedAt: new Date()
-      }
-    });
-    
-    console.log('✅ Upload status updated to failed');
-    console.log('📋 New status:', updatedUpload.status);
-    console.log('📋 Error message:', updatedUpload.errorMessage);
-    
-    // Now let's check for any other stuck uploads
-    console.log('\n🔍 Checking for other stuck uploads...');
+    // Check for stuck uploads
+    console.log('🔍 Checking for stuck uploads...');
     const stuckUploads = await prisma.upload.findMany({
       where: {
         status: 'processing',

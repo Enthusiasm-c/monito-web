@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
           where: { name: 'Temporary Processing' },
           update: {},
           create: {
+            id: `temp_${Date.now()}`,
             name: 'Temporary Processing',
             email: 'temp@processing.com'
           }
@@ -43,6 +44,7 @@ export async function POST(request: NextRequest) {
         // Create upload record in database
         const upload = await prisma.upload.create({
           data: {
+            id: `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             fileName: file.name,
             originalName: file.name,
             fileSize: file.size,
@@ -72,7 +74,7 @@ export async function POST(request: NextRequest) {
         uploadResults.push({
           filename: file.name,
           status: 'error',
-          error: 'Upload failed'
+          error: error instanceof Error ? error.message : 'Upload failed'
         });
       }
     }

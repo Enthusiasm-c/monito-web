@@ -463,6 +463,7 @@ class EnhancedFileProcessor {
         // Create new price entry
         await prisma.price.create({
           data: {
+            id: `price_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             amount: normalizedProduct.price,
             unit: normalizedProduct.unit,
             productId: product.id,
@@ -579,6 +580,7 @@ class EnhancedFileProcessor {
     console.log(`🆕 Creating new supplier: "${supplierData.name}"`);
     return await prisma.supplier.create({
       data: {
+        id: `supplier_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         name: supplierData.name.trim(),
         email: supplierData.email || null,
         phone: supplierData.phone || null,
@@ -616,13 +618,16 @@ class EnhancedFileProcessor {
     try {
       return await prisma.product.create({
         data: {
+          id: `product_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           name: productData.name.trim(),
           rawName: productData.rawName?.trim() || productData.name.trim(),
           standardizedName: productData.standardizedName.trim(),
           category: productData.category?.trim(),
           unit: productData.unit.trim(),
           standardizedUnit: productData.standardizedUnit?.trim() || productData.unit.trim(),
-          description: productData.description?.trim()
+          description: productData.description?.trim(),
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       });
     } catch (error) {

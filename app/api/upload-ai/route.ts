@@ -8,17 +8,20 @@ export async function POST(request: NextRequest) {
 
   try {
     const formData = await request.formData();
-    const file = formData.get('file') as File;
+    const files = formData.getAll('files') as File[];
     const supplierId = formData.get('supplierId') as string | null;
     const autoApprove = formData.get('autoApprove') === 'true';
-    const model = formData.get('model') as 'o3' | 'o3-mini' | 'gpt-4.1-mini' | null;
+    const model = formData.get('model') as 'gpt-4o' | 'gpt-4o-mini' | null;
 
-    if (!file) {
+    if (!files || files.length === 0) {
       return NextResponse.json(
-        { error: 'No file provided' },
+        { error: 'No files provided' },
         { status: 400 }
       );
     }
+    
+    // For now, process only the first file
+    const file = files[0];
 
     // Validate file size (10MB limit)
     const maxSize = 10 * 1024 * 1024;
@@ -92,8 +95,8 @@ export async function GET() {
       'Multi-model support'
     ],
     models: {
-      default: 'o3-mini',
-      available: ['o3', 'o3-mini', 'gpt-4.1-mini']
+      default: 'gpt-4o-mini',
+      available: ['gpt-4o', 'gpt-4o-mini']
     }
   });
 }

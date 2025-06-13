@@ -26,7 +26,7 @@ interface ProcessingOptions {
   supplierId?: string;
   autoApprove?: boolean;
   skipCache?: boolean;
-  model?: 'o3' | 'o3-mini' | 'gpt-4.1-mini';
+  model?: 'gpt-4o' | 'gpt-4o-mini';
 }
 
 interface ProcessingResult {
@@ -51,9 +51,8 @@ interface ProcessingResult {
 
 export class UnifiedAIPipeline {
   private costEstimator = {
-    'o3': { input: 0.06, output: 0.24 },
-    'o3-mini': { input: 0.003, output: 0.012 },
-    'gpt-4.1-mini': { input: 0.00015, output: 0.0006 }
+    'gpt-4o': { input: 0.005, output: 0.015 },
+    'gpt-4o-mini': { input: 0.00015, output: 0.0006 }
   };
 
   /**
@@ -88,7 +87,8 @@ export class UnifiedAIPipeline {
       const supplier = await this.resolveSupplier(
         extracted.supplierName,
         extracted.supplierContact,
-        options.supplierId
+        options.supplierId,
+        file.originalName
       );
 
       // 3. Сохранение файла в blob storage
@@ -99,7 +99,9 @@ export class UnifiedAIPipeline {
         supplier.id,
         file.originalName,
         fileUrl,
-        extracted
+        extracted,
+        file.size,
+        file.mimeType
       );
 
       // 5. Нормализация продуктов
@@ -135,7 +137,7 @@ export class UnifiedAIPipeline {
       const processingTime = Date.now() - startTime;
       const estimatedCost = this.estimateCost(
         extracted.products.length,
-        options.model || 'gpt-o3-mini'
+        options.model || 'gpt-4o-mini'
       );
 
       const result: ProcessingResult = {
@@ -177,7 +179,8 @@ export class UnifiedAIPipeline {
   private async resolveSupplier(
     extractedName: string | null,
     contactInfo: any,
-    providedId?: string
+    providedId?: string,
+    fileName?: string
   ) {
     if (providedId) {
       const existing = await prisma.supplier.findUnique({
@@ -188,16 +191,15 @@ export class UnifiedAIPipeline {
       }
     }
 
-    if (!extractedName) {
-      throw new Error('Unable to determine supplier name');
-    }
+    // Если имя не извлечено, используем имя файла как fallback
+    const supplierName = extractedName || `Auto-detected from ${fileName || 'upload'}`;
 
     // Поиск существующего поставщика
     const existing = await prisma.supplier.findFirst({
       where: {
         OR: [
-          { name: { equals: extractedName, mode: 'insensitive' } },
-          { name: { contains: extractedName, mode: 'insensitive' } }
+          { name: { equals: supplierName, mode: 'insensitive' } },
+          { name: { contains: supplierName, mode: 'insensitive' } }
         ]
       }
     });
@@ -209,7 +211,8 @@ export class UnifiedAIPipeline {
     // Создание нового поставщика
     const newSupplier = await prisma.supplier.create({
       data: {
-        name: extractedName,
+        id: `supplier_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        name: supplierName,
         email: contactInfo?.email,
         phone: contactInfo?.phone,
         address: contactInfo?.address,
@@ -242,16 +245,22 @@ export class UnifiedAIPipeline {
     supplierId: string,
     fileName: string,
     fileUrl: string,
-    extractedData: ExtractedData
+    extractedData: ExtractedData,
+    fileSize: number,
+    mimeType: string
   ) {
     return await prisma.upload.create({
       data: {
+        id: `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         supplierId,
         originalName: fileName,
+        fileName: fileName,
         url: fileUrl,
         status: 'processing',
         approvalStatus: 'pending_review',
-        extractedData: extractedData as any
+        extractedData: extractedData as any,
+        fileSize: fileSize,
+        mimeType: mimeType
       }
     });
   }
@@ -286,12 +295,15 @@ export class UnifiedAIPipeline {
           // Создаем новый продукт
           const newProduct = await prisma.product.create({
             data: {
+              id: `product_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
               name: product.originalName,
               rawName: product.originalName,
               standardizedName: product.standardName,
               category: product.category,
               unit: product.unit,
-              standardizedUnit: product.unit
+              standardizedUnit: product.unit,
+              createdAt: new Date(),
+              updatedAt: new Date()
             }
           });
           productId = newProduct.id;
@@ -301,6 +313,7 @@ export class UnifiedAIPipeline {
         // Сохраняем цену
         await prisma.price.create({
           data: {
+            id: `price_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             productId,
             supplierId,
             uploadId,
@@ -379,7 +392,7 @@ export class UnifiedAIPipeline {
    * Расчет стоимости обработки
    */
   private estimateCost(productCount: number, model: string): number {
-    const costs = this.costEstimator[model as keyof typeof this.costEstimator] || this.costEstimator['o3-mini'];
+    const costs = this.costEstimator[model as keyof typeof this.costEstimator] || this.costEstimator['gpt-4o-mini'];
     
     // Примерная оценка токенов
     const avgTokensPerProduct = 50;
