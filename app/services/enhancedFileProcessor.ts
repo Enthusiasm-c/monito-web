@@ -404,47 +404,108 @@ class EnhancedFileProcessor {
       console.log(`⚡ Skipping AI standardization: disabled or ${productsForAI.length} products > ${maxTotalForAI} limit`);
     }
 
-    // Process all products (with AI standardization for first 20, fallback for rest)
+    // Group products by standardized name + unit to prevent duplicates
+    const productGroups = new Map<string, {
+      standardizedName: string;
+      standardizedUnit: string;
+      products: Array<{
+        originalItem: any;
+        normalizedProduct: any;
+        category: string;
+        bestPrice: number;
+      }>;
+    }>();
+
+    // First pass: standardize all products and group them
     for (let i = 0; i < productsForAI.length; i++) {
-      try {
-        const { originalItem, normalizedProduct, category } = productsForAI[i];
+      const { originalItem, normalizedProduct, category } = productsForAI[i];
+      
+      // Use AI standardization for first 20, fallback for rest
+      const standardizedName = i < standardizedNames.length 
+        ? standardizedNames[i]
+        : this.simpleStandardizeProductName(normalizedProduct.name);
         
-        // Use AI standardization for first 20, fallback for rest
-        const standardizedName = i < standardizedNames.length 
-          ? standardizedNames[i]
-          : this.simpleStandardizeProductName(normalizedProduct.name);
-          
-        const standardizedUnit = this.standardizeUnit(normalizedProduct.unit);
+      const standardizedUnit = this.standardizeUnit(normalizedProduct.unit);
+      const groupKey = `${standardizedName}|${standardizedUnit}`;
+
+      if (!productGroups.has(groupKey)) {
+        productGroups.set(groupKey, {
+          standardizedName,
+          standardizedUnit,
+          products: []
+        });
+      }
+
+      productGroups.get(groupKey)!.products.push({
+        originalItem,
+        normalizedProduct,
+        category,
+        bestPrice: normalizedProduct.price
+      });
+    }
+
+    console.log(`📊 Grouped ${productsForAI.length} products into ${productGroups.size} unique products`);
+
+    // Second pass: process each unique product group
+    for (const [groupKey, group] of productGroups) {
+      try {
+        // Find the product with the best price (lowest valid price)
+        const validProducts = group.products.filter(p => p.bestPrice > 0);
+        if (validProducts.length === 0) {
+          console.warn(`⚠️ Skipping product group - no valid prices: ${group.standardizedName}`);
+          continue;
+        }
+
+        // Use the first product as the base, with the best price
+        const bestProduct = validProducts.reduce((best, current) => 
+          current.bestPrice < best.bestPrice ? current : best
+        );
 
         // Find or create product with validation
         const product = await this.findOrCreateProduct({
-          rawName: originalItem.name,
-          name: normalizedProduct.name,
-          standardizedName,
-          category,
-          unit: normalizedProduct.unit,
-          standardizedUnit,
-          description: normalizedProduct.description
+          rawName: bestProduct.originalItem.name,
+          name: bestProduct.normalizedProduct.name,
+          standardizedName: group.standardizedName,
+          category: bestProduct.category,
+          unit: bestProduct.normalizedProduct.unit,
+          standardizedUnit: group.standardizedUnit,
+          description: bestProduct.normalizedProduct.description
         });
 
         // Skip if product creation failed validation
         if (!product) {
-          console.warn(`⚠️ Skipping product due to validation failure: ${normalizedProduct.name}`);
+          console.warn(`⚠️ Skipping product due to validation failure: ${group.standardizedName}`);
           continue;
         }
 
         // Validate price data before creation
         const validator = createProductValidator(prisma);
         const priceValidation = validator.validatePriceData({
-          amount: normalizedProduct.price,
-          unit: normalizedProduct.unit,
+          amount: bestProduct.bestPrice,
+          unit: bestProduct.normalizedProduct.unit,
           supplierId: supplierId,
           productId: product.id,
           uploadId: uploadId
         });
 
         if (!priceValidation.valid) {
-          console.warn(`⚠️ Skipping invalid price for ${normalizedProduct.name}: ${priceValidation.errors.join(', ')}`);
+          console.warn(`⚠️ Skipping invalid price for ${group.standardizedName}: ${priceValidation.errors.join(', ')}`);
+          continue;
+        }
+
+        // Check if this exact price already exists for this product and supplier
+        const existingPrice = await prisma.price.findFirst({
+          where: {
+            productId: product.id,
+            supplierId: supplierId,
+            amount: bestProduct.bestPrice,
+            unit: bestProduct.normalizedProduct.unit,
+            validTo: null
+          }
+        });
+
+        if (existingPrice) {
+          console.log(`🔄 Price already exists for ${group.standardizedName}, skipping duplicate`);
           continue;
         }
 
@@ -464,8 +525,8 @@ class EnhancedFileProcessor {
         await prisma.price.create({
           data: {
             id: `price_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            amount: normalizedProduct.price,
-            unit: normalizedProduct.unit,
+            amount: bestProduct.bestPrice,
+            unit: bestProduct.normalizedProduct.unit,
             productId: product.id,
             supplierId: supplierId,
             uploadId: uploadId,
@@ -475,13 +536,18 @@ class EnhancedFileProcessor {
 
         productsCreated++;
 
+        // Log if multiple products were consolidated
+        if (group.products.length > 1) {
+          console.log(`🔗 Consolidated ${group.products.length} duplicate products into "${group.standardizedName}" (best price: ${bestProduct.bestPrice})`);
+        }
+
         // Log progress every 10 products
         if ((productsCreated % 10) === 0) {
-          console.log(`✅ Processed ${productsCreated}/${validProducts.length} products...`);
+          console.log(`✅ Processed ${productsCreated}/${productGroups.size} unique products...`);
         }
 
       } catch (error) {
-        const errorMsg = `Error processing product "${productsForAI[i].originalItem.name}": ${error}`;
+        const errorMsg = `Error processing product group "${groupKey}": ${error}`;
         console.error(errorMsg);
         metrics.errors.push(errorMsg);
       }
@@ -602,22 +668,26 @@ class EnhancedFileProcessor {
       return null;
     }
 
-    // Try to find existing product
-    const existing = await prisma.product.findFirst({
-      where: {
-        standardizedName: productData.standardizedName,
-        standardizedUnit: productData.standardizedUnit
-      }
-    });
-
-    if (existing) {
-      return existing;
-    }
-
-    // Create new product with validation
+    // Use upsert to prevent race conditions and duplicates
     try {
-      return await prisma.product.create({
-        data: {
+      return await prisma.product.upsert({
+        where: {
+          // Use the existing composite unique constraint
+          standardizedName_standardizedUnit: {
+            standardizedName: productData.standardizedName.trim(),
+            standardizedUnit: productData.standardizedUnit?.trim() || productData.unit.trim()
+          }
+        },
+        update: {
+          // Update existing product with latest data
+          name: productData.name.trim(),
+          rawName: productData.rawName?.trim() || productData.name.trim(),
+          category: productData.category?.trim(),
+          unit: productData.unit.trim(),
+          description: productData.description?.trim(),
+          updatedAt: new Date()
+        },
+        create: {
           id: `product_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           name: productData.name.trim(),
           rawName: productData.rawName?.trim() || productData.name.trim(),
@@ -631,8 +701,40 @@ class EnhancedFileProcessor {
         }
       });
     } catch (error) {
-      console.error(`❌ Failed to create product: ${productData.name}`, error);
-      return null;
+      // Fallback to find-first if unique constraint doesn't exist yet
+      console.warn(`⚠️ Upsert failed, falling back to find-first for: ${productData.name}`, error);
+      
+      const existing = await prisma.product.findFirst({
+        where: {
+          standardizedName: productData.standardizedName,
+          standardizedUnit: productData.standardizedUnit
+        }
+      });
+
+      if (existing) {
+        return existing;
+      }
+
+      // Last resort - try to create
+      try {
+        return await prisma.product.create({
+          data: {
+            id: `product_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            name: productData.name.trim(),
+            rawName: productData.rawName?.trim() || productData.name.trim(),
+            standardizedName: productData.standardizedName.trim(),
+            category: productData.category?.trim(),
+            unit: productData.unit.trim(),
+            standardizedUnit: productData.standardizedUnit?.trim() || productData.unit.trim(),
+            description: productData.description?.trim(),
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+      } catch (createError) {
+        console.error(`❌ Failed to create product: ${productData.name}`, createError);
+        return null;
+      }
     }
   }
 

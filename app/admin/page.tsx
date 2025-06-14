@@ -287,8 +287,8 @@ export default function AdminPage() {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => {
-                            setSelectedUpload(upload);
-                            setShowPreview(true);
+                            const previewUrl = `/admin/preview?id=${upload.id}`;
+                            window.open(previewUrl, '_blank', 'width=1400,height=800,scrollbars=yes,resizable=yes');
                           }}
                           className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800 px-3 py-2 rounded-md text-sm font-medium"
                         >

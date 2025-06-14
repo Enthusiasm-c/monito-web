@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
-import { PrismaClient } from '@prisma/client';
-import { enhancedFileProcessor } from '../../services/enhancedFileProcessor';
+import { unifiedFileProcessor } from '../../services/centralized/UnifiedFileProcessor';
 
-const prisma = new PrismaClient();
-
-// Database-based queue processing to handle serverless restarts
-// No in-memory state needed - we use database status for queue management
+export const maxDuration = 60; // 60 seconds timeout
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
+    const autoApprove = formData.get('autoApprove') === 'true';
 
     if (!files || files.length === 0) {
       return NextResponse.json(
@@ -20,143 +16,68 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log(`🚀 Smart processing ${files.length} files with unified processor`);
+
     const uploadResults = [];
 
     for (const file of files) {
       try {
-        // Upload file to Vercel Blob
-        const blob = await put(file.name, file, {
-          access: 'public',
-          addRandomSuffix: true,
-        });
+        // Validate file size (10MB limit)
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+          uploadResults.push({
+            filename: file.name,
+            status: 'error',
+            error: 'File size exceeds 10MB limit'
+          });
+          continue;
+        }
 
-        // Create a temporary supplier for processing
-        const tempSupplier = await prisma.supplier.upsert({
-          where: { name: 'Temporary Processing' },
-          update: {},
-          create: {
-            id: `temp_${Date.now()}`,
-            name: 'Temporary Processing',
-            email: 'temp@processing.com'
-          }
-        });
-
-        // Create upload record in database
-        const upload = await prisma.upload.create({
-          data: {
-            id: `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            fileName: file.name,
-            originalName: file.name,
-            fileSize: file.size,
-            mimeType: file.type,
-            url: blob.url,
-            supplierId: tempSupplier.id,
-            status: 'pending'
-          }
+        // Process with unified file processor (no supplierId - auto-detect)
+        const result = await unifiedFileProcessor.processUpload(file, {
+          autoApprove
         });
 
         uploadResults.push({
-          id: upload.id,
+          id: result.uploadId,
           filename: file.name,
-          status: 'uploaded',
-          url: blob.url
-        });
-
-        // Start background processing immediately
-        // Database-based queue will handle coordination
-        console.log(`🚀 Starting background processing for upload: ${upload.id}`);
-        processFileInBackground(upload.id).catch(error => {
-          console.error(`❌ Background processing failed for ${upload.id}:`, error);
+          status: result.success ? 'completed' : 'failed',
+          extractionMethod: result.extractionMethod,
+          productsExtracted: result.totalProductsExtracted,
+          productsStandardized: result.totalProductsStandardized,
+          productsStored: result.totalProductsStored,
+          processingTimeMs: result.processingTimeMs,
+          tokensUsed: result.tokensUsed,
+          needsApproval: result.needsApproval,
+          errors: result.errors
         });
 
       } catch (error) {
-        console.error(`Error uploading file ${file.name}:`, error);
+        console.error(`Error processing file ${file.name}:`, error);
         uploadResults.push({
           filename: file.name,
           status: 'error',
-          error: error instanceof Error ? error.message : 'Upload failed'
+          error: error instanceof Error ? error.message : 'Processing failed'
         });
       }
     }
 
+    const successCount = uploadResults.filter(r => r.status === 'completed').length;
+    const totalProducts = uploadResults.reduce((sum, r) => sum + (r.productsExtracted || 0), 0);
+
     return NextResponse.json({
-      message: 'Files uploaded successfully. AI is analyzing supplier information...',
+      message: `Smart processed ${successCount}/${files.length} files. AI analyzed supplier information and extracted ${totalProducts} products.`,
       results: uploadResults
     });
 
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('Smart upload processing error:', error);
     return NextResponse.json(
-      { error: 'Upload failed' },
+      { 
+        error: 'Smart upload processing failed',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
-  }
-}
-
-
-// Database-based sequential processing with better error handling
-async function processFileInBackground(uploadId: string) {
-  try {
-    console.log(`🔄 Starting processing for upload: ${uploadId}`);
-    
-    // Check if file is already being processed or completed
-    const currentUpload = await prisma.upload.findUnique({
-      where: { id: uploadId }
-    });
-    
-    if (!currentUpload) {
-      console.error(`❌ Upload ${uploadId} not found`);
-      return;
-    }
-    
-    if (currentUpload.status !== 'pending') {
-      console.log(`ℹ️ Upload ${uploadId} is already ${currentUpload.status}, skipping`);
-      return;
-    }
-    
-    // Update status to processing with proper error handling
-    await prisma.upload.update({
-      where: { id: uploadId },
-      data: { 
-        status: 'processing',
-        updatedAt: new Date()
-      }
-    });
-    
-    console.log(`✅ Updated status to processing for: ${uploadId}`);
-    
-    // Add rate limiting delay (500ms between file processing starts)
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Run the enhanced file processor with timeout (5 minutes max)
-    const timeoutMs = 5 * 60 * 1000; // 5 minutes
-    const result = await Promise.race([
-      enhancedFileProcessor.processFile(uploadId),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Processing timeout after 5 minutes')), timeoutMs)
-      )
-    ]);
-    
-    console.log(`🎉 Successfully completed processing for: ${uploadId}`);
-    
-  } catch (error) {
-    console.error(`💥 Error processing file ${uploadId}:`, error);
-    
-    try {
-      // Update status to failed with detailed error message
-      await prisma.upload.update({
-        where: { id: uploadId },
-        data: { 
-          status: 'failed',
-          errorMessage: error instanceof Error ? error.message : 'Unknown processing error',
-          updatedAt: new Date()
-        }
-      });
-      console.log(`❌ Marked upload ${uploadId} as failed`);
-    } catch (updateError) {
-      console.error(`💥 Failed to update error status for ${uploadId}:`, updateError);
-    }
-    
-    throw error;
   }
 }

@@ -97,7 +97,7 @@ export const DataComparison: React.FC<DataComparisonProps> = ({
   };
 
   return (
-    <div className={`bg-white border rounded-lg overflow-hidden ${className}`}>
+    <div className={`bg-white border rounded-lg overflow-hidden flex flex-col ${className}`}>
       <div className="bg-gray-50 px-4 py-2 border-b">
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-medium text-gray-900">
@@ -116,7 +116,7 @@ export const DataComparison: React.FC<DataComparisonProps> = ({
         </div>
       </div>
       
-      <div className="max-h-96 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50 sticky top-0">
             <tr>

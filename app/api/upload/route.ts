@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put } from '@vercel/blob';
-import { PrismaClient } from '@prisma/client';
+import { unifiedFileProcessor } from '../../services/centralized/UnifiedFileProcessor';
 
-const prisma = new PrismaClient();
+export const maxDuration = 60; // 60 seconds timeout
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
-    const supplierId = formData.get('supplierId') as string;
+    const supplierId = formData.get('supplierId') as string | null;
+    const autoApprove = formData.get('autoApprove') === 'true';
 
     if (!files || files.length === 0) {
       return NextResponse.json(
@@ -17,92 +17,69 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!supplierId) {
-      return NextResponse.json(
-        { error: 'Supplier ID is required' },
-        { status: 400 }
-      );
-    }
+    console.log(`🚀 Processing ${files.length} files with unified processor`);
 
     const uploadResults = [];
 
     for (const file of files) {
       try {
-        // Upload file to Vercel Blob
-        const blob = await put(file.name, file, {
-          access: 'public',
-        });
+        // Validate file size (10MB limit)
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+          uploadResults.push({
+            filename: file.name,
+            status: 'error',
+            error: 'File size exceeds 10MB limit'
+          });
+          continue;
+        }
 
-        // Create upload record in database
-        const upload = await prisma.upload.create({
-          data: {
-            fileName: file.name,
-            url: blob.url,
-            originalName: file.name,
-            fileSize: file.size,
-            mimeType: file.type,
-            supplierId: supplierId,
-            status: 'pending',
-            approvalStatus: 'pending_review'
-          }
+        // Process with unified file processor
+        const result = await unifiedFileProcessor.processUpload(file, {
+          supplierId: supplierId || undefined,
+          autoApprove
         });
 
         uploadResults.push({
-          id: upload.id,
+          id: result.uploadId,
           filename: file.name,
-          status: 'uploaded',
-          url: blob.url
+          status: result.success ? 'completed' : 'failed',
+          extractionMethod: result.extractionMethod,
+          productsExtracted: result.totalProductsExtracted,
+          productsStandardized: result.totalProductsStandardized,
+          productsStored: result.totalProductsStored,
+          processingTimeMs: result.processingTimeMs,
+          tokensUsed: result.tokensUsed,
+          needsApproval: result.needsApproval,
+          errors: result.errors
         });
 
-        // Trigger background processing (in a real app, this would be a queue)
-        processFileInBackground(upload.id);
-
       } catch (error) {
-        console.error(`Error uploading file ${file.name}:`, error);
+        console.error(`Error processing file ${file.name}:`, error);
         uploadResults.push({
           filename: file.name,
           status: 'error',
-          error: 'Upload failed'
+          error: error instanceof Error ? error.message : 'Processing failed'
         });
       }
     }
 
+    const successCount = uploadResults.filter(r => r.status === 'completed').length;
+    const totalProducts = uploadResults.reduce((sum, r) => sum + (r.productsExtracted || 0), 0);
+
     return NextResponse.json({
-      message: 'Files uploaded successfully',
+      message: `Processed ${successCount}/${files.length} files successfully. Extracted ${totalProducts} products.`,
       results: uploadResults
     });
 
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('Upload processing error:', error);
     return NextResponse.json(
-      { error: 'Upload failed' },
+      { 
+        error: 'Upload processing failed',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
-  }
-}
-
-async function processFileInBackground(uploadId: string) {
-  try {
-    // Update status to processing
-    await prisma.upload.update({
-      where: { id: uploadId },
-      data: { status: 'processing' }
-    });
-
-    // Import the enhanced processing service
-    const { processFile } = await import('../../services/enhancedFileProcessor');
-    await processFile(uploadId);
-
-  } catch (error) {
-    console.error(`Error processing file ${uploadId}:`, error);
-    
-    // Update status to failed
-    await prisma.upload.update({
-      where: { id: uploadId },
-      data: { 
-        status: 'failed',
-        errorMessage: error instanceof Error ? error.message : 'Unknown error'
-      }
-    });
   }
 }
