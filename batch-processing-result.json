@@ -1,0 +1,2149 @@
+{
+  "documentType": "price_list",
+  "supplier": {
+    "name": "widi wiguna (test 300 products)",
+    "email": null,
+    "phone": null,
+    "address": null
+  },
+  "products": [
+    {
+      "name": "Ares",
+      "price": 12000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Asparagus",
+      "price": 95000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean  Sprout Long",
+      "price": 10000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Green",
+      "price": 22000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Green Baby",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Long",
+      "price": 15000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Red (Kacang Buncis)",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Red (Kacang Tolo)",
+      "price": 40000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Sprout Super",
+      "price": 12000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Beet Root",
+      "price": 40000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bongkot",
+      "price": 8000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Brocoly potong",
+      "price": 60000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cabbage Chinese",
+      "price": 16000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cabbage Red",
+      "price": 40000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cabbage White",
+      "price": 10000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Caisin",
+      "price": 15000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Capsicum Green",
+      "price": 60000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Capsicum Red",
+      "price": 70000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Capsicum Yelow",
+      "price": 70000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Carrot Impot",
+      "price": 23000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Carrot Lokal",
+      "price": 18000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cauly Flower clean",
+      "price": 35000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Celery",
+      "price": 50000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Chilly green BIG",
+      "price": 40000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Chilly red BIG",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Chily Small Green",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Chily Small Red",
+      "price": 50000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Chives",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Clean",
+      "price": 13000,
+      "unit": "Pcs",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Grated",
+      "price": 35000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Old",
+      "price": 16000,
+      "unit": "Psc",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Yellow",
+      "price": 8000,
+      "unit": "Pcs",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Young",
+      "price": 12000,
+      "unit": "Pcs",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Corn Baby",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Corn Sweet",
+      "price": 12000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Corn Whole local",
+      "price": 12000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cucumber Japanese",
+      "price": 25000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cucumber Local",
+      "price": 9000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Egg Plant Long",
+      "price": 12000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Egg Plant Round",
+      "price": 12000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Galangal",
+      "price": 12000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Banana Leaf",
+      "price": 4000,
+      "unit": "Ikat",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Leaf",
+      "price": 20000,
+      "unit": "Ikat",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Garlic Clean",
+      "price": 50000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Garlic Whole",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Ginger",
+      "price": 32000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Gondo",
+      "price": 10000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Jack Fuit Young",
+      "price": 15000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kailan baby",
+      "price": 40000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kangkung akar",
+      "price": 10000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kecicang",
+      "price": 12000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kemangi Leaf",
+      "price": 40000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kencur",
+      "price": 32000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Labu Siam",
+      "price": 7000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Leek clean",
+      "price": 35000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Lemen Leaf",
+      "price": 55000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Lemo Bali",
+      "price": 25000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Lemon Grass",
+      "price": 18000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Mushroom Botton",
+      "price": 40000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Mushroom Oyster",
+      "price": 25000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Mushroom Shitake",
+      "price": 110000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Onion Red /  Bombay Merah",
+      "price": 75000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Onion Spring",
+      "price": 60000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Onion White Large",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Pakis",
+      "price": 10000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Pandan Leaf",
+      "price": 3000,
+      "unit": "Ikt",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Parsley",
+      "price": 70000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Parsley Italian",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Pepaya Young Local",
+      "price": 7000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Pok coy",
+      "price": 25000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Potato bigg",
+      "price": 25000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Potato Small",
+      "price": 18000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Potato Sweet",
+      "price": 12000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Pumkin",
+      "price": 35000,
+      "unit": "Pc",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Salam Leaf",
+      "price": 3000,
+      "unit": "Ikat",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Shalot  Clean",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Singkong Leaf",
+      "price": 8000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Spinach inggris",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Spinach Lokal",
+      "price": 15000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Suji Leaf",
+      "price": 3000,
+      "unit": "Ikt",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tahu lombok",
+      "price": 5000,
+      "unit": "bks",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tamarin",
+      "price": 30000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tempe",
+      "price": 2000,
+      "unit": "pcs",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tomato TW",
+      "price": 24000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tomato Cerry Red",
+      "price": 55000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tomato Cerry Yellow",
+      "price": 55000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Turmeric",
+      "price": 14000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Turnip",
+      "price": 16000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Ubi Kayu",
+      "price": 8000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Water Crass clean",
+      "price": 35000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Zukini Green",
+      "price": 70000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Zukini Yellow",
+      "price": 55000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Apple Fuji",
+      "price": 38000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Apple Green Smith biasa/asli",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Apple Manalagi",
+      "price": 32000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Apple lokal besar",
+      "price": 38000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Avocado",
+      "price": 42000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Banana Green",
+      "price": 35000,
+      "unit": "ssr",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Banana Kayu",
+      "price": 30000,
+      "unit": "ssr",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Banana Mas",
+      "price": 15000,
+      "unit": "sisir",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Banana Raja",
+      "price": 35000,
+      "unit": "ssr",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Banana kepok besar",
+      "price": 35000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Banana Calvadish",
+      "price": 23000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bangkuang",
+      "price": 15000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Buah Naga",
+      "price": 22000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Grape Black Local",
+      "price": 35000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Grape Red Import",
+      "price": 80000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Grape Green Import",
+      "price": 130000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Guava",
+      "price": 23000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Honey Melon  White",
+      "price": 16000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Honey Melon Red",
+      "price": 17000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Jack Fruit Old Clean",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Kiwi",
+      "price": 90000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kelengkeng",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Lemon Tea",
+      "price": 40000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Lime",
+      "price": 20000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Mangga Masak",
+      "price": 45000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Mangga Rujak",
+      "price": 25000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Mangoestine",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Orange Lokal california",
+      "price": 25000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Pamelo",
+      "price": 30000,
+      "unit": "PC",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Papaya  TW",
+      "price": 13000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Passion Fruit",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Pineapple madu",
+      "price": 8000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Pear ijo",
+      "price": 40000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Pear Kuning Biasa",
+      "price": 25000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Rambutan",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Salak Pondoh",
+      "price": 25000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Salak Bali",
+      "price": 30000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Strawberry Grade A",
+      "price": 90000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Sunkist",
+      "price": 38000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tamarelo",
+      "price": 35000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tangerine Lumajang besar",
+      "price": 20000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tangerine Kintamani",
+      "price": 22000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Water Melon  Yellow",
+      "price": 15000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Water Melon Non Seed",
+      "price": 13000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Herb Arigano",
+      "price": 120000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Herb Basil",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Herb Coriander",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Herb Dill",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Herb Marjoran",
+      "price": 90000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Herb Mint",
+      "price": 60000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Herb Rosmery",
+      "price": 160000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Herb Sage",
+      "price": 120000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Herb Taragon",
+      "price": 140000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Herb Theme",
+      "price": 180000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Lettuce Bater",
+      "price": 60000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Lettuce Green",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Lettuce Ice Berg",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Lettuce Loroloso",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Lettuce Mix",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Lettuce Prizse / Mizuna",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Lettuce Radichio",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Kale",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Lettuce Roket/Rocola",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Lettuce Romaine Baby",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "aragula wail",
+      "price": null,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Kacang polong/frozen",
+      "price": 65000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Icing sugar",
+      "price": 25000,
+      "unit": "pack",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "hand soap 5ltr",
+      "price": 165000,
+      "unit": "gln",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Oyster sauce",
+      "price": 58000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Sesame oil",
+      "price": 45000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "black oliv",
+      "price": 65000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cuka dixi",
+      "price": 18000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "toping caramel",
+      "price": 35000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Honey bloosom",
+      "price": 32000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Sos 5ltr",
+      "price": 55000,
+      "unit": "gln",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kecap manis Abc",
+      "price": 165000,
+      "unit": "gln",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Garam dolphin",
+      "price": 17000,
+      "unit": "kg",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Hazelnut",
+      "price": 250000,
+      "unit": "kg",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Oliv oil 5 ltr",
+      "price": 650000,
+      "unit": "gln",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Teh sariwangi(100 pc)",
+      "price": 25000,
+      "unit": "pack",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Baking powder",
+      "price": 55000,
+      "unit": "can",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tabasco 60ml",
+      "price": 55000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tepung segitiga biru",
+      "price": 16000,
+      "unit": "kg",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "vixal",
+      "price": 23000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "corn starch",
+      "price": 23000,
+      "unit": "pack",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Santan kara 1ltr",
+      "price": 70000,
+      "unit": "ltr",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tomato sauce",
+      "price": 25000,
+      "unit": "Kg",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Chili sauce",
+      "price": 35000,
+      "unit": "kg",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "cocing cream anchor",
+      "price": 105000,
+      "unit": "ltr",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "fresh milk grenfields",
+      "price": 28000,
+      "unit": "ltr",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Best clink wraf besar",
+      "price": 180000,
+      "unit": "Roll",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "tepung segitiga biru",
+      "price": 295000,
+      "unit": "Sak",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bread crump",
+      "price": 25000,
+      "unit": "kg",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Krupuk udang fina",
+      "price": 35000,
+      "unit": "pack",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Plastik 1kg",
+      "price": 14000,
+      "unit": "Roll",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "plastik sampah",
+      "price": 13000,
+      "unit": "pack",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "aguarkin",
+      "price": 65000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "cashew nut",
+      "price": 140000,
+      "unit": "kg",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "dijon mustard clovis",
+      "price": 70000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "tomato peeled",
+      "price": 125000,
+      "unit": "can",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "chickpeas cirio",
+      "price": 32000,
+      "unit": "can",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "mayonaise",
+      "price": 32000,
+      "unit": "Kg",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "cranbery juice",
+      "price": 48000,
+      "unit": "ltr",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "sunlight galon 5ltr",
+      "price": 120000,
+      "unit": "gln",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Red grape vinegar",
+      "price": 65000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "aplev vinegar",
+      "price": 65000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "susu kental manis",
+      "price": 17000,
+      "unit": "can",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Minyak goreng 5 ltr",
+      "price": 125000,
+      "unit": "Gln",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Gula Merah",
+      "price": 20000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Gula Pasir Import",
+      "price": 20000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Brown sugar",
+      "price": 30000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "cumin ground",
+      "price": 125000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "coriander ground",
+      "price": 55000,
+      "unit": "btl",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kemiri",
+      "price": 70000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "whole corn boundel",
+      "price": 52000,
+      "unit": "can",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tomato paste kecil",
+      "price": 35000,
+      "unit": "can",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "chicken brest",
+      "price": 57000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "chicken wings",
+      "price": 40000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "spring chicken",
+      "price": 42000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "chicken whole",
+      "price": 42000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "ceker bersih",
+      "price": 25000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tenderloin",
+      "price": 165000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Daging sapi 1",
+      "price": 120000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Tulang sapi",
+      "price": 75000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Buntut sapi",
+      "price": 75000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kulit sapi",
+      "price": 50000,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Daging babi( sam-sam)",
+      "price": 115000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Wijen putih",
+      "price": 70000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "cumin seed",
+      "price": 125000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "wijen hitam",
+      "price": 90000,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "wijen hitam",
+      "price": 90000,
+      "unit": "Kg",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Telor ayam",
+      "price": 55000,
+      "unit": "krt",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Ares (Copy 1)",
+      "price": 12699,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Asparagus (Copy 2)",
+      "price": 95533,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean  Sprout Long (Copy 3)",
+      "price": 10407,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Green (Copy 4)",
+      "price": 22869,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Green Baby (Copy 5)",
+      "price": 45358,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Long (Copy 6)",
+      "price": 15005,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Red (Kacang Buncis) (Copy 7)",
+      "price": 45544,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Red (Kacang Tolo) (Copy 8)",
+      "price": 40923,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bean Sprout Super (Copy 9)",
+      "price": 12162,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Beet Root (Copy 10)",
+      "price": 40791,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Bongkot (Copy 11)",
+      "price": 8389,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Brocoly potong (Copy 12)",
+      "price": 60348,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cabbage Chinese (Copy 13)",
+      "price": 16820,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cabbage Red (Copy 14)",
+      "price": 40147,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cabbage White (Copy 15)",
+      "price": 10746,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Caisin  (Copy 16)",
+      "price": 15366,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Capsicum Green (Copy 17)",
+      "price": 60837,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Capsicum Red (Copy 18)",
+      "price": 70821,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Capsicum Yelow (Copy 19)",
+      "price": 70131,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Carrot Impot (Copy 20)",
+      "price": 23982,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Carrot Lokal (Copy 21)",
+      "price": 18583,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cauly Flower clean (Copy 22)",
+      "price": 35967,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Celery (Copy 23)",
+      "price": 50911,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Chilly green BIG (Copy 24)",
+      "price": 40794,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Chilly red BIG (Copy 25)",
+      "price": 45230,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Chily Small Green (Copy 26)",
+      "price": 45437,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Chily Small Red (Copy 27)",
+      "price": 50841,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Chives (Copy 28)",
+      "price": 45970,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Clean (Copy 29)",
+      "price": 13964,
+      "unit": "Pcs",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Grated (Copy 30)",
+      "price": 35083,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Old (Copy 31)",
+      "price": 16418,
+      "unit": "Psc",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Yellow (Copy 32)",
+      "price": 8700,
+      "unit": "Pcs",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Young (Copy 33)",
+      "price": 12093,
+      "unit": "Pcs",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Corn Baby (Copy 34)",
+      "price": 45600,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Corn Sweet (Copy 35)",
+      "price": 12011,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Corn Whole local (Copy 36)",
+      "price": 12882,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cucumber Japanese (Copy 37)",
+      "price": 25723,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Cucumber Local (Copy 38)",
+      "price": 9123,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Egg Plant Long (Copy 39)",
+      "price": 12732,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Egg Plant Round (Copy 40)",
+      "price": 12782,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Galangal (Copy 41)",
+      "price": 12799,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Banana Leaf (Copy 42)",
+      "price": 4558,
+      "unit": "Ikat",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Coconut Leaf (Copy 43)",
+      "price": 20919,
+      "unit": "Ikat",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Garlic Clean (Copy 44)",
+      "price": 50346,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Garlic Whole (Copy 45)",
+      "price": 45917,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Ginger (Copy 46)",
+      "price": 32629,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Gondo (Copy 47)",
+      "price": 10123,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Jack Fuit Young (Copy 48)",
+      "price": 15901,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kailan baby (Copy 49)",
+      "price": 40724,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kangkung akar (Copy 50)",
+      "price": 10596,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kecicang  (Copy 51)",
+      "price": 12605,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kemangi Leaf (Copy 52)",
+      "price": 40026,
+      "unit": "KG",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Kencur (Copy 53)",
+      "price": 32171,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Labu Siam (Copy 54)",
+      "price": 7304,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Leek clean (Copy 55)",
+      "price": 35302,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Lemen Leaf (Copy 56)",
+      "price": 55268,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Lemo Bali (Copy 57)",
+      "price": 25253,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Lemon Grass (Copy 58)",
+      "price": 18541,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Mushroom Botton (Copy 59)",
+      "price": 40200,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Mushroom Oyster (Copy 60)",
+      "price": 25833,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Mushroom Shitake (Copy 61)",
+      "price": 110495,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Onion Red /  Bombay Merah (Copy 62)",
+      "price": 75975,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Onion Spring (Copy 63)",
+      "price": 60056,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Onion White Large  (Copy 64)",
+      "price": 45151,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Pakis (Copy 65)",
+      "price": 10485,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Pandan Leaf (Copy 66)",
+      "price": 3513,
+      "unit": "Ikt",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Parsley (Copy 67)",
+      "price": 70111,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Parsley Italian (Copy 68)",
+      "price": null,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Pepaya Young Local (Copy 69)",
+      "price": 7375,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Pok coy (Copy 70)",
+      "price": 25006,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Potato bigg (Copy 71)",
+      "price": 25609,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Potato Small (Copy 72)",
+      "price": 18957,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Potato Sweet (Copy 73)",
+      "price": 12270,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Pumkin (Copy 74)",
+      "price": 35362,
+      "unit": "Pc",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Salam Leaf (Copy 75)",
+      "price": 3605,
+      "unit": "Ikat",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Shalot  Clean (Copy 76)",
+      "price": 45305,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Singkong Leaf (Copy 77)",
+      "price": 8541,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Spinach inggris (Copy 78)",
+      "price": null,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.7
+    },
+    {
+      "name": "Spinach Lokal (Copy 79)",
+      "price": 15114,
+      "unit": "KG.",
+      "category": null,
+      "confidence": 0.9
+    },
+    {
+      "name": "Suji Leaf (Copy 80)",
+      "price": 3159,
+      "unit": "Ikt",
+      "category": null,
+      "confidence": 0.9
+    }
+  ],
+  "extractionQuality": 0.95,
+  "metadata": {
+    "totalBatches": 2,
+    "totalProducts": 304,
+    "processingMethod": "batch",
+    "dateExtracted": "2025-06-14T11:54:24.827Z",
+    "batchSize": 200,
+    "currency": "IDR",
+    "language": "id"
+  }
+}

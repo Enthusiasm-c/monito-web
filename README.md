@@ -84,16 +84,22 @@ monito-web/
 │   ├── (auth)/            # Authentication pages
 │   ├── (dashboard)/       # Main application
 │   ├── api/               # API routes
+│   │   └── upload-unified/ # Unified upload endpoint
+│   ├── lib/               # Core business logic
+│   │   └── core/          # Unified architecture
+│   │       ├── BaseProcessor.ts    # Base class for all processors
+│   │       ├── Interfaces.ts       # Unified type definitions
+│   │       ├── ErrorHandler.ts     # Centralized error handling
+│   │       └── PromptTemplates.ts  # AI prompt management
+│   ├── services/          # Business services
+│   │   └── core/          # Core services
+│   │       └── UnifiedGeminiService.ts # Main AI processing service
+│   ├── components/        # React components
 │   └── globals.css        # Global styles
-├── components/            # React components
-├── lib/                   # Business logic
-│   ├── processors/        # File processors
-│   ├── ai/               # AI integrations
-│   └── utils/            # Utilities
 ├── prisma/               # Database schema
 ├── public/               # Static assets
 ├── telegram-bot/         # Telegram bot (Python)
-└── docs/                 # Documentation
+└── docs/                 # Technical documentation
 ```
 
 ## 🔧 Core Technologies
@@ -108,7 +114,9 @@ monito-web/
 - **Node.js** - JavaScript runtime
 - **Prisma** - Type-safe ORM
 - **PostgreSQL** - Database (Neon cloud)
-- **OpenAI API** - AI-powered features
+- **Google Gemini AI** - Primary AI processing (Gemini 2.0 Flash)
+- **OpenAI API** - Secondary AI features
+- **Unified Architecture** - Centralized processing patterns
 
 ### Infrastructure
 - **Vercel** - Hosting platform
@@ -220,7 +228,8 @@ npm start
 
 ```env
 DATABASE_URL=            # PostgreSQL connection string
-OPENAI_API_KEY=         # OpenAI API key
+GOOGLE_API_KEY=         # Google Gemini API key (primary)
+OPENAI_API_KEY=         # OpenAI API key (secondary)
 BLOB_READ_WRITE_TOKEN=  # Vercel Blob storage
 BOT_API_KEY=            # Internal API authentication
 ```
@@ -247,8 +256,9 @@ SENTRY_DSN=            # Error tracking
 - `PUT /api/suppliers/:id` - Update supplier
 
 ### Upload
-- `POST /api/upload` - Upload price list
-- `GET /api/upload/status/:id` - Check processing status
+- `POST /api/upload-unified` - Unified upload endpoint for all file types
+- `GET /api/upload-unified` - Health check and supported formats
+- `GET /api/uploads/status/:id` - Check processing status
 
 ### Bot API
 - `GET /api/bot/products/search` - Search for bot

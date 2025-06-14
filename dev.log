@@ -2,684 +2,2734 @@
 > vercel-marketplace-neon@0.1.0 dev
 > next dev
 
- ⚠ Port 3000 is in use, trying 3001 instead.
    ▲ Next.js 15.1.6
-   - Local:        http://localhost:3001
-   - Network:      http://192.168.0.195:3001
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.195:3000
    - Environments: .env
 
  ✓ Starting...
- ✓ Ready in 1268ms
+ ✓ Ready in 1954ms
  ✓ Compiled /middleware in 90ms (98 modules)
-[1fd0e6e2-0b31-4cc9-9889-94a7fd64d9fa] GET http://localhost:3001/api/stats
- ○ Compiling /api/stats ...
- ✓ Compiled /api/stats in 544ms (331 modules)
- GET /api/stats 200 in 1399ms
-[93cb909e-d6f7-4baf-899e-c3cb954e3ec8] POST http://localhost:3001/api/upload-gemini
- ✓ Compiled /api/upload-gemini in 213ms (477 modules)
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: munch bakery.jpg, type: image/jpeg, size: 133890 bytes
-[GeminiPipeline] Starting processing of munch bakery.jpg
-[GeminiProcessor] Processing munch bakery.jpg with model gemini-2.0-flash-exp
-[GeminiProcessor] Direct processing for image/jpeg
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: binary
-[GeminiProcessor] Response received in 15036ms
-[GeminiProcessor] Parsing response, length: 7228
-[GeminiPipeline] Processing completed in 22849ms
-[Upload-Gemini] Processing completed successfully: {
-  uploadId: 'upload_1749812845781_morpud4gt',
-  products: 48,
-  processingTime: 22849
-}
- POST /api/upload-gemini 200 in 23282ms
- ✓ Compiled in 10ms
-[03ad1aed-7837-48ce-932a-6c1dea0f15eb] POST http://localhost:3001/api/upload-gemini
- ✓ Compiled /api/upload-gemini in 84ms (226 modules)
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: Oka veg supplier.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 1253352 bytes
-[GeminiPipeline] Starting processing of Oka veg supplier.xlsx
-[GeminiProcessor] Processing Oka veg supplier.xlsx with model gemini-2.0-flash-exp
-[GeminiProcessor] Preprocessing Excel/CSV file: Oka veg supplier.xlsx
-[GeminiProcessor] Reading Excel file: Oka veg supplier.xlsx
-[GeminiProcessor] Using sheet: Sheet1 with 1000 rows
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
-[GeminiProcessor] Response received in 39152ms
-[GeminiProcessor] Parsing response, length: 20122
-[GeminiProcessor] Parse error: SyntaxError: Unterminated string in JSON at position 20114 (line 987 column 8)
-    at JSON.parse (<anonymous>)
-    at parse (app/services/gemini/GeminiUnifiedProcessor.ts:316:27)
-    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
-    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  314 |     
-  315 |     try {
-> 316 |       const rawData = JSON.parse(cleanContent);
-      |                           ^
-  317 |       
-  318 |       // Fix common issues
-  319 |       if (rawData.documentType === 'price list') {
-[GeminiProcessor] Failed content preview: {
-  "documentType": "price_list",
-  "supplierName": "UD OKA'S",
-  "supplierContact": {
-    "email": "Okassuplier@gmail.com",
-    "phone": "082144328997",
-    "address": "PENEBEL-TABANAN-BALI"
+[c2ea6f99-35f7-4887-8a64-fb42b7408c37] GET http://localhost:3000/api/stats
+ ✓ Compiled /api/stats in 228ms (331 modules)
+ GET /api/stats 200 in 1047ms
+[4c1bd3a3-b8e9-479f-8d38-631b384b1c66] POST http://localhost:3000/api/async-upload
+ ✓ Compiled /api/async-upload in 269ms (566 modules)
+🚀 Starting background job processor...
+✅ Background job processor started
+🚀 Async upload endpoint called
+📁 Processing file: test-global-pricelist.pdf (0.28MB)
+📝 Job queued: job_1749897690204_71z108wau for upload cmbw3witi0002oud7cra8shtg
+🚀 Starting job queue processor...
+✅ File queued for async processing: cmbw3witi0002oud7cra8shtg (job: job_1749897690204_71z108wau)
+ POST /api/async-upload 200 in 4657ms
+[5b74fdde-b1b0-426f-a34f-c32988fb5448] GET http://localhost:3000/api/async-upload?uploadId=cmbw3witi0002oud7cra8shtg
+ GET /api/async-upload?uploadId=cmbw3witi0002oud7cra8shtg 200 in 114ms
+[9fe62d09-d930-4e9d-99de-dbb02801a9cc] GET http://localhost:3000/api/async-upload?uploadId=cmbw3witi0002oud7cra8shtg
+ GET /api/async-upload?uploadId=cmbw3witi0002oud7cra8shtg 200 in 48ms
+[dc6d1008-13bb-4a3c-ab14-cc4f743112ba] POST http://localhost:3000/api/upload
+ ✓ Compiled /api/upload in 105ms (568 modules)
+🚀 Processing 1 files with unified processor
+🚀 Starting unified processing: test-global-pricelist.pdf (0.28MB)
+📁 Created upload record: cmbw3xgmv0005oud74gn2w1q3
+🔄 Starting file extraction for application/pdf...
+🚀 Starting Gemini Flash 2.0 PDF processing: test-global-pricelist.pdf
+📤 Sending PDF to Gemini Flash 2.0 (0.28MB)
+📥 Received response from Gemini Flash 2.0 (8669 characters)
+📊 Parsed Gemini response: 73 products, supplier: NICO boulangerie
+✅ Gemini Flash 2.0 processing completed: 73 products in 33652ms
+📦 Extracted 73 products
+⚠️ Product count (73) exceeds batch limit of 50. Processing first 50 products only.
+🤖 Starting ChatGPT o3-mini standardization for 50 products
+ POST /api/upload 200 in 120352ms
+[b42b8459-0654-4ed2-9bee-be70979f5920] GET http://localhost:3000/api/stats
+ GET /api/stats 200 in 768ms
+ChatGPT o3-mini raw response length: 7398
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Ciabatta",
+    "standardizedName": "Bread Ciabatta",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
   },
-  "products": [
-    {
-      "name": "asparagus",
-      "price": 90000.0,
-      "unit": "kg",
-      "category": "VEGETABLE",
-      "confidence": 0.95
-    },
-    {
-      "name": "baby beans",
-      "price": 60000.0,
-      "unit": "kg",
-      "category": "VEGETABLE",
-      "confidence": 0.95
-    },
-    {
+  {
+    "originalName": "Pita",
+    "standardizedName": "Bread Pita",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Bagel",
+    "standardizedName": "Bread Bagel",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+...
+❌ Failed to parse ChatGPT o3 response: SyntaxError: Expected property name or '}' in JSON at position 7397 (line 306 column 4)
+    at JSON.parse (<anonymous>)
+    at parse (app/services/centralized/StandardizationService.ts:294:33)
+    at parseStandardizationResponse (app/services/centralized/StandardizationService.ts:155:40)
+    at async UnifiedFileProcessor.processUpload (app/services/centralized/UnifiedFileProcessor.ts:108:36)
+    at async POST (app/api/upload/route.ts:38:23)
+  292 |       }
+  293 |
+> 294 |       const parsedResults = JSON.parse(cleanContent);
+      |                                 ^
+  295 |       
+  296 |       if (!Array.isArray(parsedResults)) {
+  297 |         throw new Error('Response is not an array');
+Raw response: [
+  {
+    "originalName": "Ciabatta",
+    "standardizedName": "Bread Ciabatta",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Pita",
+    "standardizedName": "Bread Pita",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Bagel",
+    "standardizedName": "Bread Bagel",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Bagel Normal",
+    "standardizedName": "Bagel Normal",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Burger Bun",
+    "standardizedName": "Bun Burger",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Burger Bun Small",
+    "standardizedName": "Bun Burger Small",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Bistro' Bun",
+    "standardizedName": "Bun Bistro",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Hotdog Bun Normal",
+    "standardizedName": "Bun Hotdog Normal",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Hotdog Bun Mini",
+    "standardizedName": "Bun Hotdog Mini",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "English Muffin",
+    "standardizedName": "Muffin English",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Pretzel",
+    "standardizedName": "Bread Pretzel",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Pizza Base American",
+    "standardizedName": "Base Pizza American",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Pizza Base Italian",
+    "standardizedName": "Base Pizza Italian",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Baguette Big",
+    "standardizedName": "Baguette Big",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Baguette Mini",
+    "standardizedName": "Baguette Mini",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Sourdough Bun",
+    "standardizedName": "Bun Sourdough",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Sourdough Baguette",
+    "standardizedName": "Baguette Sourdough",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Panini",
+    "standardizedName": "Bread Panini",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Sourdough Big",
+    "standardizedName": "Bread Sourdough Big",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Sourdough Normal",
+    "standardizedName": "Bread Sourdough Normal",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Multigrain Round",
+    "standardizedName": "Bread Multigrain Round",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Loaf",
+    "standardizedName": "Bread Loaf",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Sunflower Whole Wheat",
+    "standardizedName": "Bread Sunflower Whole Wheat",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Country",
+    "standardizedName": "Bread Country",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Toast Brown",
+    "standardizedName": "Toast Brown",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Toast White",
+    "standardizedName": "Toast White",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "GF English Muffin",
+    "standardizedName": "Muffin English",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "GF Ciabatta",
+    "standardizedName": "Bread Ciabatta",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "GF Bagel",
+    "standardizedName": "Bread Bagel",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "GF Pizza Base",
+    "standardizedName": "Base Pizza",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Mini Baguette",
+    "standardizedName": "Baguette Mini",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "GF Burger Bun",
+    "standardizedName": "Bun Burger",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Multiseeds Crackers",
+    "standardizedName": "Crackers Multiseeds",
+    "originalUnit": "kg",
+    "standardizedUnit": "kg",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "Multiseeds Crackers",
+    "standardizedName": "Crackers Multiseeds",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 100
+  },
+  {
+    "originalName": "GF Stroopwafel",
+    "standardizedName": "Bread Stroopwafel",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "bakery",
+    "confidence": 90
+  },
+  {
+    "originalName": "Sable' Chocolate Cashews",
+    "standardizedName": "Snack Sable Chocolate Cashews",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "other",
+    "confidence": 90
+  },
+  {
+    "originalName": "Sable' Vanilla",
+    "standardizedName": "Snack Sable Vanilla",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "other",
+    "confidence": 90
+  },
+  {
+    "originalName": "Sable' Lemon",
+    "standardizedName": "Snack Sable Lemon",
+    "originalUnit": "pcs",
+    "standardizedUnit": "pcs",
+    "category": "other",
+    "confidence": 90
+  },
+  {
 
-[GeminiProcessor] API call failed: Error: Failed to parse Gemini response: Unterminated string in JSON at position 20114 (line 987 column 8)
-    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
-    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
-    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  356 |       console.error('[GeminiProcessor] Parse error:', error);
-  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
-> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+❌ ChatGPT o3-mini standardization failed: Error: Failed to parse ChatGPT o3 response: Expected property name or '}' in JSON at position 7397 (line 306 column 4)
+    at StandardizationService.parseStandardizationResponse (app/services/centralized/StandardizationService.ts:328:12)
+    at parseStandardizationResponse (app/services/centralized/StandardizationService.ts:155:40)
+    at async UnifiedFileProcessor.processUpload (app/services/centralized/UnifiedFileProcessor.ts:108:36)
+    at async POST (app/api/upload/route.ts:38:23)
+  326 |       
+  327 |       // No fallback - throw error if parsing fails
+> 328 |       throw new Error(`Failed to parse ChatGPT o3 response: ${error instanceof Error ? error.message : 'Unknown parsing error'}`);
       |            ^
-  359 |     }
-  360 |   }
-  361 |
-[GeminiProcessor] Error: Error: Failed to parse Gemini response: Unterminated string in JSON at position 20114 (line 987 column 8)
-    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
-    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
-    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  356 |       console.error('[GeminiProcessor] Parse error:', error);
-  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
-> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  329 |     }
+  330 |   }
+  331 |
+❌ Unified processing failed: Error: OpenAI API Error: ChatGPT o3-mini standardization service is unavailable. Failed to parse ChatGPT o3 response: Expected property name or '}' in JSON at position 7397 (line 306 column 4)
+    at StandardizationService.standardizeProducts (app/services/centralized/StandardizationService.ts:171:12)
+    at async UnifiedFileProcessor.processUpload (app/services/centralized/UnifiedFileProcessor.ts:108:36)
+    at async POST (app/api/upload/route.ts:38:23)
+  169 |     } catch (error) {
+  170 |       console.error('❌ ChatGPT o3-mini standardization failed:', error);
+> 171 |       throw new Error(`OpenAI API Error: ChatGPT o3-mini standardization service is unavailable. ${error instanceof Error ? error.message : 'Unknown error'}`);
       |            ^
-  359 |     }
-  360 |   }
-  361 |
-[GeminiPipeline] Processing error: Error: Failed to process document: Failed to parse Gemini response: Unterminated string in JSON at position 20114 (line 987 column 8)
-    at GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:48:12)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  46 |     } catch (error) {
-  47 |       console.error('[GeminiProcessor] Error:', error);
-> 48 |       throw new Error(`Failed to process document: ${error instanceof Error ? error.message : 'Unknown error'}`);
-     |            ^
-  49 |     }
-  50 |   }
-  51 |
-[Upload-Gemini] Processing error: Error: Processing failed: Failed to process document: Failed to parse Gemini response: Unterminated string in JSON at position 20114 (line 987 column 8)
-    at GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:139:12)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  137 |     } catch (error) {
-  138 |       console.error('[GeminiPipeline] Processing error:', error);
-> 139 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      |            ^
-  140 |     }
-  141 |   }
-  142 |   
- POST /api/upload-gemini 500 in 39871ms
-[9671a68b-0744-4c38-a81d-7975fe0488fd] POST http://localhost:3001/api/upload-gemini
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: sri 2 vegetables supplier.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 16083 bytes
-[GeminiPipeline] Starting processing of sri 2 vegetables supplier.xlsx
-[GeminiProcessor] Processing sri 2 vegetables supplier.xlsx with model gemini-2.0-flash-exp
-[GeminiProcessor] Preprocessing Excel/CSV file: sri 2 vegetables supplier.xlsx
-[GeminiProcessor] Reading Excel file: sri 2 vegetables supplier.xlsx
-[GeminiProcessor] Using sheet: Sheet1 with 1002 rows
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
-[GeminiProcessor] Response received in 37890ms
-[GeminiProcessor] Parsing response, length: 20363
-[GeminiProcessor] Parse error: SyntaxError: Unterminated string in JSON at position 20355 (line 1042 column 18)
-    at JSON.parse (<anonymous>)
-    at parse (app/services/gemini/GeminiUnifiedProcessor.ts:316:27)
-    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
-    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  314 |     
-  315 |     try {
-> 316 |       const rawData = JSON.parse(cleanContent);
-      |                           ^
-  317 |       
-  318 |       // Fix common issues
-  319 |       if (rawData.documentType === 'price list') {
-[GeminiProcessor] Failed content preview: {
-  "documentType": "price_list",
-  "supplierName": "SRI SEDANA",
-  "supplierContact": {
-    "email": null,
-    "phone": "085 934 330 999",
-    "address": "Br, Babakan, Sukawati, Gianyar"
+  172 |     }
+  173 |   }
+  174 |
+💾 Updated upload cmbw3xgmv0005oud74gn2w1q3 status to failed
+[f89efda5-0825-4fc3-be4b-c46e184b0ede] POST http://localhost:3000/api/async-upload
+🚀 Starting background job processor...
+✅ Background job processor started
+🚀 Async upload endpoint called
+📁 Processing file: test-widi-wiguna.xlsx (0.09MB)
+📝 Job queued: job_1749897974096_upsn77q36 for upload cmbw42m7l0008oud7b50mfgcs
+🚀 Starting job queue processor...
+✅ File queued for async processing: cmbw42m7l0008oud7b50mfgcs (job: job_1749897974096_upsn77q36)
+ POST /api/async-upload 200 in 2635ms
+[952e7ba0-2c6f-4e3b-ac8e-c2738a3eec95] GET http://localhost:3000/api/async-upload?uploadId=cmbw42m7l0008oud7b50mfgcs
+ GET /api/async-upload?uploadId=cmbw42m7l0008oud7b50mfgcs 200 in 92ms
+[8c67c4a0-a9ff-44bb-a84e-e8b4cf381fca] POST http://localhost:3000/api/upload
+🚀 Processing 1 files with unified processor
+🚀 Starting unified processing: test-widi-wiguna.xlsx (0.09MB)
+📁 Created upload record: cmbw435op000boud7ysf02iz8
+🔄 Starting file extraction for application/octet-stream...
+📊 Processing Excel/CSV with Gemini Flash 2.0: test-widi-wiguna.xlsx
+📥 Downloading file from: https://cdc1w79ssc4kg6xh.public.blob.vercel-storage.com/test-widi-wiguna-WqJjJLvdHbR90HkNe0oqW9EIlpxe50.xlsx
+📦 Converting file content to array buffer...
+🤖 Sending content to Gemini Flash 2.0 (10283 characters)...
+❌ Excel/CSV processing failed: Expected double-quoted property name in JSON at position 22865 (line 1123 column 34)
+⏱️  Failed after 39785ms
+🏷️  Error category: parsing
+❌ Unified processing failed: Error: No products extracted from file
+    at UnifiedFileProcessor.processUpload (app/services/centralized/UnifiedFileProcessor.ts:102:14)
+    at async POST (app/api/upload/route.ts:38:23)
+  100 |
+  101 |       if (extractionResult.products.length === 0) {
+> 102 |         throw new Error('No products extracted from file');
+      |              ^
+  103 |       }
+  104 |
+  105 |       console.log(`📦 Extracted ${extractionResult.products.length} products`);
+💾 Updated upload cmbw435op000boud7ysf02iz8 status to failed
+ POST /api/upload 200 in 41589ms
+ ✓ Compiled in 11ms
+[2c5f0b6c-25bc-4145-8bef-53bc7f9cfb37] POST http://localhost:3000/api/upload
+ ✓ Compiled /api/upload in 83ms (312 modules)
+🚀 Processing 1 files with unified processor
+🚀 Starting unified processing: test-widi-wiguna.xlsx (0.09MB)
+📁 Created upload record: cmbw45j04000eoud7y6xddt6o
+🔄 Starting file extraction for application/octet-stream...
+📊 Processing Excel/CSV with Gemini Flash 2.0: test-widi-wiguna.xlsx
+📥 Downloading file from: https://cdc1w79ssc4kg6xh.public.blob.vercel-storage.com/test-widi-wiguna-YcizB9GB7AlGuG0N85J06cShXP5oZx.xlsx
+📦 Converting file content to array buffer...
+🤖 Sending content to Gemini Flash 2.0 (10283 characters)...
+📦 Extracted 30 products
+🤖 Starting ChatGPT o3-mini standardization for 30 products
+ChatGPT o3-mini raw response length: 5820
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Ares",
+    "standardizedName": "Ares",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "vegetables",
+    "confidence": 100
   },
-  "products": [
-    {
-      "name": "Avocado",
-      "price": 45000.0,
-      "unit": "kg",
-      "category": null,
-      "confidence": 1.0
-    },
-    {
-      "name": "Anggur Red import",
-      "price": 85000.0,
-      "unit": "kg",
-      "category": null,
-      "confidence": 1.0
-    },
-    {
-      "name": "
-[GeminiProcessor] API call failed: Error: Failed to parse Gemini response: Unterminated string in JSON at position 20355 (line 1042 column 18)
-    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
-    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
-    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  356 |       console.error('[GeminiProcessor] Parse error:', error);
-  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
-> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      |            ^
-  359 |     }
-  360 |   }
-  361 |
-[GeminiProcessor] Error: Error: Failed to parse Gemini response: Unterminated string in JSON at position 20355 (line 1042 column 18)
-    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
-    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
-    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  356 |       console.error('[GeminiProcessor] Parse error:', error);
-  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
-> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      |            ^
-  359 |     }
-  360 |   }
-  361 |
-[GeminiPipeline] Processing error: Error: Failed to process document: Failed to parse Gemini response: Unterminated string in JSON at position 20355 (line 1042 column 18)
-    at GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:48:12)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  46 |     } catch (error) {
-  47 |       console.error('[GeminiProcessor] Error:', error);
-> 48 |       throw new Error(`Failed to process document: ${error instanceof Error ? error.message : 'Unknown error'}`);
-     |            ^
-  49 |     }
-  50 |   }
-  51 |
-[Upload-Gemini] Processing error: Error: Processing failed: Failed to process document: Failed to parse Gemini response: Unterminated string in JSON at position 20355 (line 1042 column 18)
-    at GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:139:12)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  137 |     } catch (error) {
-  138 |       console.error('[GeminiPipeline] Processing error:', error);
-> 139 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      |            ^
-  140 |     }
-  141 |   }
-  142 |   
- POST /api/upload-gemini 500 in 38016ms
-[1d47a196-b5f9-4fc9-ba81-5dface3cdd83] POST http://localhost:3001/api/upload-gemini
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: plaga farm bali.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 135064 bytes
-[GeminiPipeline] Starting processing of plaga farm bali.xlsx
-[GeminiProcessor] Processing plaga farm bali.xlsx with model gemini-2.0-flash-exp
-[GeminiProcessor] Preprocessing Excel/CSV file: plaga farm bali.xlsx
-[GeminiProcessor] Reading Excel file: plaga farm bali.xlsx
-[GeminiProcessor] Using sheet: 1 with 1000 rows
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
-[GeminiProcessor] Response received in 14820ms
-[GeminiProcessor] Parsing response, length: 7666
-[GeminiPipeline] Processing completed in 22800ms
-[Upload-Gemini] Processing completed successfully: {
-  uploadId: 'upload_1749813080325_970fhn6tl',
-  products: 48,
-  processingTime: 22800
-}
- POST /api/upload-gemini 200 in 22861ms
-[5789c8f2-51b1-4868-82a6-2de8e1dd3077] POST http://localhost:3001/api/upload-gemini
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: widi wiguna.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 90810 bytes
-[GeminiPipeline] Starting processing of widi wiguna.xlsx
-[GeminiProcessor] Processing widi wiguna.xlsx with model gemini-2.0-flash-exp
-[GeminiProcessor] Preprocessing Excel/CSV file: widi wiguna.xlsx
-[GeminiProcessor] Reading Excel file: widi wiguna.xlsx
-[GeminiProcessor] Using sheet: Sheet1 with 1000 rows
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
-[GeminiProcessor] Response received in 38262ms
-[GeminiProcessor] Parsing response, length: 20776
-[GeminiProcessor] Parse error: SyntaxError: Expected double-quoted property name in JSON at position 20761 (line 1075 column 34)
-    at JSON.parse (<anonymous>)
-    at parse (app/services/gemini/GeminiUnifiedProcessor.ts:316:27)
-    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
-    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  314 |     
-  315 |     try {
-> 316 |       const rawData = JSON.parse(cleanContent);
-      |                           ^
-  317 |       
-  318 |       // Fix common issues
-  319 |       if (rawData.documentType === 'price list') {
-[GeminiProcessor] Failed content preview: {
-  "documentType": "price_list",
-  "supplierName": "UD Widi Wiguna",
-  "supplierContact": {
-    "email": null,
-    "phone": null,
-    "address": null
+  {
+    "originalName": "Asparagus",
+    "standardizedName": "Asparagus",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "vegetables",
+    "confidence": 100
   },
-  "products": [
-    {
-      "name": "ares",
-      "price": 12000.0,
-      "unit": "kg",
-      "category": null,
-      "confidence": 0.9
+  {
+    "originalName": "Bean Sprout Long",
+    "standardizedName": "Bean Sprout Long",
+    "originalUnit": "KG.",
+    "standardized...
+✅ ChatGPT o3-mini standardization completed: 30 products in 38967ms, 6258 tokens
+🔧 Standardized 30 products
+✅ Processing completed: cmbw45j04000eoud7y6xddt6o, 0 products stored, 50155ms
+ POST /api/upload 200 in 50303ms
+ ✓ Compiled in 9ms
+[ad42dca1-ed72-4b89-8dba-776a124509f3] POST http://localhost:3000/api/upload
+ ✓ Compiled /api/upload in 78ms (312 modules)
+🚀 Processing 1 files with unified processor
+🚀 Starting unified processing: test-widi-wiguna.xlsx (0.09MB)
+📁 Created upload record: cmbw48jnk000ioud7e32p8im9
+🔄 Starting file extraction for application/octet-stream...
+📊 Processing Excel/CSV with Gemini Flash 2.0: test-widi-wiguna.xlsx
+📥 Downloading file from: https://cdc1w79ssc4kg6xh.public.blob.vercel-storage.com/test-widi-wiguna-ov4guGfuf70jwIWJwcTIA6glKp7qLz.xlsx
+📦 Converting file content to array buffer...
+🤖 Sending content to Gemini Flash 2.0 (10283 characters)...
+❌ Excel/CSV processing failed: Unexpected end of JSON input
+⏱️  Failed after 38450ms
+🏷️  Error category: parsing
+❌ Unified processing failed: Error: No products extracted from file
+    at UnifiedFileProcessor.processUpload (app/services/centralized/UnifiedFileProcessor.ts:102:14)
+    at async POST (app/api/upload/route.ts:38:23)
+  100 |
+  101 |       if (extractionResult.products.length === 0) {
+> 102 |         throw new Error('No products extracted from file');
+      |              ^
+  103 |       }
+  104 |
+  105 |       console.log(`📦 Extracted ${extractionResult.products.length} products`);
+💾 Updated upload cmbw48jnk000ioud7e32p8im9 status to failed
+ POST /api/upload 200 in 41789ms
+ ✓ Compiled in 54ms (347 modules)
+[e69c65ae-4fb8-4096-a111-1e979c6d540b] POST http://localhost:3000/api/process-direct
+ ✓ Compiled /api/process-direct in 137ms (563 modules)
+🚀 Starting direct processing for upload: cmbw42m7l0008oud7b50mfgcs
+🚀 Starting async processing: test-widi-wiguna.xlsx
+ POST /api/process-direct 200 in 1165ms
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw42m7l0008oud7b50mfgcs"
+  },
+  data: {
+    processingDetails: {
+      0: "{",
+      ~
+      1: "\"",
+      2: "j",
+      3: "o",
+      4: "b",
+      5: "I",
+      6: "d",
+      7: "\"",
+      8: ":",
+      9: "\"",
+      10: "j",
+      11: "o",
+      12: "b",
+      13: "_",
+      14: "1",
+      15: "7",
+      16: "4",
+      17: "9",
+      18: "8",
+      19: "9",
+      20: "7",
+      21: "9",
+      22: "7",
+      23: "4",
+      24: "0",
+      25: "9",
+      26: "6",
+      27: "_",
+      28: "u",
+      29: "p",
+      30: "s",
+      31: "n",
+      32: "7",
+      33: "7",
+      34: "q",
+      35: "3",
+      36: "6",
+      37: "\"",
+      38: ",",
+      39: "\"",
+      40: "s",
+      41: "t",
+      42: "a",
+      43: "g",
+      44: "e",
+      45: "\"",
+      46: ":",
+      47: "\"",
+      48: "q",
+      49: "u",
+      50: "e",
+      51: "u",
+      52: "e",
+      53: "d",
+      54: "\"",
+      55: ",",
+      56: "\"",
+      57: "p",
+      58: "r",
+      59: "o",
+      60: "g",
+      61: "r",
+      62: "e",
+      63: "s",
+      64: "s",
+      65: "\"",
+      66: ":",
+      67: "0",
+      68: ",",
+      69: "\"",
+      70: "b",
+      71: "a",
+      72: "t",
+      73: "c",
+      74: "h",
+      75: "S",
+      76: "i",
+      77: "z",
+      78: "e",
+      79: "\"",
+      80: ":",
+      81: "2",
+      82: "5",
+      83: "}",
+      stage: "extracting",
+      progress: 10,
+      message: "Extracting data with Gemini Flash 2.0...",
+      lastUpdated: "2025-06-14T10:52:45.844Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `0`. Did you mean `set`? Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:27:6)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+📊 Processing Excel/CSV with Gemini Flash 2.0: test-widi-wiguna.xlsx
+📥 Downloading file from: https://cdc1w79ssc4kg6xh.public.blob.vercel-storage.com/test-widi-wiguna-Z5cBTRrJqAn5A0x1Sr8xz4PpGHi0PN.xlsx
+📦 Converting file content to array buffer...
+🤖 Sending content to Gemini Flash 2.0 (10283 characters)...
+❌ Excel/CSV processing failed: Expected ',' or '}' after property value in JSON at position 22834 (line 1127 column 26)
+⏱️  Failed after 38225ms
+🏷️  Error category: parsing
+❌ Async processing failed for test-widi-wiguna.xlsx: Error: No products extracted from file
+    at AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:39:14)
+  37 |       
+  38 |       if (!extractionResult.products || extractionResult.products.length === 0) {
+> 39 |         throw new Error('No products extracted from file');
+     |              ^
+  40 |       }
+  41 |       
+  42 |       console.log(`📦 Extracted ${extractionResult.products.length} products`);
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw42m7l0008oud7b50mfgcs"
+  },
+  data: {
+    processingDetails: {
+      0: "{",
+      ~
+      1: "\"",
+      2: "j",
+      3: "o",
+      4: "b",
+      5: "I",
+      6: "d",
+      7: "\"",
+      8: ":",
+      9: "\"",
+      10: "j",
+      11: "o",
+      12: "b",
+      13: "_",
+      14: "1",
+      15: "7",
+      16: "4",
+      17: "9",
+      18: "8",
+      19: "9",
+      20: "7",
+      21: "9",
+      22: "7",
+      23: "4",
+      24: "0",
+      25: "9",
+      26: "6",
+      27: "_",
+      28: "u",
+      29: "p",
+      30: "s",
+      31: "n",
+      32: "7",
+      33: "7",
+      34: "q",
+      35: "3",
+      36: "6",
+      37: "\"",
+      38: ",",
+      39: "\"",
+      40: "s",
+      41: "t",
+      42: "a",
+      43: "g",
+      44: "e",
+      45: "\"",
+      46: ":",
+      47: "\"",
+      48: "q",
+      49: "u",
+      50: "e",
+      51: "u",
+      52: "e",
+      53: "d",
+      54: "\"",
+      55: ",",
+      56: "\"",
+      57: "p",
+      58: "r",
+      59: "o",
+      60: "g",
+      61: "r",
+      62: "e",
+      63: "s",
+      64: "s",
+      65: "\"",
+      66: ":",
+      67: "0",
+      68: ",",
+      69: "\"",
+      70: "b",
+      71: "a",
+      72: "t",
+      73: "c",
+      74: "h",
+      75: "S",
+      76: "i",
+      77: "z",
+      78: "e",
+      79: "\"",
+      80: ":",
+      81: "2",
+      82: "5",
+      83: "}",
+      stage: "failed",
+      progress: 0,
+      message: undefined,
+      lastUpdated: "2025-06-14T10:53:24.194Z",
+      error: "No products extracted from file",
+?     set?: String | Null
     },
-    {
-      "name": "asparagus",
-      "price": 95000.0,
-      "unit": "kg",
-      "category": null,
-      "confidence": 0.9
+    status: "failed",
+    errorMessage: "No products extracted from file"
+  }
+}
+
+Unknown argument `0`. Did you mean `set`? Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:174:6)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Background processing failed: Error: No products extracted from file
+    at AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:39:14)
+  37 |       
+  38 |       if (!extractionResult.products || extractionResult.products.length === 0) {
+> 39 |         throw new Error('No products extracted from file');
+     |              ^
+  40 |       }
+  41 |       
+  42 |       console.log(`📦 Extracted ${extractionResult.products.length} products`);
+ ✓ Compiled in 11ms
+[17de7560-a239-4268-a955-a4557ccda8d7] POST http://localhost:3000/api/upload
+ ✓ Compiled /api/upload in 75ms (313 modules)
+🚀 Processing 1 files with unified processor
+🚀 Starting unified processing: test-widi-wiguna.xlsx (0.09MB)
+📁 Created upload record: cmbw4fp23000loud75gqbfz7x
+🔄 Starting file extraction for application/octet-stream...
+📊 Processing Excel/CSV with batch processor: test-widi-wiguna.xlsx
+📊 Processing Excel file in batches: test-widi-wiguna.xlsx
+📋 Processing sheet: Sheet1
+🔄 Processing batch 1/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 2/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 3/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 4/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 5/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 6/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 7/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 8/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 9/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 10/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 11/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 12/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 13/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 14/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 15/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 16/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 17/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 18/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 19/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 20/34 (31 rows) from sheet Sheet1
+ POST /api/upload 200 in 120296ms
+🔄 Processing batch 21/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 22/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 23/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 24/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 25/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 26/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 27/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 28/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 29/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 30/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 31/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 32/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 33/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 34/34 (10 rows) from sheet Sheet1
+📋 Processing sheet: Sheet2
+📋 Processing sheet: Sheet3
+✅ Excel batch processing completed: 587 products extracted
+📦 Extracted 587 products
+⚠️ Product count (587) exceeds batch limit of 50. Processing first 50 products only.
+🤖 Starting ChatGPT o3-mini standardization for 50 products
+ ✓ Compiled in 10ms
+ChatGPT o3-mini raw response length: 9651
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Ares",
+    "standardizedName": "Ares",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "other",
+    "confidence": 80
+  },
+  {
+    "originalName": "Asparagus",
+    "standardizedName": "Asparagus",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "vegetables",
+    "confidence": 100
+  },
+  {
+    "originalName": "Bean Sprout Long",
+    "standardizedName": "Bean Sprout Long",
+    "originalUnit": "KG.",
+    "standardizedUnit":...
+✅ ChatGPT o3-mini standardization completed: 50 products in 54468ms, 10394 tokens
+🔧 Standardized 50 products
+✅ Processing completed: cmbw4fp23000loud75gqbfz7x, 0 products stored, 257844ms
+[27b38963-ec7d-48f1-aab9-851f55ad7656] POST http://localhost:3000/api/upload
+ ✓ Compiled /api/upload in 73ms (313 modules)
+Upload processing error: TypeError: Content-Type was not one of "multipart/form-data" or "application/x-www-form-urlencoded".
+    at async POST (app/api/upload/route.ts:8:21)
+   6 | export async function POST(request: NextRequest) {
+   7 |   try {
+>  8 |     const formData = await request.formData();
+     |                     ^
+   9 |     const files = formData.getAll('files') as File[];
+  10 |     const supplierId = formData.get('supplierId') as string | null;
+  11 |     const autoApprove = formData.get('autoApprove') === 'true';
+ POST /api/upload 500 in 128ms
+[a4e9a496-c3ff-4cc0-8432-29b241c53543] POST http://localhost:3000/api/process-direct
+ ✓ Compiled /api/process-direct in 80ms (317 modules)
+🚀 Starting direct processing for upload: cmbw4fp23000loud75gqbfz7x
+🚀 Starting async processing: test-widi-wiguna.xlsx
+ POST /api/process-direct 200 in 990ms
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "extracting",
+      ~~~~~
+      progress: 10,
+      message: "Extracting data with Gemini Flash 2.0...",
+      lastUpdated: "2025-06-14T11:02:38.908Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:27:6)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+📊 Processing Excel/CSV with batch processor: test-widi-wiguna.xlsx
+📊 Processing Excel file in batches: test-widi-wiguna.xlsx
+📋 Processing sheet: Sheet1
+🔄 Processing batch 1/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 2/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 3/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 4/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 5/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 6/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 7/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 8/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 9/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 10/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 11/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 12/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 13/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 14/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 15/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 16/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 17/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 18/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 19/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 20/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 21/34 (31 rows) from sheet Sheet1
+❌ Batch 21 failed: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash-exp"},"quotaValue":"10"}]},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"19s"}]
+    at async ExcelBatchProcessor.processBatch (app/services/centralized/ExcelBatchProcessor.ts:192:23)
+    at async ExcelBatchProcessor.processExcelInBatches (app/services/centralized/ExcelBatchProcessor.ts:76:32)
+    at async UnifiedFileProcessor.processExcelOrCsv (app/services/centralized/UnifiedFileProcessor.ts:257:21)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:35:27)
+  190 | - Process ALL rows in this batch thoroughly`;
+  191 |
+> 192 |     const aiResponse = await Promise.race([
+      |                       ^
+  193 |       this.model.generateContent(prompt),
+  194 |       new Promise((_, reject) => 
+  195 |         setTimeout(() => reject(new Error('Batch processing timeout after 60 seconds')), 60000) {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [Array]
+}
+🔄 Processing batch 22/34 (31 rows) from sheet Sheet1
+❌ Batch 22 failed: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash-exp"},"quotaValue":"10"}]},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"18s"}]
+    at async ExcelBatchProcessor.processBatch (app/services/centralized/ExcelBatchProcessor.ts:192:23)
+    at async ExcelBatchProcessor.processExcelInBatches (app/services/centralized/ExcelBatchProcessor.ts:76:32)
+    at async UnifiedFileProcessor.processExcelOrCsv (app/services/centralized/UnifiedFileProcessor.ts:257:21)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:35:27)
+  190 | - Process ALL rows in this batch thoroughly`;
+  191 |
+> 192 |     const aiResponse = await Promise.race([
+      |                       ^
+  193 |       this.model.generateContent(prompt),
+  194 |       new Promise((_, reject) => 
+  195 |         setTimeout(() => reject(new Error('Batch processing timeout after 60 seconds')), 60000) {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [Array]
+}
+🔄 Processing batch 23/34 (31 rows) from sheet Sheet1
+❌ Batch 23 failed: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"GenerateRequestsPerMinutePerProjectPerModel-FreeTier","quotaDimensions":{"location":"global","model":"gemini-2.0-flash-exp"},"quotaValue":"10"}]},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"18s"}]
+    at async ExcelBatchProcessor.processBatch (app/services/centralized/ExcelBatchProcessor.ts:192:23)
+    at async ExcelBatchProcessor.processExcelInBatches (app/services/centralized/ExcelBatchProcessor.ts:76:32)
+    at async UnifiedFileProcessor.processExcelOrCsv (app/services/centralized/UnifiedFileProcessor.ts:257:21)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:35:27)
+  190 | - Process ALL rows in this batch thoroughly`;
+  191 |
+> 192 |     const aiResponse = await Promise.race([
+      |                       ^
+  193 |       this.model.generateContent(prompt),
+  194 |       new Promise((_, reject) => 
+  195 |         setTimeout(() => reject(new Error('Batch processing timeout after 60 seconds')), 60000) {
+  status: 429,
+  statusText: 'Too Many Requests',
+  errorDetails: [Array]
+}
+🔄 Processing batch 24/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 25/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 26/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 27/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 28/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 29/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 30/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 31/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 32/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 33/34 (31 rows) from sheet Sheet1
+🔄 Processing batch 34/34 (10 rows) from sheet Sheet1
+📋 Processing sheet: Sheet2
+📋 Processing sheet: Sheet3
+✅ Excel batch processing completed: 517 products extracted
+📦 Extracted 517 products
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "extracted",
+      ~~~~~
+      progress: 25,
+      message: "Extracted 517 products",
+      lastUpdated: "2025-06-14T11:05:47.591Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:43:6)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+📊 Processing 517 products in 21 batches of 25
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 25,
+      message: "Standardizing batch 1/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:05:47.692Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 1/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4857
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Ares",
+    "standardizedName": "Ares",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "vegetables",
+    "confidence": 100
+  },
+  {
+    "originalName": "Asparagus",
+    "standardizedName": "Asparagus",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "vegetables",
+    "confidence": 100
+  },
+  {
+    "originalName": "Bean Sprout Long",
+    "standardizedName": "Bean Sprout Long",
+    "originalUnit": "KG.",
+    "standardized...
+✅ ChatGPT o3-mini standardization completed: 25 products in 31672ms, 6045 tokens
+✅ Batch 1 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 27,
+      message: "Standardizing batch 2/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:06:20.554Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 2/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4808
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Chily Small Green",
+    "standardizedName": "Chili Small Green",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "vegetables",
+    "confidence": 100
+  },
+  {
+    "originalName": "Chily Small Red",
+    "standardizedName": "Chili Small Red",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "vegetables",
+    "confidence": 100
+  },
+  {
+    "originalName": "Chives",
+    "standardizedName": "Chives",
+    "originalUnit": "KG.",...
+✅ ChatGPT o3-mini standardization completed: 25 products in 36790ms, 7041 tokens
+✅ Batch 2 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 30,
+      message: "Standardizing batch 3/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:06:58.533Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 3/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4706
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Kecicang",
+    "standardizedName": "Kecicang",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "other",
+    "confidence": 100
+  },
+  {
+    "originalName": "Kemangi Leaf",
+    "standardizedName": "Leaf Kemangi",
+    "originalUnit": "KG",
+    "standardizedUnit": "kg",
+    "category": "vegetables",
+    "confidence": 100
+  },
+  {
+    "originalName": "Kencur",
+    "standardizedName": "Kencur",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",...
+✅ ChatGPT o3-mini standardization completed: 25 products in 54533ms, 10637 tokens
+✅ Batch 3 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 32,
+      message: "Standardizing batch 4/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:07:54.926Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 4/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4780
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Singkong Leaf",
+    "standardizedName": "Cassava Leaf",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "vegetables",
+    "confidence": 100
+  },
+  {
+    "originalName": "Spinach Lokal",
+    "standardizedName": "Spinach Local",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "vegetables",
+    "confidence": 100
+  },
+  {
+    "originalName": "Suji Leaf",
+    "standardizedName": "Suji Leaf",
+    "originalUnit": "Ikt",
+    "s...
+✅ ChatGPT o3-mini standardization completed: 25 products in 38343ms, 7728 tokens
+✅ Batch 4 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 35,
+      message: "Standardizing batch 5/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:08:34.458Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 5/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4680
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Bangkuang",
+    "standardizedName": "Jicama",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "fruits",
+    "confidence": 100
+  },
+  {
+    "originalName": "Buah Naga",
+    "standardizedName": "Dragonfruit",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "fruits",
+    "confidence": 100
+  },
+  {
+    "originalName": "Grape Black Local",
+    "standardizedName": "Grape Black",
+    "originalUnit": "KG.",
+    "standardizedUni...
+✅ ChatGPT o3-mini standardization completed: 25 products in 45285ms, 8452 tokens
+✅ Batch 5 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 37,
+      message: "Standardizing batch 6/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:09:20.941Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 6/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4779
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Tangerine Lumajang besar",
+    "standardizedName": "Tangerine Lumajang",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "fruits",
+    "confidence": 100
+  },
+  {
+    "originalName": "Tangerine Kintamani",
+    "standardizedName": "Tangerine Kintamani",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "fruits",
+    "confidence": 100
+  },
+  {
+    "originalName": "Water Melon Yellow",
+    "standardizedName": "Watermelon Yell...
+✅ ChatGPT o3-mini standardization completed: 25 products in 47344ms, 8712 tokens
+✅ Batch 6 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 39,
+      message: "Standardizing batch 7/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:10:09.472Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 7/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4812
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Baking powder",
+    "standardizedName": "Powder Baking",
+    "originalUnit": "can",
+    "standardizedUnit": "can",
+    "category": "other",
+    "confidence": 100
+  },
+  {
+    "originalName": "Tabasco 60ml",
+    "standardizedName": "Sauce Tabasco",
+    "originalUnit": "btl",
+    "standardizedUnit": null,
+    "category": "condiments",
+    "confidence": 90
+  },
+  {
+    "originalName": "Tepung segitiga biru",
+    "standardizedName": "Flour",
+    "originalUnit": "kg",
+    "...
+✅ ChatGPT o3-mini standardization completed: 25 products in 52687ms, 9478 tokens
+✅ Batch 7 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 42,
+      message: "Standardizing batch 8/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:11:03.351Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 8/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4756
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "aplev vinegar",
+    "standardizedName": "Vinegar Aplev",
+    "originalUnit": "btl",
+    "standardizedUnit": "bottle",
+    "category": "other",
+    "confidence": 95
+  },
+  {
+    "originalName": "susu kental manis",
+    "standardizedName": "Milk Condensed",
+    "originalUnit": "can",
+    "standardizedUnit": "can",
+    "category": "other",
+    "confidence": 95
+  },
+  {
+    "originalName": "Minyak goreng 5 ltr",
+    "standardizedName": "Oil Cooking",
+    "originalUnit": "G...
+✅ ChatGPT o3-mini standardization completed: 25 products in 65256ms, 9796 tokens
+✅ Batch 8 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 44,
+      message: "Standardizing batch 9/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:12:09.815Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 9/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4704
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "wijen hitam",
+    "standardizedName": "Sesame Black",
+    "originalUnit": "Kg",
+    "standardizedUnit": "kg",
+    "category": "spices",
+    "confidence": 100
+  },
+  {
+    "originalName": "Telor ayam",
+    "standardizedName": "Egg Chicken",
+    "originalUnit": "krt",
+    "standardizedUnit": null,
+    "category": "dairy",
+    "confidence": 80
+  },
+  {
+    "originalName": "Gula Pasir",
+    "standardizedName": "Sugar Granulated",
+    "originalUnit": "KG.",
+    "standardize...
+✅ ChatGPT o3-mini standardization completed: 25 products in 44319ms, 7315 tokens
+✅ Batch 9 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 46,
+      message: "Standardizing batch 10/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:12:55.666Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 10/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4793
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Kecap Manis",
+    "standardizedName": "Sauce Sweet",
+    "originalUnit": "Botol",
+    "standardizedUnit": "bottle",
+    "category": "condiments",
+    "confidence": 100
+  },
+  {
+    "originalName": "Saus Sambal",
+    "standardizedName": "Sauce Chili",
+    "originalUnit": "Botol",
+    "standardizedUnit": "bottle",
+    "category": "condiments",
+    "confidence": 100
+  },
+  {
+    "originalName": "Gula Pasir",
+    "standardizedName": "Sugar Granulated",
+    "originalUnit": ...
+✅ ChatGPT o3-mini standardization completed: 25 products in 43338ms, 6918 tokens
+✅ Batch 10 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 49,
+      message: "Standardizing batch 11/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:13:40.204Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 11/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4751
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Garam",
+    "standardizedName": "Salt",
+    "originalUnit": "Bungkus",
+    "standardizedUnit": "pack",
+    "category": "condiments",
+    "confidence": 100
+  },
+  {
+    "originalName": "Kecap Manis",
+    "standardizedName": "Sauce Sweet",
+    "originalUnit": "Botol",
+    "standardizedUnit": "bottle",
+    "category": "condiments",
+    "confidence": 100
+  },
+  {
+    "originalName": "Saus Sambal",
+    "standardizedName": "Sauce Chili",
+    "originalUnit": "Botol",
+    "sta...
+✅ ChatGPT o3-mini standardization completed: 25 products in 47723ms, 7458 tokens
+✅ Batch 11 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 51,
+      message: "Standardizing batch 12/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:14:29.119Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 12/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4687
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Garam",
+    "standardizedName": "Salt",
+    "originalUnit": "PCS.",
+    "standardizedUnit": "pcs",
+    "category": "condiments",
+    "confidence": 95
+  },
+  {
+    "originalName": "Kecap Manis",
+    "standardizedName": "Sauce Sweet",
+    "originalUnit": "Botol",
+    "standardizedUnit": "bottle",
+    "category": "condiments",
+    "confidence": 95
+  },
+  {
+    "originalName": "Saus Sambal",
+    "standardizedName": "Sauce Chili",
+    "originalUnit": "Botol",
+    "standardi...
+✅ ChatGPT o3-mini standardization completed: 25 products in 55298ms, 8861 tokens
+✅ Batch 12 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 54,
+      message: "Standardizing batch 13/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:15:25.801Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 13/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4786
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "KOPI",
+    "standardizedName": "Coffee",
+    "originalUnit": "PCS.",
+    "standardizedUnit": "pcs",
+    "category": "beverages",
+    "confidence": 100
+  },
+  {
+    "originalName": "TEH",
+    "standardizedName": "Tea",
+    "originalUnit": "PCS.",
+    "standardizedUnit": "pcs",
+    "category": "beverages",
+    "confidence": 100
+  },
+  {
+    "originalName": "GULA MERAH",
+    "standardizedName": "Sugar Brown",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "c...
+✅ ChatGPT o3-mini standardization completed: 25 products in 50026ms, 8113 tokens
+✅ Batch 13 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 56,
+      message: "Standardizing batch 14/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:16:17.024Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 14/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4826
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Susu Bendera Coklat",
+    "standardizedName": "Milk Chocolate",
+    "originalUnit": "PCS.",
+    "standardizedUnit": "pcs",
+    "category": "dairy",
+    "confidence": 100
+  },
+  {
+    "originalName": "KOPI ABC SUSU",
+    "standardizedName": "Coffee Milk",
+    "originalUnit": "PCS.",
+    "standardizedUnit": "pcs",
+    "category": "beverages",
+    "confidence": 100
+  },
+  {
+    "originalName": "TEH CELUP SOSRO",
+    "standardizedName": "Tea Bag",
+    "originalUnit": "DUS"...
+✅ ChatGPT o3-mini standardization completed: 25 products in 56545ms, 9182 tokens
+✅ Batch 14 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 58,
+      message: "Standardizing batch 15/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:17:14.764Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 15/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4796
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Mie Instan",
+    "standardizedName": "Noodle Instant",
+    "originalUnit": "PCS.",
+    "standardizedUnit": "pcs",
+    "category": "other",
+    "confidence": 100
+  },
+  {
+    "originalName": "Kopi Bubuk",
+    "standardizedName": "Coffee Powder",
+    "originalUnit": "Bungkus",
+    "standardizedUnit": "pack",
+    "category": "beverages",
+    "confidence": 95
+  },
+  {
+    "originalName": "Teh Celup",
+    "standardizedName": "Tea Bag",
+    "originalUnit": "Kotak",
+    "stan...
+✅ ChatGPT o3-mini standardization completed: 25 products in 58468ms, 8510 tokens
+✅ Batch 15 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 61,
+      message: "Standardizing batch 16/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:18:14.944Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 16/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 5035
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Beras Premium Sania 5 KG.",
+    "standardizedName": "Rice Premium",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "grains",
+    "confidence": 100
+  },
+  {
+    "originalName": "Indomie Goreng",
+    "standardizedName": "Noodles Fried",
+    "originalUnit": "PCS",
+    "standardizedUnit": "pcs",
+    "category": "grains",
+    "confidence": 100
+  },
+  {
+    "originalName": "Susu UHT Indomilk Cokelat 1 Liter",
+    "standardizedName": "Milk Chocolate"...
+✅ ChatGPT o3-mini standardization completed: 25 products in 54963ms, 8040 tokens
+✅ Batch 16 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 63,
+      message: "Standardizing batch 17/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:19:11.097Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 17/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4722
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "ROICO AYAM",
+    "standardizedName": "Chicken",
+    "originalUnit": "PCS.",
+    "standardizedUnit": "pcs",
+    "category": "meat",
+    "confidence": 100
+  },
+  {
+    "originalName": "MASAKO SAPI",
+    "standardizedName": "Beef",
+    "originalUnit": "PCS.",
+    "standardizedUnit": "pcs",
+    "category": "meat",
+    "confidence": 100
+  },
+  {
+    "originalName": "LADA KUBU",
+    "standardizedName": "Pepper",
+    "originalUnit": "PCS.",
+    "standardizedUnit": "pcs",
+    ...
+✅ ChatGPT o3-mini standardization completed: 25 products in 53764ms, 7549 tokens
+✅ Batch 17 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 65,
+      message: "Standardizing batch 18/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:20:06.053Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 18/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4711
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Jahe",
+    "standardizedName": "Ginger",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "spices",
+    "confidence": 100
+  },
+  {
+    "originalName": "Lengkuas",
+    "standardizedName": "Galangal",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+    "category": "spices",
+    "confidence": 100
+  },
+  {
+    "originalName": "Gula Pasir",
+    "standardizedName": "Sugar Granulated",
+    "originalUnit": "KG.",
+    "standardizedUnit": "kg",
+ ...
+✅ ChatGPT o3-mini standardization completed: 25 products in 51760ms, 8020 tokens
+✅ Batch 18 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 68,
+      message: "Standardizing batch 19/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:20:59.009Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 19/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4789
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Mie Instan",
+    "standardizedName": "Noodles Instant",
+    "originalUnit": "PCS.",
+    "standardizedUnit": "pcs",
+    "category": "other",
+    "confidence": 100
+  },
+  {
+    "originalName": "Kopi Bubuk",
+    "standardizedName": "Coffee Powder",
+    "originalUnit": "Bungkus",
+    "standardizedUnit": "pack",
+    "category": "beverages",
+    "confidence": 100
+  },
+  {
+    "originalName": "Teh Celup",
+    "standardizedName": "Tea Bag",
+    "originalUnit": "Kotak",
+    "st...
+✅ ChatGPT o3-mini standardization completed: 25 products in 49615ms, 7886 tokens
+✅ Batch 19 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 70,
+      message: "Standardizing batch 20/21 (25 products)...",
+      lastUpdated: "2025-06-14T11:21:49.817Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 20/21: 25 products
+🤖 Starting ChatGPT o3-mini standardization for 25 products
+ChatGPT o3-mini raw response length: 4919
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "Beras Premium",
+    "standardizedName": "Rice Premium",
+    "originalUnit": "KG",
+    "standardizedUnit": "kg",
+    "category": "grains",
+    "confidence": 100
+  },
+  {
+    "originalName": "Telur Ayam",
+    "standardizedName": "Chicken Egg",
+    "originalUnit": "KG",
+    "standardizedUnit": "kg",
+    "category": "other",
+    "confidence": 100
+  },
+  {
+    "originalName": "Mie Instan Indomie Ayam Bawang",
+    "standardizedName": "Instant Noodle Chicken Onion",
+    "orig...
+✅ ChatGPT o3-mini standardization completed: 25 products in 71883ms, 10188 tokens
+✅ Batch 20 completed: 25 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardizing",
+      ~~~~~
+      progress: 73,
+      message: "Standardizing batch 21/21 (17 products)...",
+      lastUpdated: "2025-06-14T11:23:02.892Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:59:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+🤖 Standardizing batch 21/21: 17 products
+🤖 Starting ChatGPT o3-mini standardization for 17 products
+ChatGPT o3-mini raw response length: 3269
+ChatGPT o3-mini content preview: [
+  {
+    "originalName": "MIE INSTAN (PCS)",
+    "standardizedName": "Noodles Instant",
+    "originalUnit": "PCS",
+    "standardizedUnit": "pcs",
+    "category": "other",
+    "confidence": 100
+  },
+  {
+    "originalName": "MINYAK GORENG (KGM)",
+    "standardizedName": "Oil Frying",
+    "originalUnit": "KGM",
+    "standardizedUnit": "kg",
+    "category": "oils",
+    "confidence": 100
+  },
+  {
+    "originalName": "SARDEN (PCS)",
+    "standardizedName": "Sardine",
+    "originalUnit": "PCS",
+    "s...
+✅ ChatGPT o3-mini standardization completed: 17 products in 41421ms, 7039 tokens
+✅ Batch 21 completed: 17 products standardized
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "standardized",
+      ~~~~~
+      progress: 75,
+      message: "Standardized 517 products",
+      lastUpdated: "2025-06-14T11:23:44.978Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:106:6)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 80,
+      message: "Storing products in database...",
+      lastUpdated: "2025-06-14T11:23:45.075Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:109:6)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 80,
+      message: "Stored 50/517 products...",
+      lastUpdated: "2025-06-14T11:23:53.727Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:135:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 81,
+      message: "Stored 100/517 products...",
+      lastUpdated: "2025-06-14T11:24:01.611Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:135:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 83,
+      message: "Stored 150/517 products...",
+      lastUpdated: "2025-06-14T11:24:09.721Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:135:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 84,
+      message: "Stored 200/517 products...",
+      lastUpdated: "2025-06-14T11:24:17.215Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:135:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 85,
+      message: "Stored 250/517 products...",
+      lastUpdated: "2025-06-14T11:24:24.018Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:135:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 87,
+      message: "Stored 300/517 products...",
+      lastUpdated: "2025-06-14T11:24:30.016Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:135:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 88,
+      message: "Stored 350/517 products...",
+      lastUpdated: "2025-06-14T11:24:37.419Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:135:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 90,
+      message: "Stored 400/517 products...",
+      lastUpdated: "2025-06-14T11:24:43.949Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:135:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 91,
+      message: "Stored 450/517 products...",
+      lastUpdated: "2025-06-14T11:24:49.830Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:135:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 92,
+      message: "Stored 500/517 products...",
+      lastUpdated: "2025-06-14T11:24:55.656Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:135:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "storing",
+      ~~~~~
+      progress: 94,
+      message: "Stored 517/517 products...",
+      lastUpdated: "2025-06-14T11:24:58.034Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:135:8)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "completing",
+      ~~~~~
+      progress: 95,
+      message: "Finalizing...",
+      lastUpdated: "2025-06-14T11:24:58.134Z",
+?     set?: String | Null
+    }
+  }
+}
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:144:6)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
+}
+❌ Failed to update job status: Error [PrismaClientValidationError]: 
+Invalid `prisma.upload.update()` invocation:
+
+{
+  where: {
+    id: "cmbw4fp23000loud75gqbfz7x"
+  },
+  data: {
+    processingDetails: {
+      stage: "completed",
+      ~~~~~
+      progress: 100,
+      message: "✅ Completed! Stored 517 products",
+      lastUpdated: "2025-06-14T11:24:58.273Z",
+?     set?: String | Null
     },
-    {
-      "name": "bean sprout long",
-      "price": 10000.0,
-     
-[GeminiProcessor] API call failed: Error: Failed to parse Gemini response: Expected double-quoted property name in JSON at position 20761 (line 1075 column 34)
-    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
-    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
-    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  356 |       console.error('[GeminiProcessor] Parse error:', error);
-  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
-> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      |            ^
-  359 |     }
-  360 |   }
-  361 |
-[GeminiProcessor] Error: Error: Failed to parse Gemini response: Expected double-quoted property name in JSON at position 20761 (line 1075 column 34)
-    at GeminiUnifiedProcessor.parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:358:12)
-    at parseGeminiResponse (app/services/gemini/GeminiUnifiedProcessor.ts:279:18)
-    at async GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:45:13)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  356 |       console.error('[GeminiProcessor] Parse error:', error);
-  357 |       console.log('[GeminiProcessor] Failed content preview:', cleanContent.substring(0, 500));
-> 358 |       throw new Error(`Failed to parse Gemini response: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      |            ^
-  359 |     }
-  360 |   }
-  361 |
-[GeminiPipeline] Processing error: Error: Failed to process document: Failed to parse Gemini response: Expected double-quoted property name in JSON at position 20761 (line 1075 column 34)
-    at GeminiUnifiedProcessor.processDocument (app/services/gemini/GeminiUnifiedProcessor.ts:48:12)
-    at async GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:55:24)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  46 |     } catch (error) {
-  47 |       console.error('[GeminiProcessor] Error:', error);
-> 48 |       throw new Error(`Failed to process document: ${error instanceof Error ? error.message : 'Unknown error'}`);
-     |            ^
-  49 |     }
-  50 |   }
-  51 |
-[Upload-Gemini] Processing error: Error: Processing failed: Failed to process document: Failed to parse Gemini response: Expected double-quoted property name in JSON at position 20761 (line 1075 column 34)
-    at GeminiPipeline.processUpload (app/services/gemini/GeminiPipeline.ts:139:12)
-    at async POST (app/api/upload-gemini/route.ts:61:19)
-  137 |     } catch (error) {
-  138 |       console.error('[GeminiPipeline] Processing error:', error);
-> 139 |       throw new Error(`Processing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      |            ^
-  140 |     }
-  141 |   }
-  142 |   
- POST /api/upload-gemini 500 in 38411ms
-[d110ffaa-6549-481f-ab3f-3e949e9e78f3] POST http://localhost:3001/api/upload-gemini
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: sai fresh.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 110196 bytes
-[GeminiPipeline] Starting processing of sai fresh.xlsx
-[GeminiProcessor] Processing sai fresh.xlsx with model gemini-2.0-flash-exp
-[GeminiProcessor] Preprocessing Excel/CSV file: sai fresh.xlsx
-[GeminiProcessor] Reading Excel file: sai fresh.xlsx
-[GeminiProcessor] Using sheet: Sheet1 with 1000 rows
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
-[GeminiProcessor] Response received in 34332ms
-[GeminiProcessor] Parsing response, length: 18399
- POST /api/upload-gemini 200 in 40871ms
-[GeminiPipeline] Processing completed in 54426ms
-[Upload-Gemini] Processing completed successfully: {
-  uploadId: 'upload_1749813162373_ca33cwooi',
-  products: 132,
-  processingTime: 54426
+    status: "completed"
+  }
 }
- ✓ Compiled in 12ms
-[c7f1b786-4aa7-42c8-a211-798778551719] POST http://localhost:3001/api/upload-gemini
- ✓ Compiled /api/upload-gemini in 80ms (226 modules)
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: bali boga.pdf, type: application/pdf, size: 667826 bytes
-[GeminiPipeline] Starting processing of bali boga.pdf
-[GeminiProcessor] Processing bali boga.pdf with model gemini-2.0-flash-exp
-[GeminiProcessor] Direct processing for application/pdf
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: binary
-[GeminiProcessor] Response received in 42424ms
-[GeminiProcessor] Parsing response, length: 20548
-[GeminiProcessor] Response appears truncated, attempting to fix...
-[GeminiProcessor] Successfully parsed 252 products from compact format
-[GeminiPipeline] Processing completed in 75963ms
-[Upload-Gemini] Processing completed successfully: {
-  uploadId: 'upload_1749813320637_1ubgqbxcf',
-  products: 252,
-  processingTime: 75963
+
+Unknown argument `stage`. Available options are marked with ?.
+    at async JobQueue.updateJobStatus (app/services/background/JobQueue.ts:181:6)
+    at async AsyncFileProcessor.processFile (app/services/background/AsyncFileProcessor.ts:166:6)
+  179 |       };
+  180 |
+> 181 |       await prisma.upload.update({
+      |      ^
+  182 |         where: { id: uploadId },
+  183 |         data: {
+  184 |           processingDetails: updatedDetails, {
+  clientVersion: '6.9.0'
 }
- POST /api/upload-gemini 200 in 76194ms
-[46b736ae-b0ca-4ff1-8629-764cfc733d0e] POST http://localhost:3001/api/upload-gemini
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: VALENTA cheese supplier.pdf, type: application/pdf, size: 563304 bytes
-[GeminiPipeline] Starting processing of VALENTA cheese supplier.pdf
-[GeminiProcessor] Processing VALENTA cheese supplier.pdf with model gemini-2.0-flash-exp
-[GeminiProcessor] Direct processing for application/pdf
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: binary
-[GeminiProcessor] Response received in 10440ms
-[GeminiProcessor] Parsing response, length: 3152
-[GeminiProcessor] Successfully parsed 47 products from compact format
-[GeminiPipeline] Processing completed in 17957ms
-[Upload-Gemini] Processing completed successfully: {
-  uploadId: 'upload_1749813363849_gotmtrlmf',
-  products: 47,
-  processingTime: 17957
-}
- POST /api/upload-gemini 200 in 18014ms
-[5f27be83-d7e9-4ec8-83d3-4846b8a58967] POST http://localhost:3001/api/upload-gemini
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: milk up.pdf, type: application/pdf, size: 2548943 bytes
-[GeminiPipeline] Starting processing of milk up.pdf
-[GeminiProcessor] Processing milk up.pdf with model gemini-2.0-flash-exp
-[GeminiProcessor] Direct processing for application/pdf
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: binary
-[GeminiProcessor] Response received in 17781ms
-[GeminiProcessor] Parsing response, length: 5499
-[GeminiProcessor] Successfully parsed 73 products from compact format
-[GeminiPipeline] Processing completed in 30123ms
-[Upload-Gemini] Processing completed successfully: {
-  uploadId: 'upload_1749813390371_bxvyuj6cp',
-  products: 73,
-  processingTime: 30123
-}
- POST /api/upload-gemini 200 in 30182ms
-[7e13f3b7-93de-489c-9928-fd4a9fa410e1] POST http://localhost:3001/api/upload-gemini
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: munch bakery.jpg, type: image/jpeg, size: 133890 bytes
-[GeminiPipeline] Starting processing of munch bakery.jpg
-[GeminiProcessor] Processing munch bakery.jpg with model gemini-2.0-flash-exp
-[GeminiProcessor] Direct processing for image/jpeg
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: binary
-[GeminiProcessor] Response received in 15394ms
-[GeminiProcessor] Parsing response, length: 7295
-[GeminiPipeline] Processing completed in 20806ms
-[Upload-Gemini] Processing completed successfully: {
-  uploadId: 'upload_1749813416399_01qq57lrf',
-  products: 48,
-  processingTime: 20806
-}
- POST /api/upload-gemini 200 in 20868ms
-[89da7570-3cfd-4ce1-8bc7-79233b155163] POST http://localhost:3001/api/upload-gemini
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: Oka veg supplier.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 1253352 bytes
-[GeminiPipeline] Starting processing of Oka veg supplier.xlsx
-[GeminiProcessor] Processing Oka veg supplier.xlsx with model gemini-2.0-flash-exp
-[GeminiProcessor] Preprocessing Excel/CSV file: Oka veg supplier.xlsx
-[GeminiProcessor] Reading Excel file: Oka veg supplier.xlsx
-[GeminiProcessor] Using sheet: Sheet1 with 1000 rows
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
-[GeminiProcessor] Response received in 29234ms
-[GeminiProcessor] Parsing response, length: 13421
-[GeminiProcessor] Successfully parsed 216 products from compact format
-[GeminiPipeline] Processing completed in 60802ms
-[Upload-Gemini] Processing completed successfully: {
-  uploadId: 'upload_1749813453141_thldmbxay',
-  products: 216,
-  processingTime: 60802
-}
- POST /api/upload-gemini 200 in 60957ms
-[5cd99549-88c6-43eb-93cb-987b15b206fe] POST http://localhost:3001/api/upload-gemini
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: sri 2 vegetables supplier.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 16083 bytes
-[GeminiPipeline] Starting processing of sri 2 vegetables supplier.xlsx
-[GeminiProcessor] Processing sri 2 vegetables supplier.xlsx with model gemini-2.0-flash-exp
-[GeminiProcessor] Preprocessing Excel/CSV file: sri 2 vegetables supplier.xlsx
-[GeminiProcessor] Reading Excel file: sri 2 vegetables supplier.xlsx
-[GeminiProcessor] Using sheet: Sheet1 with 1002 rows
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
-[GeminiProcessor] Response received in 33511ms
-[GeminiProcessor] Parsing response, length: 13897
-[GeminiProcessor] Successfully parsed 237 products from compact format
-[GeminiPipeline] Processing completed in 64980ms
-[Upload-Gemini] Processing completed successfully: {
-  uploadId: 'upload_1749813516185_w88h8owu4',
-  products: 237,
-  processingTime: 64980
-}
- POST /api/upload-gemini 200 in 65089ms
-[6c7f0832-2193-4525-85c5-8b17f1034964] POST http://localhost:3001/api/upload-gemini
-[Upload-Gemini] Processing upload request
-[Upload-Gemini] Processing file: plaga farm bali.xlsx, type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, size: 135064 bytes
-[GeminiPipeline] Starting processing of plaga farm bali.xlsx
-[GeminiProcessor] Processing plaga farm bali.xlsx with model gemini-2.0-flash-exp
-[GeminiProcessor] Preprocessing Excel/CSV file: plaga farm bali.xlsx
-[GeminiProcessor] Reading Excel file: plaga farm bali.xlsx
-[GeminiProcessor] Using sheet: 1 with 1000 rows
-[GeminiProcessor] Sending to Gemini API - Model: gemini-2.0-flash-exp, Type: text
-[GeminiProcessor] Response received in 7925ms
-[GeminiProcessor] Parsing response, length: 3722
-[GeminiProcessor] Successfully parsed 52 products from compact format
-[GeminiPipeline] Processing completed in 14469ms
-[Upload-Gemini] Processing completed successfully: {
-  uploadId: 'upload_1749813556072_wcbn6mk1g',
-  products: 52,
-  processingTime: 14469
-}
- POST /api/upload-gemini 200 in 14529ms
-[8a09fc3e-9de6-43ae-843c-54b71eae0269] GET http://localhost:3001/api/stats
- ✓ Compiled /api/stats in 111ms (228 modules)
- GET /api/stats 200 in 1373ms
-[27190cc7-24f8-4635-8b86-67bbe9992944] GET http://localhost:3001/
- ○ Compiling / ...
- ✓ Compiled / in 1582ms (620 modules)
- GET / 200 in 1664ms
-[19281d2c-efeb-4012-a55a-515f4be67d46] GET http://localhost:3001/
- ✓ Compiled in 159ms (597 modules)
- GET / 200 in 104ms
- GET /_next/static/webpack/523275fc0604a974.webpack.hot-update.json 404 in 1791ms
-[2e099d9e-715c-44f9-8421-c2b07a4043e5] GET http://localhost:3001/
- GET / 200 in 19ms
-[4fe48095-eba5-4c46-a5be-72f16edee419] GET http://localhost:3001/
- GET / 200 in 9ms
-[a818bf0a-b209-4301-9ec4-5115d0709474] GET http://localhost:3001/api/products?category=All+Categories&limit=50&page=1&sortBy=name&sortOrder=asc&search=
-[fa14ef1a-4e43-45a6-ac51-16fe6d6997fd] GET http://localhost:3001/api/suppliers
-[df8f9f02-48f7-4b9a-aac0-da143d88d4c8] GET http://localhost:3001/api/stats
-[7bcf448f-dc99-49e2-ba4a-da81a04ca23d] GET http://localhost:3001/api/uploads/status?limit=5
-[aed2b5a1-1d90-40f8-8f90-a84a3d319628] GET http://localhost:3001/api/token-usage
-[6245ed4f-f668-4f33-9294-00053e72ed6e] GET http://localhost:3001/api/uploads/pending-count
- ✓ Compiled /api/uploads/pending-count in 157ms (626 modules)
- GET /api/token-usage 200 in 200ms
- GET /api/suppliers 200 in 635ms
- GET /api/uploads/pending-count 200 in 636ms
- GET /api/uploads/status?limit=5 200 in 893ms
- GET /api/stats 200 in 1316ms
- GET /api/products?category=All%20Categories&limit=50&page=1&sortBy=name&sortOrder=asc&search= 200 in 1969ms
- ✓ Compiled in 84ms (297 modules)
-[a442b0d8-2e13-469a-8f3c-7c25b35794c5] GET http://localhost:3001/
- ⨯ Error: Cannot find module './5994.js'
-Require stack:
-- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
-- /Users/denisdomashenko/monito-web/.next/server/app/api/suppliers/route.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
-    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
-    at <unknown> (.next/server/webpack-runtime.js:116:40)
-    at Array.reduce (<anonymous>)
-    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
-    at Array.map (<anonymous>)
-    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
-    at <unknown> (.next/server/app/page.js:1:47103)
-    at Object.<anonymous> (.next/server/app/page.js:1:47155) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [Array],
-  page: '/'
-}
- ✓ Compiled /_error in 406ms (868 modules)
- GET / 500 in 716ms
-[2dadda4a-4ce6-46bc-aac8-0a7515da33eb] GET http://localhost:3001/
- ⨯ Error: Cannot find module './5994.js'
-Require stack:
-- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
-- /Users/denisdomashenko/monito-web/.next/server/pages/_document.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
-    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
-    at <unknown> (.next/server/webpack-runtime.js:116:40)
-    at Array.reduce (<anonymous>)
-    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
-    at Array.map (<anonymous>)
-    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
-    at <unknown> (.next/server/app/page.js:1:47103)
-    at Object.<anonymous> (.next/server/app/page.js:1:47155) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [Array],
-  page: '/'
-}
- GET / 500 in 228ms
-[045dbf90-7990-4946-b4e4-6a600264f838] GET http://localhost:3001/
- ⨯ Error: Cannot find module './5994.js'
-Require stack:
-- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
-- /Users/denisdomashenko/monito-web/.next/server/pages/_document.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
-    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
-    at <unknown> (.next/server/webpack-runtime.js:116:40)
-    at Array.reduce (<anonymous>)
-    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
-    at Array.map (<anonymous>)
-    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
-    at <unknown> (.next/server/app/page.js:1:47103)
-    at Object.<anonymous> (.next/server/app/page.js:1:47155) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [Array],
-  page: '/'
-}
- GET / 500 in 229ms
-[d52855e8-3b21-4247-8f9d-92b5b5eaa936] GET http://localhost:3001/
- ⨯ Error: Cannot find module './5994.js'
-Require stack:
-- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
-- /Users/denisdomashenko/monito-web/.next/server/pages/_document.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
-    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
-    at <unknown> (.next/server/webpack-runtime.js:116:40)
-    at Array.reduce (<anonymous>)
-    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
-    at Array.map (<anonymous>)
-    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
-    at <unknown> (.next/server/app/page.js:1:47103)
-    at Object.<anonymous> (.next/server/app/page.js:1:47155) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [Array],
-  page: '/'
-}
- GET / 500 in 229ms
- ⨯ Error: Cannot find module './5994.js'
-Require stack:
-- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
-- /Users/denisdomashenko/monito-web/.next/server/pages/_document.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
-    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
-    at <unknown> (.next/server/webpack-runtime.js:116:40)
-    at Array.reduce (<anonymous>)
-    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
-    at Array.map (<anonymous>)
-    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
-    at <unknown> (.next/server/app/_not-found/page.js:1:2832)
-    at Object.<anonymous> (.next/server/app/_not-found/page.js:1:2879) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [Array]
-}
- ⨯ Error: Cannot find module './5994.js'
-Require stack:
-- /Users/denisdomashenko/monito-web/.next/server/webpack-runtime.js
-- /Users/denisdomashenko/monito-web/.next/server/pages/_document.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/require.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/load-components.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/utils.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/options.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/swc/index.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/build/next-config-ts/transpile-config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/config.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/next.js
-- /Users/denisdomashenko/monito-web/node_modules/next/dist/server/lib/start-server.js
-    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
-    at <unknown> (.next/server/webpack-runtime.js:116:40)
-    at Array.reduce (<anonymous>)
-    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
-    at Array.map (<anonymous>)
-    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
-    at <unknown> (.next/server/app/_not-found/page.js:1:2832)
-    at Object.<anonymous> (.next/server/app/_not-found/page.js:1:2879) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [Array]
-}
- GET /_next/static/chunks/app-pages-internals.js 500 in 268ms
- GET /_next/static/chunks/app/page.js 500 in 249ms
- ✓ Compiled in 78ms (494 modules)
- ✓ Compiled in 86ms (490 modules)
+🎉 Async processing completed for test-widi-wiguna.xlsx: 517 products stored
+[61635a43-b5d9-4699-ab1d-0251789b93a6] GET http://localhost:3000/admin
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 585ms (607 modules)
+ GET /admin 200 in 701ms
+ ✓ Compiled in 53ms (294 modules)
+[62e4ef26-8ce4-4bb8-a05d-e6ed876a86fc] GET http://localhost:3000/api/uploads/pending?page=1&limit=10
+ ✓ Compiled /api/uploads/pending in 44ms (611 modules)
+ GET /api/uploads/pending?page=1&limit=10 200 in 914ms
+ ✓ Compiled in 92ms (294 modules)
+ ✓ Compiled in 64ms (294 modules)
+ ✓ Compiled in 82ms (691 modules)
+ ✓ Compiled in 88ms (294 modules)
+ ✓ Compiled in 67ms (294 modules)
+ ✓ Compiled in 76ms (294 modules)
+ ✓ Compiled in 60ms (294 modules)
+ ✓ Compiled in 75ms (294 modules)
+ ✓ Compiled in 61ms (294 modules)
+ ✓ Compiled in 54ms (294 modules)
+ ✓ Compiled in 60ms (294 modules)
+ ✓ Compiled in 65ms (294 modules)
+ ✓ Compiled in 62ms (294 modules)
+ ✓ Compiled in 67ms (294 modules)
+ ✓ Compiled in 86ms (294 modules)
+ ✓ Compiled in 57ms (294 modules)
+ ✓ Compiled in 64ms (294 modules)
+ ✓ Compiled in 65ms (294 modules)
+ ✓ Compiled in 67ms (294 modules)
+ ✓ Compiled in 61ms (294 modules)
+ ✓ Compiled in 84ms (691 modules)
+ ✓ Compiled in 64ms (294 modules)

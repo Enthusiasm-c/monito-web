@@ -39,8 +39,10 @@ Monito Web is a **B2B price monitoring and comparison platform** designed for th
 - **Authentication**: NextAuth.js (prepared but not fully implemented)
 
 ### AI/ML Services
-- **LLM**: OpenAI GPT-4o and GPT-4o-mini
-- **OCR**: OpenAI Vision API
+- **Primary LLM**: Google Gemini 2.0 Flash (free tier, high performance)
+- **Secondary LLM**: OpenAI GPT-4o and GPT-4o-mini
+- **OCR**: Google Gemini Vision API
+- **Architecture**: Unified processing system with BaseProcessor pattern
 - **Embeddings**: (Prepared for future similarity matching)
 
 ### Telegram Bot
@@ -117,31 +119,42 @@ The main user interface built with Next.js App Router:
   - `process` - Async file processing
   - `bot` - Telegram bot API endpoints
 
-### 2. File Processing System (`/lib/processors`)
-Handles various file formats with intelligent extraction:
+### 2. Unified Processing System (`/app/lib/core` & `/app/services/core`)
+**🎯 New Refactored Architecture** - Centralized processing with unified patterns:
 
-- **`ExcelProcessor`** - Handles .xlsx, .xls files
-- **`PDFProcessor`** - Extracts tables from PDFs
-- **`CSVProcessor`** - Processes CSV files
-- **`ImageProcessor`** - OCR for images
-- **`AIProcessor`** - Fallback using GPT-4 Vision
+#### Core Components:
+- **`BaseProcessor.ts`** - Abstract base class for all processors
+- **`Interfaces.ts`** - Unified type definitions and schemas
+- **`ErrorHandler.ts`** - Centralized error handling system
+- **`PromptTemplates.ts`** - AI prompt management
+- **`UnifiedGeminiService.ts`** - Main AI processing service
+
+#### Unified API Endpoint:
+- **`/api/upload-unified`** - Single endpoint for all file types
+  - Supports: Excel, PDF, CSV, Images
+  - Auto-detects file type and processing strategy
+  - Handles batch processing for large files
+  - Returns standardized response format
 
 #### Processing Pipeline:
-1. **Upload** → File validation and storage
-2. **Analysis** → Format detection and structure analysis
-3. **Extraction** → Data extraction using appropriate processor
-4. **Standardization** → AI-powered product name normalization
-5. **Validation** → Data quality checks
-6. **Import** → Database updates with conflict resolution
+1. **Upload** → File validation using BaseProcessor
+2. **Routing** → UnifiedGeminiService selects optimal strategy
+3. **Extraction** → Gemini 2.0 Flash processes content
+4. **Batch Handling** → Auto-splits large files (>200 products)
+5. **Standardization** → PromptTemplates ensure consistent results
+6. **Error Handling** → ErrorHandler provides unified error responses
+7. **Response** → Standardized ProcessingResult format
 
-### 3. AI Integration (`/lib/ai`)
-Leverages OpenAI for intelligent processing:
+### 3. AI Integration Strategy
+**Primary**: Google Gemini 2.0 Flash (free tier, high performance)
+**Secondary**: OpenAI GPT-4o (fallback)
 
-- **Product Standardization**: Maps supplier names to canonical forms
-- **Category Detection**: Auto-categorizes products
-- **Unit Normalization**: Standardizes measurements
-- **Data Extraction**: Fallback for complex documents
-- **OCR Enhancement**: Improves text recognition accuracy
+#### Features:
+- **Product Standardization**: Maps "Ayam Potong" → "Fresh Cut Chicken"
+- **Intelligent Extraction**: Handles complex layouts and formats
+- **Batch Processing**: Processes 200+ products per batch efficiently
+- **Compact Mode**: Optimized for large files (1000+ products)
+- **Quality Assessment**: Confidence scoring and extraction quality metrics
 
 ### 4. Telegram Bot (`/telegram-bot`)
 Separate Python application for mobile access:

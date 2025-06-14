@@ -29,7 +29,7 @@ model Product {
   standardizedName String
   category         String?
   unit             String
-  standardizedUnit String
+  standardizedUnit String?
   description      String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -81,7 +81,7 @@ model Upload {
   totalRowsProcessed Int?
   
   // Approval workflow fields
-  approvalStatus     String?  @default("pending_review") // pending_review, approved, rejected
+  approvalStatus     String?  @default("pending_review") // pending_review, processing, approved, rejected
   approvedBy         String?
   approvedAt         DateTime?
   rejectionReason    String?

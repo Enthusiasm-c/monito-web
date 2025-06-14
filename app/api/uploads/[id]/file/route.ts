@@ -5,10 +5,10 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const uploadId = params.id;
+    const { id: uploadId } = await params;
 
     const upload = await prisma.upload.findUnique({
       where: { id: uploadId },

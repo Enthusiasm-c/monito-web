@@ -1,0 +1,104 @@
+{
+  "timestamp": "2025-06-14T05:26:46.047Z",
+  "approach": "Gemini Flash 2.0 + Claude Sonnet 4",
+  "file": "milk up.pdf",
+  "metrics": {
+    "totalTime": 39,
+    "geminiTime": 29,
+    "claudeTime": 10,
+    "productsExtracted": 73,
+    "productsStandardized": 10,
+    "totalTokens": 4776,
+    "totalCost": 0.16700399999999999,
+    "averageConfidence": 96.5
+  },
+  "quality": {
+    "highConfidence": 10,
+    "mediumConfidence": 0,
+    "lowConfidence": 0,
+    "categories": 2
+  },
+  "supplier": "Milk Up",
+  "sampleProducts": [
+    {
+      "originalName": "mascarpone cheese bar in chocolate",
+      "standardizedName": "Chocolate Mascarpone Cheese Bar",
+      "originalUnit": "70g",
+      "standardizedUnit": "g",
+      "category": "dairy",
+      "confidence": 95
+    },
+    {
+      "originalName": "FRENCH YOGURT",
+      "standardizedName": "French Yogurt",
+      "originalUnit": "1000ML",
+      "standardizedUnit": "ml",
+      "category": "dairy",
+      "confidence": 100
+    },
+    {
+      "originalName": "COCONUT YOGURT",
+      "standardizedName": "Coconut Yogurt",
+      "originalUnit": "1000ML",
+      "standardizedUnit": "ml",
+      "category": "dairy",
+      "confidence": 100
+    },
+    {
+      "originalName": "PLAIN CREAM CHEESE",
+      "standardizedName": "Plain Cream Cheese",
+      "originalUnit": "1KG",
+      "standardizedUnit": "kg",
+      "category": "dairy",
+      "confidence": 100
+    },
+    {
+      "originalName": "PLAIN MASCARPONE CREAM CHEESE 1KG",
+      "standardizedName": "Plain Mascarpone Cream Cheese",
+      "originalUnit": "1KG",
+      "standardizedUnit": "kg",
+      "category": "dairy",
+      "confidence": 95
+    },
+    {
+      "originalName": "COCONUT MILK PLANT-BASED",
+      "standardizedName": "Plant-Based Coconut Milk",
+      "originalUnit": "null",
+      "standardizedUnit": "ml",
+      "category": "beverages",
+      "confidence": 85
+    },
+    {
+      "originalName": "PLAIN YOGURT",
+      "standardizedName": "Plain Yogurt",
+      "originalUnit": "1000ML",
+      "standardizedUnit": "ml",
+      "category": "dairy",
+      "confidence": 100
+    },
+    {
+      "originalName": "GREEK YOGURT",
+      "standardizedName": "Greek Yogurt",
+      "originalUnit": "1000ML",
+      "standardizedUnit": "ml",
+      "category": "dairy",
+      "confidence": 100
+    },
+    {
+      "originalName": "FULL CREAM (suitable for whipping)",
+      "standardizedName": "Whipping Cream",
+      "originalUnit": "1000ML",
+      "standardizedUnit": "ml",
+      "category": "dairy",
+      "confidence": 90
+    },
+    {
+      "originalName": "COTTAGE CHEESE",
+      "standardizedName": "Cottage Cheese",
+      "originalUnit": "500 gr",
+      "standardizedUnit": "g",
+      "category": "dairy",
+      "confidence": 100
+    }
+  ]
+}

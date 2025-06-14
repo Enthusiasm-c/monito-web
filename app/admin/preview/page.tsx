@@ -80,12 +80,16 @@ export default function PreviewPage() {
     fetchUploadData();
   }, [uploadId]);
 
+  const [isApproving, setIsApproving] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
+
   const handleApprove = async (reviewNotes?: string) => {
-    if (!upload) {
-      console.error('No upload data available');
+    if (!upload || isApproving) {
+      console.error('No upload data available or already approving');
       return;
     }
     
+    setIsApproving(true);
     console.log('Approving upload:', upload.id);
     
     try {
@@ -114,12 +118,15 @@ export default function PreviewPage() {
     } catch (error) {
       console.error('Error approving upload:', error);
       alert('Failed to approve upload');
+    } finally {
+      setIsApproving(false);
     }
   };
 
   const handleReject = async () => {
-    if (!upload) return;
+    if (!upload || isRejecting) return;
     
+    setIsRejecting(true);
     try {
       const response = await fetch('/api/uploads/reject', {
         method: 'POST',
@@ -141,6 +148,8 @@ export default function PreviewPage() {
     } catch (error) {
       console.error('Error rejecting upload:', error);
       alert('Failed to reject upload');
+    } finally {
+      setIsRejecting(false);
     }
   };
 
@@ -190,15 +199,25 @@ export default function PreviewPage() {
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => handleApprove()}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                disabled={isApproving || isRejecting}
+                className={`px-4 py-2 rounded-md text-sm font-medium ${
+                  isApproving || isRejecting
+                    ? 'bg-gray-400 cursor-not-allowed text-gray-600'
+                    : 'bg-green-600 hover:bg-green-700 text-white'
+                }`}
               >
-                ✓ Approve
+                {isApproving ? '⏳ Approving...' : '✓ Approve'}
               </button>
               <button
                 onClick={handleReject}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                disabled={isApproving || isRejecting}
+                className={`px-4 py-2 rounded-md text-sm font-medium ${
+                  isApproving || isRejecting
+                    ? 'bg-gray-400 cursor-not-allowed text-gray-600'
+                    : 'bg-red-600 hover:bg-red-700 text-white'
+                }`}
               >
-                ✗ Reject
+                {isRejecting ? '⏳ Rejecting...' : '✗ Reject'}
               </button>
               <button
                 onClick={() => window.close()}

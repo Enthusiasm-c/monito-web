@@ -201,45 +201,120 @@ export default function Home() {
     setUploadStatus('Uploading files...');
     
     try {
+      // Process one file at a time with async processing
+      const file = selectedFiles[0]; // Take first file for now
       const formData = new FormData();
-      selectedFiles.forEach(file => {
-        formData.append('files', file);
-      });
-
-      // Use new Gemini-powered endpoint
-      let endpoint = '/api/upload-gemini';
+      formData.append('file', file);
       
-      // Add model selection (default to free experimental model)
-      formData.append('model', 'gemini-2.0-flash-exp');
+      // Use async processing endpoint
+      let endpoint = '/api/async-upload';
       
-      // Add supplier ID if selected (AI will use it as a hint)
+      // Add batch size for large files
+      formData.append('batchSize', '25');
+      
+      // Add supplier ID if selected
       if (selectedSupplier) {
         formData.append('supplierId', selectedSupplier);
       }
 
-      setUploadStatus('Processing with AI... This may take 20-30 seconds...');
+      // Start processing with real-time status updates
+      setUploadStatus('📤 Uploading file to server...');
       
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: formData
-      });
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          body: formData
+        });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Upload successful:', result);
-        setUploadStatus(`Success! Extracted ${result.stats?.totalExtracted || 0} products.`);
-        setSelectedFiles([]);
-        setSelectedSupplier('');
-        
-        // Refresh data after upload
-        await fetchData();
-        
-        setTimeout(() => {
-          setUploadStatus('');
-        }, 3000);
-      } else {
-        const error = await response.json();
-        throw new Error(error.message || 'Upload failed');
+        let statusInterval: NodeJS.Timeout | null = null;
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Upload started:', result);
+          
+          if (result.success && result.uploadId) {
+            // Start polling for status updates
+            setUploadStatus('🔄 Processing started, checking status...');
+            
+            statusInterval = setInterval(async () => {
+              try {
+                const statusResponse = await fetch(`/api/async-upload?uploadId=${result.uploadId}`);
+                if (statusResponse.ok) {
+                  const status = await statusResponse.json();
+                  
+                  if (status.message) {
+                    setUploadStatus(`📊 ${status.progress}% - ${status.message}`);
+                  }
+                  
+                  // Check if processing is complete
+                  if (status.stage === 'completed') {
+                    if (statusInterval) clearInterval(statusInterval);
+                    setUploadStatus('✅ Processing completed successfully!');
+                    
+                    // Refresh stats after completion
+                    await fetchStats();
+                    
+                    setTimeout(() => {
+                      setUploading(false);
+                      setSelectedFiles([]);
+                      setUploadStatus('');
+                    }, 2000);
+                    return;
+                  }
+                  
+                  // Check if processing failed
+                  if (status.stage === 'failed') {
+                    if (statusInterval) clearInterval(statusInterval);
+                    setUploadStatus(`❌ Processing failed: ${status.error || 'Unknown error'}`);
+                    setTimeout(() => {
+                      setUploading(false);
+                      setUploadStatus('');
+                    }, 3000);
+                    return;
+                  }
+                }
+              } catch (statusError) {
+                console.error('Status check error:', statusError);
+              }
+            }, 2000); // Check every 2 seconds
+            
+            return; // Exit early, let polling handle the rest
+          }
+          
+          // Fallback for non-async response
+          const { stats } = result;
+          const processingTime = stats?.processingTimeMs ? Math.round(stats.processingTimeMs / 1000) : 0;
+          const cost = stats?.estimatedCostUsd ? `$${stats.estimatedCostUsd.toFixed(4)}` : '';
+          
+          let message = `✅ Success! Extracted ${stats?.totalExtracted || 0} products`;
+          if (stats?.newProducts || stats?.updatedProducts) {
+            message += ` (${stats.newProducts || 0} new, ${stats.updatedProducts || 0} updated)`;
+          }
+          if (processingTime > 0) {
+            message += ` in ${processingTime}s`;
+          }
+          if (cost) {
+            message += ` • Cost: ${cost}`;
+          }
+          
+          setUploadStatus(message);
+          setSelectedFiles([]);
+          setSelectedSupplier('');
+          
+          // Refresh data after upload
+          await fetchData();
+          
+          setTimeout(() => {
+            setUploadStatus('');
+          }, 8000);
+        } else {
+          const error = await response.json();
+          throw new Error(error.message || 'Upload failed');
+        }
+      } catch (fetchError) {
+        // Clear all pending status updates on error
+        timeouts.forEach(clearTimeout);
+        throw fetchError;
       }
     } catch (error) {
       console.error('Upload error:', error);

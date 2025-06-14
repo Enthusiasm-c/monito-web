@@ -1,0 +1,208 @@
+{
+  "timestamp": "2025-06-14T05:01:26.241Z",
+  "file": "widi wiguna.xlsx",
+  "processingTimeMs": 17408,
+  "tokensUsed": 8579,
+  "cost": 0.042345,
+  "productsExtracted": 31,
+  "supplier": {
+    "name": "UD Widi Wiguna",
+    "contact": "Ni Nyoman Suartini",
+    "email": "",
+    "phone": "",
+    "address": "Denpasar"
+  },
+  "products": [
+    {
+      "name": "Ares",
+      "price": 12000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Asparagus",
+      "price": 95000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Long Bean Sprouts",
+      "price": 10000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Green Beans",
+      "price": 22000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Baby Green Beans",
+      "price": 45000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Long Beans",
+      "price": 15000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Red Beans",
+      "price": 45000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Bean Sprouts Super",
+      "price": 12000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Beetroot",
+      "price": 40000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Broccoli Cut",
+      "price": 60000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Chinese Cabbage",
+      "price": 16000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Red Cabbage",
+      "price": 40000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "White Cabbage",
+      "price": 10000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Green Bell Pepper",
+      "price": 60000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Red Bell Pepper",
+      "price": 70000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Yellow Bell Pepper",
+      "price": 70000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Imported Carrot",
+      "price": 23000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Local Carrot",
+      "price": 18000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Cauliflower Clean",
+      "price": 35000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Celery",
+      "price": 50000,
+      "unit": "kg",
+      "category": "vegetables"
+    },
+    {
+      "name": "Fresh Milk Greenfields",
+      "price": 28000,
+      "unit": "l",
+      "category": "dairy"
+    },
+    {
+      "name": "Chicken Breast",
+      "price": 57000,
+      "unit": "kg",
+      "category": "meat"
+    },
+    {
+      "name": "Chicken Wings",
+      "price": 40000,
+      "unit": "kg",
+      "category": "meat"
+    },
+    {
+      "name": "Spring Chicken",
+      "price": 42000,
+      "unit": "kg",
+      "category": "meat"
+    },
+    {
+      "name": "Whole Chicken",
+      "price": 42000,
+      "unit": "kg",
+      "category": "meat"
+    },
+    {
+      "name": "Beef Tenderloin",
+      "price": 165000,
+      "unit": "kg",
+      "category": "meat"
+    },
+    {
+      "name": "Premium Beef",
+      "price": 120000,
+      "unit": "kg",
+      "category": "meat"
+    },
+    {
+      "name": "Beef Bones",
+      "price": 75000,
+      "unit": "kg",
+      "category": "meat"
+    },
+    {
+      "name": "Oxtail",
+      "price": 75000,
+      "unit": "kg",
+      "category": "meat"
+    },
+    {
+      "name": "Pork Sam-Sam",
+      "price": 115000,
+      "unit": "kg",
+      "category": "meat"
+    },
+    {
+      "name": "Chicken Eggs",
+      "price": 55000,
+      "unit": "crate",
+      "category": "dairy"
+    }
+  ],
+  "performance": {
+    "costPerProduct": 0.0013659677419354838,
+    "productsPerSecond": 1.7807904411764706,
+    "tokensPerProduct": 276.741935483871
+  }
+}
