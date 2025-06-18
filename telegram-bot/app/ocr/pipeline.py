@@ -9,6 +9,7 @@ from typing import Dict, Any, Optional, List
 import openai
 from PIL import Image
 from loguru import logger
+import httpx
 
 from ..config import settings
 
@@ -17,7 +18,15 @@ class OCRPipeline:
     """Main OCR pipeline for processing invoices"""
     
     def __init__(self):
-        self.client = openai.OpenAI(api_key=settings.openai_api_key)
+        # Create httpx client without proxy settings
+        http_client = httpx.Client(
+            timeout=httpx.Timeout(30.0, connect=10.0),
+            limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
+        )
+        self.client = openai.OpenAI(
+            api_key=settings.openai_api_key,
+            http_client=http_client
+        )
         self.model = settings.openai_model
     
     async def process_invoice(self, image: Image.Image) -> Dict[str, Any]:
@@ -85,10 +94,32 @@ class OCRPipeline:
         2. Invoice date
         3. Product list with names, quantities, unit prices, and total prices
         
-        IMPORTANT for Indonesian invoices:
-        - Dots (.) are thousand separators (e.g., 1.500 = 1500)
-        - Commas (,) are decimal separators
+        CRITICAL RULES for Indonesian invoices:
+        - HARGA = unit price per item (price per kg, per pcs, etc.)
+        - JUMLAH = total amount for that line (harga × quantity)
+        - For unit_price field, ALWAYS use HARGA column, NOT JUMLAH
+        - For total_price field, use JUMLAH column if available
+        - Extract prices EXACTLY as they appear in the invoice
+        - DO NOT convert or interpret numbers - return raw values
+        - If you see "2.200" return 2200 (remove dots used as thousand separators)  
+        - If you see "244" or "244.000" return 244000
+        - Minimum realistic price is 1000 IDR
+        - Dots (.) are thousand separators (e.g., 1.500 = 1500, 10.000 = 10000)
+        - Commas (,) are decimal separators (rare in invoices)
         - Common units: kg, gr, ltr, pcs, dus, pak
+        
+        Table structure recognition:
+        - Look for columns like: Nama/Product, Qty/Jumlah Barang, Satuan/Unit, Harga/Price, Jumlah/Total
+        - Extract unit_price from "Harga" column (price per unit)
+        - Extract total_price from "Jumlah" column (total amount)
+        - VALIDATE: total_price should equal unit_price × quantity
+        - If math doesn't work, prioritize the "Harga" column value for unit_price
+        - If no separate columns, calculate: total_price = unit_price × quantity
+        
+        CRITICAL VALIDATION:
+        - For each row, verify: Harga × Qty = Jumlah
+        - If this formula doesn't match, the OCR extraction is wrong
+        - Example: Green Bean, 0.5 kg, Harga: 18000, Jumlah: 9000 → unit_price=18000, total_price=9000
         
         Return a JSON object with this structure:
         {
@@ -98,13 +129,15 @@ class OCRPipeline:
                 {
                     "name": "product name",
                     "quantity": number,
-                    "unit": "string",
-                    "unit_price": number,
-                    "total_price": number
+                    "unit": "string", 
+                    "unit_price": number (from HARGA column - price per unit),
+                    "total_price": number (from JUMLAH column - total amount)
                 }
             ],
             "confidence": 0.0-1.0
         }
+        
+        Example: if HARGA shows "Rp 2.500" and JUMLAH shows "Rp 5.000", return unit_price: 2500, total_price: 5000
         """
         
         try:
@@ -182,6 +215,26 @@ class OCRPipeline:
             total_price = self._parse_indonesian_number(
                 str(product.get('total_price', unit_price))
             )
+            
+            # Fix common OCR mistakes with missing zeros
+            # If price is suspiciously low (< 1000), multiply by 1000
+            if unit_price > 0 and unit_price < 1000:
+                unit_price = unit_price * 1000
+            if total_price > 0 and total_price < 1000:
+                total_price = total_price * 1000
+            
+            # Additional validation: check if unit_price makes sense
+            quantity = float(product.get('quantity', 1))
+            if quantity > 0 and total_price > 0 and unit_price > 0:
+                # Calculate expected total from unit price
+                expected_total = unit_price * quantity
+                # If they don't match within 10%, there might be an extraction error
+                if abs(expected_total - total_price) / total_price > 0.1:
+                    # OCR might have mixed up unit_price and total_price
+                    # Calculate unit price from total price
+                    calculated_unit_price = total_price / quantity
+                    if calculated_unit_price >= 1000:  # Reasonable unit price
+                        unit_price = calculated_unit_price
             
             cleaned_product = {
                 'name': product['name'].strip(),

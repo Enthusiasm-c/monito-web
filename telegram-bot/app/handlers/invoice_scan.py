@@ -12,7 +12,7 @@ from PIL import Image
 from ..config import get_text
 from ..database_api import db_api as db
 from ..ocr.pipeline import OCRPipeline
-from ..utils.formatting import format_comparison_report
+from ..utils.formatting import format_comparison_report, format_price
 
 router = Router()
 
@@ -59,27 +59,133 @@ async def handle_invoice_photo(message: types.Message):
         supplier_name = result.get('supplier_name', 'Unknown Supplier')
         invoice_date = result.get('date', datetime.now().strftime('%Y-%m-%d'))
         
-        # Find supplier in database
-        supplier = await db.find_supplier_by_name(supplier_name) if supplier_name != 'Unknown Supplier' else None
+        # Log OCR result for debugging
+        logger.info(f"OCR result: {len(result.get('products', []))} products extracted")
+        for idx, item in enumerate(result.get('products', [])):
+            logger.info(f"OCR Item {idx}: {item.get('name')} - Qty: {item.get('quantity')} - Unit Price: {item.get('unit_price')} - Total: {item.get('total_price')}")
         
-        # Prepare products for comparison
+        # Prepare products for comparison - no supplier check needed
         product_supplier_pairs = []
         for item in result['products']:
+            # Always use unit_price for comparison (price per unit)
+            # This ensures we compare like-for-like prices
+            unit_price = item.get('unit_price', 0)
+            if unit_price == 0:
+                # Fallback: calculate unit price from total price if available
+                total_price = item.get('total_price', 0)
+                quantity = item.get('quantity', 1)
+                if total_price > 0 and quantity > 0:
+                    unit_price = total_price / quantity
+            
             product_supplier_pairs.append((
                 item['name'],
-                supplier['id'] if supplier else None,
-                item.get('total_price', item.get('unit_price', 0))
+                None,  # Don't match by supplier, just compare all prices
+                unit_price
             ))
         
+        # Log request data
+        logger.info(f"Sending {len(product_supplier_pairs)} items for comparison")
+        for idx, item in enumerate(product_supplier_pairs):
+            logger.info(f"Item {idx}: {item[0]} - Price: {item[2]}")
+        
         # Compare prices
-        comparison = await db.compare_prices_bulk(product_supplier_pairs)
+        api_response = await db.compare_prices_bulk(product_supplier_pairs)
+        
+        # Log API response for debugging
+        logger.info(f"API comparison response: {len(api_response) if api_response else 0} items")
+        
+        if not api_response:
+            logger.error("API returned empty response")
+            await processing_msg.edit_text(
+                "❌ Failed to compare prices. Please try again later.",
+                parse_mode="Markdown"
+            )
+            return
+            
+        for idx, comp in enumerate(api_response):
+            logger.info(f"Item {idx}: {comp.get('product_name')} - Status: {comp.get('status')}")
+        
+        # Transform API response to expected format
+        comparison_data = {
+            'comparisons': [],
+            'total_current': 0,
+            'total_savings': 0,
+            'total_savings_percent': 0
+        }
+        
+        not_found_items = []
+        
+        for comp in api_response:
+            if comp.get('status') == 'not_found':
+                not_found_items.append({
+                    'product_name': comp['product_name'],
+                    'scanned_price': comp['scanned_price']
+                })
+                continue
+                
+            analysis = comp.get('price_analysis', {})
+            scanned_price = comp['scanned_price']
+            min_price = analysis.get('min_price', scanned_price)
+            
+            # Get better deals from API response
+            better_deals = analysis.get('better_deals', [])
+            has_better_deals = analysis.get('has_better_deals', False)
+            
+            # Find best supplier from better deals
+            best_supplier = better_deals[0]['supplier'] if better_deals else 'Current price is best'
+            
+            can_optimize = has_better_deals
+            savings = better_deals[0]['savings'] if better_deals else 0
+            savings_percent = better_deals[0]['savings_percent'] if better_deals else 0
+            
+            comparison_data['comparisons'].append({
+                'product_name': comp['product_name'],
+                'current_price': scanned_price,
+                'best_price': min_price,
+                'best_supplier': best_supplier,
+                'can_optimize': can_optimize,
+                'savings': savings,
+                'savings_percent': savings_percent,
+                'better_deals': better_deals  # Include all better deals
+            })
+            
+            comparison_data['total_current'] += scanned_price
+            comparison_data['total_savings'] += savings
+        
+        # Calculate total savings percentage
+        if comparison_data['total_current'] > 0:
+            comparison_data['total_savings_percent'] = (
+                comparison_data['total_savings'] / comparison_data['total_current'] * 100
+            )
         
         # Format and send report
-        report = format_comparison_report(comparison, supplier_name)
-        await processing_msg.edit_text(
-            report,
-            parse_mode="Markdown"
-        )
+        report = format_comparison_report(comparison_data, supplier_name)
+        
+        # Add not found items to report (limited to avoid message length issues)
+        if not_found_items:
+            report += "\n\n❓ *Products not found in database:*"
+            for idx, item in enumerate(not_found_items[:3]):  # Limit to 3 items
+                product_name = item['product_name'][:30]  # Limit length
+                report += f"\n• {product_name} - {format_price(item['scanned_price'])}"
+            if len(not_found_items) > 3:
+                report += f"\n• \\.\\.\\. and {len(not_found_items) - 3} more items"
+            report += "\n\n_These products may be new or have different names in our database\\._"
+        
+        # Limit total message length
+        if len(report) > 4000:
+            report = report[:3900] + "\n\n_\\.\\.\\. message truncated due to length_"
+        
+        # Try with MarkdownV2 first, fallback to plain text if it fails
+        try:
+            await processing_msg.edit_text(
+                report,
+                parse_mode="MarkdownV2"
+            )
+        except Exception as e:
+            logger.warning(f"MarkdownV2 failed: {e}, falling back to plain text")
+            # Remove markdown formatting and send as plain text
+            plain_report = report.replace('*', '').replace('_', '').replace('\\', '')
+            await processing_msg.edit_text(plain_report)
         
         # Log successful processing
         logger.info(f"Successfully processed invoice with {len(result['products'])} products")

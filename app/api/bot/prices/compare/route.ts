@@ -29,8 +29,8 @@ export async function POST(request: NextRequest) {
 
     const comparisons = await Promise.all(
       items.map(async (item: ComparisonRequest) => {
-        // Search for product
-        const products = await prisma.product.findMany({
+        // Search for product - first try exact match
+        let products = await prisma.product.findMany({
           where: {
             OR: [
               { name: { contains: item.product_name, mode: 'insensitive' } },
@@ -53,21 +53,93 @@ export async function POST(request: NextRequest) {
               }
             }
           },
-          take: 5
+          take: 20 // Get more products to find best matches
         });
 
-        // Find best matching product
-        let bestMatch = products[0];
-        if (products.length > 1) {
-          // Simple matching score based on name similarity
-          bestMatch = products.reduce((best, current) => {
-            const bestScore = calculateSimilarity(item.product_name, best.name);
-            const currentScore = calculateSimilarity(item.product_name, current.name);
-            return currentScore > bestScore ? current : best;
-          });
+        // If no products found, try word-based search
+        if (products.length === 0) {
+          const words = item.product_name.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+          if (words.length > 0) {
+            const wordConditions = words.map(word => ({
+              OR: [
+                { name: { contains: word, mode: 'insensitive' } },
+                { standardizedName: { contains: word, mode: 'insensitive' } },
+                { rawName: { contains: word, mode: 'insensitive' } }
+              ]
+            }));
+
+            products = await prisma.product.findMany({
+              where: {
+                OR: wordConditions
+              },
+              include: {
+                prices: {
+                  where: {
+                    validTo: null
+                  },
+                  include: {
+                    supplier: {
+                      select: {
+                        id: true,
+                        name: true
+                      }
+                    }
+                  }
+                }
+              },
+              take: 20
+            });
+          }
         }
 
-        if (!bestMatch) {
+        // If no products found, try fuzzy search for common misspellings
+        if (products.length === 0) {
+          // Common OCR mistakes
+          const variations = [
+            item.product_name,
+            item.product_name.replace(/z/gi, 'zz'), // mozarella -> mozzarella
+            item.product_name.replace(/zz/gi, 'z'), // mozzarella -> mozarella
+            item.product_name.replace(/l{2}/gi, 'll'), // mayonaise -> mayonnaise
+            item.product_name.replace(/n{2}/gi, 'n'), // mayonnaise -> mayonaise
+            item.product_name.replace(/naise$/i, 'nnaise'), // mayonaise -> mayonnaise
+            item.product_name.replace(/nnaise$/i, 'naise'), // mayonnaise -> mayonaise
+          ];
+
+          for (const variant of variations) {
+            if (variant !== item.product_name) {
+              products = await prisma.product.findMany({
+                where: {
+                  OR: [
+                    { name: { contains: variant, mode: 'insensitive' } },
+                    { standardizedName: { contains: variant, mode: 'insensitive' } },
+                    { rawName: { contains: variant, mode: 'insensitive' } }
+                  ]
+                },
+                include: {
+                  prices: {
+                    where: {
+                      validTo: null
+                    },
+                    include: {
+                      supplier: {
+                        select: {
+                          id: true,
+                          name: true
+                        }
+                      }
+                    }
+                  }
+                },
+                take: 20 // Get more products to find best matches
+              });
+              
+              if (products.length > 0) break;
+            }
+          }
+        }
+
+        // Check if we have any products
+        if (products.length === 0) {
           return {
             product_name: item.product_name,
             scanned_price: item.scanned_price,
@@ -77,8 +149,53 @@ export async function POST(request: NextRequest) {
           };
         }
 
-        // Get all prices for this product
-        const allPrices = bestMatch.prices.map(p => Number(p.amount));
+        // Find best matching product
+        let bestMatch = products[0];
+        if (products.length > 1) {
+          // Simple matching score based on name similarity
+          bestMatch = products.reduce((best, current) => {
+            const bestScore = calculateSimilarity(item.product_name, best.name);
+            const currentScore = calculateSimilarity(item.product_name, current.name);
+            return currentScore > bestScore ? current : best;
+          }, products[0]); // Add initial value to prevent reduce error
+        }
+
+        // Collect all prices from all matching products
+        const allPriceEntries: Array<{price: number, supplier: string, productName: string}> = [];
+        
+        products.forEach(product => {
+          product.prices.forEach(p => {
+            allPriceEntries.push({
+              price: Number(p.amount),
+              supplier: p.supplier.name,
+              productName: product.name
+            });
+          });
+        });
+
+        // Sort by price
+        allPriceEntries.sort((a, b) => a.price - b.price);
+        
+        // Get better deals (prices lower than scanned price)
+        const betterDeals = allPriceEntries.filter(entry => entry.price < item.scanned_price);
+        
+        // Remove duplicates (same supplier + same price + same product)
+        const uniqueBetterDeals = betterDeals.reduce((acc: typeof betterDeals, current) => {
+          const isDuplicate = acc.some(deal => 
+            deal.supplier === current.supplier && 
+            deal.price === current.price &&
+            deal.productName === current.productName
+          );
+          if (!isDuplicate) {
+            acc.push(current);
+          }
+          return acc;
+        }, []);
+        
+        const topBetterDeals = uniqueBetterDeals.slice(0, 5); // Top 5 unique better deals
+
+        // Calculate price statistics
+        const allPrices = allPriceEntries.map(entry => entry.price);
         const minPrice = Math.min(...allPrices);
         const maxPrice = Math.max(...allPrices);
         const avgPrice = allPrices.reduce((a, b) => a + b, 0) / allPrices.length;
@@ -124,11 +241,19 @@ export async function POST(request: NextRequest) {
             supplier_price: supplierPrice,
             deviation_percent: Math.round(deviation * 10) / 10,
             supplier_count: allPrices.length,
-            suppliers: bestMatch.prices.map(p => ({
-              id: p.supplier.id,
-              name: p.supplier.name,
-              price: Number(p.amount)
-            })).sort((a, b) => a.price - b.price)
+            suppliers: allPriceEntries.slice(0, 10).map(entry => ({
+              name: entry.supplier,
+              price: entry.price,
+              product_name: entry.productName
+            })),
+            better_deals: topBetterDeals.map(deal => ({
+              supplier: deal.supplier,
+              price: deal.price,
+              product_name: deal.productName,
+              savings: item.scanned_price - deal.price,
+              savings_percent: Math.round(((item.scanned_price - deal.price) / item.scanned_price) * 100)
+            })),
+            has_better_deals: betterDeals.length > 0
           }
         };
       })
