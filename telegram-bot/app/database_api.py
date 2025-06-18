@@ -72,12 +72,23 @@ class DatabaseAPI:
         # Convert tuples to API format
         api_items = []
         for item in items:
-            product_name, supplier_id, scanned_price = item
-            api_items.append({
-                'product_name': product_name,
-                'supplier_id': supplier_id,
-                'scanned_price': float(scanned_price)
-            })
+            if len(item) == 4:
+                # New format with unit
+                product_name, supplier_id, scanned_price, unit = item
+                api_items.append({
+                    'product_name': product_name,
+                    'supplier_id': supplier_id,
+                    'scanned_price': float(scanned_price),
+                    'unit': unit
+                })
+            else:
+                # Old format without unit
+                product_name, supplier_id, scanned_price = item
+                api_items.append({
+                    'product_name': product_name,
+                    'supplier_id': supplier_id,
+                    'scanned_price': float(scanned_price)
+                })
         
         try:
             async with self.session.post(

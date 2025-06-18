@@ -80,7 +80,8 @@ async def handle_invoice_photo(message: types.Message):
             product_supplier_pairs.append((
                 item['name'],
                 None,  # Don't match by supplier, just compare all prices
-                unit_price
+                unit_price,
+                item.get('unit', '')  # Include unit for comparison
             ))
         
         # Log request data

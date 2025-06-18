@@ -1,20 +1,24 @@
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+import { calculateUnitPrice } from '../../lib/utils/unit-price-calculator';
 
 interface CreatePriceInput {
   amount: number;
-  currency?: string;
+  unit: string;
+  supplierId: string;
   productId: string;
   uploadId: string;
   validFrom?: Date;
+  quantity?: number; // For unit price calculation
 }
 
 interface UpdatePriceInput {
   supplierId: string;
   productId: string;
   amount: number;
-  currency?: string;
+  unit: string;
   uploadId: string;
+  quantity?: number; // For unit price calculation
 }
 
 /**
@@ -27,10 +31,17 @@ export class PriceService {
   static async createPrice(data: CreatePriceInput, tx?: Prisma.TransactionClient) {
     const client = tx || prisma;
     
+    // Calculate unit price if possible
+    const unitPrice = data.quantity 
+      ? calculateUnitPrice(data.amount, data.quantity, data.unit)
+      : calculateUnitPrice(data.amount, 1, data.unit); // Assume 1 unit if no quantity
+    
     return await client.price.create({
       data: {
         amount: data.amount,
-        currency: data.currency || 'IDR',
+        unit: data.unit,
+        unitPrice: unitPrice,
+        supplierId: data.supplierId,
         productId: data.productId,
         uploadId: data.uploadId,
         validFrom: data.validFrom || new Date(),
@@ -80,11 +91,18 @@ export class PriceService {
         });
       }
       
+      // Calculate unit price if possible
+      const unitPrice = data.quantity 
+        ? calculateUnitPrice(data.amount, data.quantity, data.unit)
+        : calculateUnitPrice(data.amount, 1, data.unit); // Assume 1 unit if no quantity
+      
       // Create new price record
       const newPrice = await transactionClient.price.create({
         data: {
           amount: data.amount,
-          currency: data.currency || 'IDR',
+          unit: data.unit,
+          unitPrice: unitPrice,
+          supplierId: data.supplierId,
           productId: data.productId,
           uploadId: data.uploadId,
           validFrom: new Date(),
@@ -110,7 +128,8 @@ export class PriceService {
     products: Array<{
       productId: string;
       amount: number;
-      currency?: string;
+      unit: string;
+      quantity?: number;
     }>,
     uploadId: string,
     tx?: Prisma.TransactionClient
@@ -127,7 +146,8 @@ export class PriceService {
               supplierId,
               productId: product.productId,
               amount: product.amount,
-              currency: product.currency,
+              unit: product.unit,
+              quantity: product.quantity,
               uploadId,
             },
             transactionClient

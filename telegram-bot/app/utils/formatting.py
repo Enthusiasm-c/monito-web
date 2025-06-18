@@ -54,24 +54,27 @@ def format_comparison_report(comparison_data: Dict[str, Any], supplier_name: str
     
     lines.append("\n*Price Comparison:*")
     
-    # Product comparisons
-    optimizable = []
-    for comp in comparison_data['comparisons']:
+    # Product comparisons with numbers, bold product names and up to 3 better deals
+    for i, comp in enumerate(comparison_data['comparisons'], 1):
         product = comp['product_name']
         current = format_price(comp['current_price'])
-        best = format_price(comp['best_price'])
         
         if comp['can_optimize']:
-            emoji = "⚠️"
-            optimizable.append(comp)
-            lines.append(
-                f"{emoji} {product} - {current}\n"
-                f"   Better price: {comp['best_supplier']} - {best} "
-                f"(-{comp['savings_percent']:.0f}%)"
-            )
+            status_emoji = "⚠️"
+            lines.append(f"{i}\\. **{product}** \\- {current} {status_emoji}")
+            
+            # Show up to 3 better deals for this product
+            better_deals = comp.get('better_deals', [])[:3]
+            for deal in better_deals:
+                deal_price = format_price(deal['price'])
+                savings_pct = deal['savings_percent']
+                lines.append(
+                    f"   • {deal['supplier']} \\- {deal_price} \\(\\-{savings_pct}%\\)"
+                )
         else:
-            emoji = "✅"
-            lines.append(f"{emoji} {product} - {current} (best price!)")
+            status_emoji = "✅"
+            lines.append(f"{i}\\. **{product}** \\- {current} \\(best price\\!\\) {status_emoji}")
+    
     
     # Summary
     lines.append("\n*Summary:*")
@@ -82,18 +85,9 @@ def format_comparison_report(comparison_data: Dict[str, Any], supplier_name: str
     
     if comparison_data['total_savings'] > 0:
         lines.append(f"💰 Potential savings: {total_savings} "
-                    f"(-{comparison_data['total_savings_percent']:.0f}%)")
-        
-        # Recommendations
-        if optimizable:
-            lines.append("\n*Recommendations:*")
-            for comp in optimizable[:3]:  # Top 3 savings
-                lines.append(
-                    f"• Switch {comp['product_name']} to {comp['best_supplier']} "
-                    f"(save {format_price(comp['savings'])})"
-                )
+                    f"\\(\\-{comparison_data['total_savings_percent']:.0f}%\\)")
     else:
-        lines.append("✅ All prices are optimal!")
+        lines.append("✅ All prices are optimal\\!")
     
     return "\n".join(lines)
 

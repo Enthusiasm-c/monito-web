@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { authenticateBot } from '../../middleware';
-import { calculateUnitPrice, areUnitsComparable, getCanonicalUnit } from '../../../lib/utils/unit-price-calculator';
+import { calculateUnitPrice, areUnitsComparable, getCanonicalUnit } from '../../../../lib/utils/unit-price-calculator';
 
 const prisma = new PrismaClient();
 
@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
         if (products.length === 0) {
           const words = item.product_name.toLowerCase().split(/\s+/).filter(w => w.length > 2);
           if (words.length > 0) {
+            // First try OR conditions for individual words (more permissive)
             const wordConditions = words.map(word => ({
               OR: [
                 { name: { contains: word, mode: 'insensitive' } },
@@ -131,6 +132,36 @@ export async function POST(request: NextRequest) {
               take: 20
             });
           }
+        }
+
+        // If still no results, try partial word matches (for short queries like "romana")
+        if (products.length === 0 && item.product_name.length >= 4) {
+          const query = item.product_name.toLowerCase();
+          products = await prisma.product.findMany({
+            where: {
+              OR: [
+                { name: { contains: query, mode: 'insensitive' } },
+                { standardizedName: { contains: query, mode: 'insensitive' } },
+                { rawName: { contains: query, mode: 'insensitive' } }
+              ]
+            },
+            include: {
+              prices: {
+                where: {
+                  validTo: null
+                },
+                include: {
+                  supplier: {
+                    select: {
+                      id: true,
+                      name: true
+                    }
+                  }
+                }
+              }
+            },
+            take: 20
+          });
         }
 
         // If no products found, try fuzzy search for common misspellings
@@ -190,35 +221,57 @@ export async function POST(request: NextRequest) {
           };
         }
 
-        // Find best matching product, prioritizing unit match
+        // Find best matching product, prioritizing similarity score and unit match
         let bestMatch = products[0];
-        if (products.length > 1) {
-          // If unit is provided, prioritize products with matching units
-          if (item.unit) {
-            const scannedCanonical = getCanonicalUnit(item.unit);
-            bestMatch = products.reduce((best, current) => {
-              const bestCanonical = getCanonicalUnit(best.unit);
-              const currentCanonical = getCanonicalUnit(current.unit);
-              const bestUnitMatch = bestCanonical === scannedCanonical;
-              const currentUnitMatch = currentCanonical === scannedCanonical;
-              
-              // Prioritize unit match
-              if (currentUnitMatch && !bestUnitMatch) return current;
-              if (!currentUnitMatch && bestUnitMatch) return best;
-              
-              // If both match or both don't match, use enhanced product similarity
-              const bestScore = calculateProductSimilarity(item.product_name, best.name);
-              const currentScore = calculateProductSimilarity(item.product_name, current.name);
-              return currentScore > bestScore ? current : best;
-            }, products[0]);
-          } else {
-            // No unit provided, use enhanced product similarity
-            bestMatch = products.reduce((best, current) => {
-              const bestScore = calculateProductSimilarity(item.product_name, best.name);
-              const currentScore = calculateProductSimilarity(item.product_name, current.name);
-              return currentScore > bestScore ? current : best;
-            }, products[0]);
-          }
+        
+        // Always apply similarity scoring, even for single product
+        if (item.unit) {
+          const scannedCanonical = getCanonicalUnit(item.unit);
+          bestMatch = products.reduce((best, current) => {
+            const bestCanonical = getCanonicalUnit(best.unit);
+            const currentCanonical = getCanonicalUnit(current.unit);
+            const bestUnitMatch = bestCanonical === scannedCanonical;
+            const currentUnitMatch = currentCanonical === scannedCanonical;
+            
+            // First check similarity scores to exclude incompatible products
+            const bestScore = calculateProductSimilarity(item.product_name, best.name);
+            const currentScore = calculateProductSimilarity(item.product_name, current.name);
+            
+            // Exclude products with 0 similarity (incompatible modifiers)
+            if (currentScore === 0) return best;
+            if (bestScore === 0) return current;
+            
+            // Prioritize unit match among compatible products
+            if (currentUnitMatch && !bestUnitMatch) return current;
+            if (!currentUnitMatch && bestUnitMatch) return best;
+            
+            // If both match or both don't match, use higher similarity score
+            return currentScore > bestScore ? current : best;
+          }, products[0]);
+        } else {
+          // No unit provided, use enhanced product similarity only
+          bestMatch = products.reduce((best, current) => {
+            const bestScore = calculateProductSimilarity(item.product_name, best.name);
+            const currentScore = calculateProductSimilarity(item.product_name, current.name);
+            
+            // Exclude products with 0 similarity (incompatible modifiers)
+            if (currentScore === 0) return best;
+            if (bestScore === 0) return current;
+            
+            return currentScore > bestScore ? current : best;
+          }, products[0]);
+        }
+        
+        // Final check: if best match has 0 similarity, skip this item
+        const finalSimilarity = calculateProductSimilarity(item.product_name, bestMatch.name);
+        if (finalSimilarity === 0) {
+          return {
+            product_name: item.product_name,
+            scanned_price: item.scanned_price,
+            status: 'not_found',
+            matched_product: null,
+            price_analysis: null
+          };
         }
 
         // MVP: Calculate scanned unit price for comparison
@@ -478,10 +531,16 @@ function hasExclusiveModifierMismatch(query: string, productName: string): boole
   const queryExclusives = queryWords.filter(w => PRODUCT_MODIFIERS.exclusive.includes(w));
   const productExclusives = productWords.filter(w => PRODUCT_MODIFIERS.exclusive.includes(w));
   
-  // If product has exclusive modifiers that query doesn't have, it's a mismatch
-  const incompatibleModifiers = productExclusives.filter(mod => !queryExclusives.includes(mod));
+  // FIXED: Only reject if query has exclusive modifiers that don't match product
+  // Allow partial queries without exclusive modifiers to match products with them
+  if (queryExclusives.length === 0) {
+    return false; // Query has no exclusive modifiers, so allow any product
+  }
   
-  return incompatibleModifiers.length > 0;
+  // If query has exclusive modifiers, check if product conflicts
+  const conflictingModifiers = queryExclusives.filter(mod => !productExclusives.includes(mod));
+  
+  return conflictingModifiers.length > 0;
 }
 
 // Get core product words (excluding modifiers)

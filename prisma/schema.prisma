@@ -43,6 +43,7 @@ model Price {
   id         String    @id @default(cuid())
   amount     Decimal
   unit       String
+  unitPrice  Decimal?  @map("unit_price") // Price per canonical unit (e.g., per kg, per liter)
   supplierId String
   productId  String
   uploadId   String?
@@ -55,6 +56,7 @@ model Price {
   upload     Upload?   @relation(fields: [uploadId], references: [id])
 
   @@unique([supplierId, productId, validFrom])
+  @@index([unitPrice]) // Index for fast price comparison queries
   @@map("prices")
 }
 

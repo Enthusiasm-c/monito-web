@@ -4,6 +4,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { calculateUnitPrice } from '../app/lib/utils/unit-price-calculator';
 
 export interface ProductValidationRule {
   requirePrice: boolean;
@@ -125,10 +126,16 @@ export class ProductValidator {
         throw new Error(`Price validation failed: ${priceValidation.errors.join(', ')}`);
       }
       
+      // Calculate unit price for the new price record
+      const unitPrice = priceData.quantity 
+        ? calculateUnitPrice(priceData.amount, priceData.quantity, priceData.unit || product.unit)
+        : calculateUnitPrice(priceData.amount, 1, priceData.unit || product.unit);
+      
       await this.prisma.price.create({
         data: {
           amount: priceData.amount,
           unit: priceData.unit || product.unit,
+          unitPrice: unitPrice,
           supplierId: priceData.supplierId,
           productId: product.id,
           uploadId: priceData.uploadId
