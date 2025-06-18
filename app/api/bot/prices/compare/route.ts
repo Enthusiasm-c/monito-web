@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { authenticateBot } from '../../middleware';
+import { calculateUnitPrice, areUnitsComparable, getCanonicalUnit } from '../../../lib/utils/unit-price-calculator';
 
 const prisma = new PrismaClient();
 
+
 interface ComparisonRequest {
   product_name: string;
-  supplier_id?: string;
+  supplier_id?: string; // Supplier to exclude from recommendations
   scanned_price: number;
+  unit?: string;
+  quantity?: number; // For unit price calculation
 }
 
 // Bulk price comparison for invoice scanning
@@ -56,7 +60,44 @@ export async function POST(request: NextRequest) {
           take: 20 // Get more products to find best matches
         });
 
-        // If no products found, try word-based search
+        // Enhanced search: try exact word match first
+        if (products.length === 0) {
+          const queryWords = getWordsArray(item.product_name);
+          if (queryWords.length > 1) {
+            // Search for products containing ALL query words
+            const allWordsConditions = queryWords.map(word => ({
+              OR: [
+                { name: { contains: word, mode: 'insensitive' } },
+                { standardizedName: { contains: word, mode: 'insensitive' } },
+                { rawName: { contains: word, mode: 'insensitive' } }
+              ]
+            }));
+
+            products = await prisma.product.findMany({
+              where: {
+                AND: allWordsConditions
+              },
+              include: {
+                prices: {
+                  where: {
+                    validTo: null
+                  },
+                  include: {
+                    supplier: {
+                      select: {
+                        id: true,
+                        name: true
+                      }
+                    }
+                  }
+                }
+              },
+              take: 20
+            });
+          }
+        }
+
+        // If still no products found, try word-based search
         if (products.length === 0) {
           const words = item.product_name.toLowerCase().split(/\s+/).filter(w => w.length > 2);
           if (words.length > 0) {
@@ -149,35 +190,131 @@ export async function POST(request: NextRequest) {
           };
         }
 
-        // Find best matching product
+        // Find best matching product, prioritizing unit match
         let bestMatch = products[0];
         if (products.length > 1) {
-          // Simple matching score based on name similarity
-          bestMatch = products.reduce((best, current) => {
-            const bestScore = calculateSimilarity(item.product_name, best.name);
-            const currentScore = calculateSimilarity(item.product_name, current.name);
-            return currentScore > bestScore ? current : best;
-          }, products[0]); // Add initial value to prevent reduce error
+          // If unit is provided, prioritize products with matching units
+          if (item.unit) {
+            const scannedCanonical = getCanonicalUnit(item.unit);
+            bestMatch = products.reduce((best, current) => {
+              const bestCanonical = getCanonicalUnit(best.unit);
+              const currentCanonical = getCanonicalUnit(current.unit);
+              const bestUnitMatch = bestCanonical === scannedCanonical;
+              const currentUnitMatch = currentCanonical === scannedCanonical;
+              
+              // Prioritize unit match
+              if (currentUnitMatch && !bestUnitMatch) return current;
+              if (!currentUnitMatch && bestUnitMatch) return best;
+              
+              // If both match or both don't match, use enhanced product similarity
+              const bestScore = calculateProductSimilarity(item.product_name, best.name);
+              const currentScore = calculateProductSimilarity(item.product_name, current.name);
+              return currentScore > bestScore ? current : best;
+            }, products[0]);
+          } else {
+            // No unit provided, use enhanced product similarity
+            bestMatch = products.reduce((best, current) => {
+              const bestScore = calculateProductSimilarity(item.product_name, best.name);
+              const currentScore = calculateProductSimilarity(item.product_name, current.name);
+              return currentScore > bestScore ? current : best;
+            }, products[0]);
+          }
         }
 
+        // MVP: Calculate scanned unit price for comparison
+        const scannedUnitPrice = item.unit && item.quantity ? 
+          calculateUnitPrice(item.scanned_price, item.quantity, item.unit) : 
+          item.scanned_price;
+
         // Collect all prices from all matching products
-        const allPriceEntries: Array<{price: number, supplier: string, productName: string}> = [];
+        const allPriceEntries: Array<{
+          price: number, 
+          unitPrice: number | null,
+          supplier: string, 
+          supplierId: string,
+          productName: string, 
+          unit: string, 
+          unitMatch: boolean,
+          createdAt: Date
+        }> = [];
+        
+        const scannedCanonicalUnit = item.unit ? getCanonicalUnit(item.unit) : null;
         
         products.forEach(product => {
+          // MODIFIER FIX: Skip products with incompatible exclusive modifiers
+          if (hasExclusiveModifierMismatch(item.product_name, product.name)) {
+            return; // Skip entire product if it has incompatible modifiers
+          }
+          
           product.prices.forEach(p => {
+            // MVP: Skip same supplier recommendations
+            if (item.supplier_id && p.supplierId === item.supplier_id) {
+              return;
+            }
+
+            // MVP: Skip stale prices (older than 30 days)
+            const priceAge = Date.now() - p.createdAt.getTime();
+            const isStale = priceAge > 30 * 24 * 60 * 60 * 1000; // 30 days
+            if (isStale && p.validTo === null) {
+              return;
+            }
+
+            const priceCanonicalUnit = getCanonicalUnit(p.unit || product.unit);
+            const unitsMatch = scannedCanonicalUnit && priceCanonicalUnit && 
+                              scannedCanonicalUnit === priceCanonicalUnit;
+
+            // Calculate unit price for this entry if possible
+            let entryUnitPrice: number | null = null;
+            if (unitsMatch && product.standardizedUnit) {
+              // Try to use existing unitPrice or calculate it
+              if (p.unitPrice) {
+                entryUnitPrice = Number(p.unitPrice);
+              } else {
+                // Fallback calculation assuming amount is for 1 unit
+                entryUnitPrice = calculateUnitPrice(Number(p.amount), 1, p.unit || product.unit);
+              }
+            }
+
             allPriceEntries.push({
               price: Number(p.amount),
+              unitPrice: entryUnitPrice,
               supplier: p.supplier.name,
-              productName: product.name
+              supplierId: p.supplierId,
+              productName: product.name,
+              unit: p.unit || product.unit,
+              unitMatch: unitsMatch,
+              createdAt: p.createdAt
             });
           });
         });
 
-        // Sort by price
-        allPriceEntries.sort((a, b) => a.price - b.price);
+        // Sort by unit match first, then by unit price (if available), then by total price
+        allPriceEntries.sort((a, b) => {
+          // Prioritize unit matches
+          if (a.unitMatch && !b.unitMatch) return -1;
+          if (!a.unitMatch && b.unitMatch) return 1;
+          
+          // For matching units, sort by unit price
+          if (a.unitMatch && b.unitMatch && a.unitPrice && b.unitPrice) {
+            return a.unitPrice - b.unitPrice;
+          }
+          
+          // Fallback to total price
+          return a.price - b.price;
+        });
         
-        // Get better deals (prices lower than scanned price)
-        const betterDeals = allPriceEntries.filter(entry => entry.price < item.scanned_price);
+        // C-4: Get better deals with 5% minimum savings threshold
+        const MIN_SAVING_PCT = Number(process.env.MIN_SAVING_PCT) || 5;
+        const betterDeals = allPriceEntries.filter(entry => {
+          if (scannedUnitPrice && entry.unitPrice && entry.unitMatch) {
+            // Compare unit prices for matching units - require ≥5% savings
+            const savingsPct = ((scannedUnitPrice - entry.unitPrice) / scannedUnitPrice) * 100;
+            return savingsPct >= MIN_SAVING_PCT;
+          }
+          // Fallback to total price comparison - require ≥5% savings
+          const savingsPct = ((item.scanned_price - entry.price) / item.scanned_price) * 100;
+          return savingsPct >= MIN_SAVING_PCT;
+        });
         
         // Remove duplicates (same supplier + same price + same product)
         const uniqueBetterDeals = betterDeals.reduce((acc: typeof betterDeals, current) => {
@@ -192,7 +329,8 @@ export async function POST(request: NextRequest) {
           return acc;
         }, []);
         
-        const topBetterDeals = uniqueBetterDeals.slice(0, 5); // Top 5 unique better deals
+        // C-4: Limit to maximum 3 alternatives, sorted by best price
+        const topBetterDeals = uniqueBetterDeals.slice(0, 3); // Maximum 3 alternatives
 
         // Calculate price statistics
         const allPrices = allPriceEntries.map(entry => entry.price);
@@ -246,14 +384,30 @@ export async function POST(request: NextRequest) {
               price: entry.price,
               product_name: entry.productName
             })),
-            better_deals: topBetterDeals.map(deal => ({
-              supplier: deal.supplier,
-              price: deal.price,
-              product_name: deal.productName,
-              savings: item.scanned_price - deal.price,
-              savings_percent: Math.round(((item.scanned_price - deal.price) / item.scanned_price) * 100)
-            })),
-            has_better_deals: betterDeals.length > 0
+            better_deals: topBetterDeals.map(deal => {
+              // Calculate savings based on unit price when available
+              let savings, savingsPercent;
+              if (scannedUnitPrice && deal.unitPrice && deal.unitMatch) {
+                savings = scannedUnitPrice - deal.unitPrice;
+                savingsPercent = Math.round((savings / scannedUnitPrice) * 100);
+              } else {
+                savings = item.scanned_price - deal.price;
+                savingsPercent = Math.round((savings / item.scanned_price) * 100);
+              }
+
+              return {
+                supplier: deal.supplier,
+                price: deal.price,
+                unit_price: deal.unitPrice,
+                product_name: deal.productName,
+                unit: deal.unit,
+                unit_match: deal.unitMatch,
+                savings: Math.round(savings),
+                savings_percent: savingsPercent
+              };
+            }),
+            has_better_deals: betterDeals.length > 0,
+            is_best_price: topBetterDeals.length === 0 // C-4: Indicate when no better alternatives found
           }
         };
       })
@@ -278,7 +432,139 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Simple string similarity calculation
+// Normalize product name for comparison
+function normalizeProductName(name: string): string {
+  return name.toLowerCase()
+    .replace(/[^\w\s]/g, ' ')  // Remove punctuation
+    .replace(/\s+/g, ' ')       // Normalize spaces
+    .trim();
+}
+
+// Product modifiers classification
+const PRODUCT_MODIFIERS = {
+  // Words that fundamentally change the product (exclude if mismatch)
+  exclusive: [
+    'sweet', 'wild', 'sea', 'mountain', 'water', 'bitter',
+    'black', 'white', 'red', 'green', 'yellow', 'purple',
+    'dried', 'frozen', 'canned', 'pickled', 'smoked',
+    'japanese', 'chinese', 'indian', 'thai', 'korean',
+    'baby', 'young', 'old', 'mature',
+    'male', 'female',
+    'imported', 'organic', 'conventional'
+  ],
+  
+  // Words that describe size/quality but don't change core product
+  descriptive: [
+    'big', 'large', 'huge', 'giant', 'jumbo',
+    'small', 'mini', 'tiny', 'little',
+    'medium', 'regular', 'standard',
+    'fresh', 'new', 'premium', 'grade', 'quality',
+    'whole', 'half', 'piece', 'slice',
+    'local'
+  ]
+};
+
+// Get normalized words array
+function getWordsArray(name: string): string[] {
+  return normalizeProductName(name).split(' ').filter(word => word.length > 0);
+}
+
+// Check if product has incompatible exclusive modifiers
+function hasExclusiveModifierMismatch(query: string, productName: string): boolean {
+  const queryWords = getWordsArray(query);
+  const productWords = getWordsArray(productName);
+  
+  // Find exclusive modifiers in both query and product
+  const queryExclusives = queryWords.filter(w => PRODUCT_MODIFIERS.exclusive.includes(w));
+  const productExclusives = productWords.filter(w => PRODUCT_MODIFIERS.exclusive.includes(w));
+  
+  // If product has exclusive modifiers that query doesn't have, it's a mismatch
+  const incompatibleModifiers = productExclusives.filter(mod => !queryExclusives.includes(mod));
+  
+  return incompatibleModifiers.length > 0;
+}
+
+// Get core product words (excluding modifiers)
+function getCoreWords(name: string): string[] {
+  const words = getWordsArray(name);
+  return words.filter(word => 
+    !PRODUCT_MODIFIERS.exclusive.includes(word) && 
+    !PRODUCT_MODIFIERS.descriptive.includes(word)
+  );
+}
+
+// Check if all query words are present in product name
+function hasAllWords(queryWords: string[], productWords: string[]): boolean {
+  return queryWords.every(qWord => 
+    productWords.some(pWord => pWord.includes(qWord) || qWord.includes(pWord))
+  );
+}
+
+// Enhanced product similarity calculation with modifier awareness
+function calculateProductSimilarity(query: string, productName: string): number {
+  const queryWords = getWordsArray(query);
+  const productWords = getWordsArray(productName);
+  
+  // CRITICAL: Exclude products with incompatible exclusive modifiers
+  if (hasExclusiveModifierMismatch(query, productName)) {
+    return 0; // Immediate rejection for incompatible modifiers
+  }
+  
+  // Exact normalized match (highest priority)
+  if (normalizeProductName(query) === normalizeProductName(productName)) {
+    return 100;
+  }
+  
+  // Check if words match when sorted ("english spinach" = "spinach english")
+  const sortedQuery = [...queryWords].sort().join(' ');
+  const sortedProduct = [...productWords].sort().join(' ');
+  if (sortedQuery === sortedProduct) {
+    return 95;
+  }
+  
+  // Core words must match (excluding modifiers)
+  const queryCoreWords = getCoreWords(query);
+  const productCoreWords = getCoreWords(productName);
+  
+  if (queryCoreWords.length > 0 && productCoreWords.length > 0) {
+    const coreMatch = queryCoreWords.every(coreWord => 
+      productCoreWords.some(pCore => pCore.includes(coreWord) || coreWord.includes(pCore))
+    );
+    
+    if (!coreMatch) {
+      return 0; // Core product must match
+    }
+  }
+  
+  // All query words must be present
+  if (!hasAllWords(queryWords, productWords)) {
+    return 0; // No match if missing required words
+  }
+  
+  // Calculate word overlap score
+  const matchingWords = queryWords.filter(qWord => 
+    productWords.some(pWord => pWord.includes(qWord) || qWord.includes(pWord))
+  );
+  
+  const wordOverlapScore = matchingWords.length / Math.max(queryWords.length, productWords.length);
+  
+  // Bonus for exact word matches
+  const exactMatches = queryWords.filter(qWord => productWords.includes(qWord));
+  const exactMatchBonus = exactMatches.length / queryWords.length * 0.3;
+  
+  // Bonus for products with only descriptive modifiers (vs exclusive ones)
+  const productExclusives = productWords.filter(w => PRODUCT_MODIFIERS.exclusive.includes(w));
+  const productDescriptives = productWords.filter(w => PRODUCT_MODIFIERS.descriptive.includes(w));
+  const descriptiveBonus = (productExclusives.length === 0 && productDescriptives.length > 0) ? 0.1 : 0;
+  
+  // Penalty for extra words in product name
+  const extraWordsPenalty = Math.max(0, productWords.length - queryWords.length) * 0.05; // Reduced penalty
+  
+  const finalScore = (wordOverlapScore + exactMatchBonus + descriptiveBonus - extraWordsPenalty) * 80;
+  return Math.max(0, Math.min(90, finalScore)); // Cap at 90 to reserve 95+ for exact matches
+}
+
+// Legacy similarity function for fallback
 function calculateSimilarity(str1: string, str2: string): number {
   const s1 = str1.toLowerCase();
   const s2 = str2.toLowerCase();
