@@ -1,8 +1,10 @@
+import { prisma } from 'lib/prisma';
+
 // Принудительное исправление всех processing uploads
 const { PrismaClient } = require('@prisma/client');
 
 async function forceFixProcessing() {
-  const prisma = new PrismaClient();
+  
   
   try {
     console.log('🔧 Force fixing all processing uploads...');

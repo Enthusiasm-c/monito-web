@@ -3,9 +3,7 @@
  * Handles asynchronous file processing without HTTP timeouts
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../../lib/prisma';
 
 export interface JobData {
   uploadId: string;

@@ -5,11 +5,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
-import { PrismaClient } from '@prisma/client';
 import { jobQueue } from '../../services/background/JobQueue';
 import '../../services/background/startProcessor';
 
-const prisma = new PrismaClient();
+import { prisma } from '../../../lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {

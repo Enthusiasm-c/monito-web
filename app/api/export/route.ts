@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import * as XLSX from 'xlsx';
 
-const prisma = new PrismaClient();
+import { prisma } from '../../../lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {

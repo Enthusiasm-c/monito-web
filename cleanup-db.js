@@ -1,7 +1,9 @@
+import { prisma } from 'lib/prisma';
+
 const { PrismaClient } = require('@prisma/client');
 
 async function cleanupDatabase() {
-  const prisma = new PrismaClient();
+  
   
   try {
     console.log('🧹 Начинаем очистку базы данных...\n');

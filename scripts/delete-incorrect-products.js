@@ -1,6 +1,8 @@
+import { prisma } from '../lib/prisma';
+
 const { PrismaClient } = require('@prisma/client');
 
-const prisma = new PrismaClient();
+
 
 async function deleteIncorrectProducts() {
   console.log('🗑️ Finding and deleting incorrect products from last milk up upload...');

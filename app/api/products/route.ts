@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../../lib/prisma';
+import { calcUnitPrice } from '../../lib/utils/product-normalizer';
 
 export async function GET(request: NextRequest) {
   try {
@@ -125,49 +124,68 @@ export async function GET(request: NextRequest) {
         }
       });
 
-      // Deduplicate prices by supplier to prevent showing the same supplier multiple times
-      const supplierMap = new Map<string, typeof allRelatedPrices[0]>();
+      // Calculate unit prices and deduplicate by supplier
+      const pricesWithUnitPrice = allRelatedPrices.map(price => {
+        const unitPrice = price.unitPrice 
+          ? Number(price.unitPrice)
+          : calcUnitPrice(Number(price.amount), 1, price.unit);
+        
+        return {
+          ...price,
+          calculatedUnitPrice: unitPrice,
+          amount: Number(price.amount)
+        };
+      });
       
-      for (const price of allRelatedPrices) {
+      // Deduplicate prices by supplier to prevent showing the same supplier multiple times
+      const supplierMap = new Map<string, typeof pricesWithUnitPrice[0]>();
+      
+      for (const price of pricesWithUnitPrice) {
         const supplierId = price.supplierId;
         
-        // Keep the best (lowest) price for each supplier
-        if (!supplierMap.has(supplierId) || price.amount < supplierMap.get(supplierId)!.amount) {
+        // Keep the best (lowest) unit price for each supplier
+        if (!supplierMap.has(supplierId) || price.calculatedUnitPrice < supplierMap.get(supplierId)!.calculatedUnitPrice) {
           supplierMap.set(supplierId, price);
         }
       }
       
-      const deduplicatedPrices = Array.from(supplierMap.values()).sort((a, b) => a.amount - b.amount);
+      const deduplicatedPrices = Array.from(supplierMap.values()).sort((a, b) => a.calculatedUnitPrice - b.calculatedUnitPrice);
 
       const bestPrice = deduplicatedPrices.length > 0 ? deduplicatedPrices[0] : null;
       const highestPrice = deduplicatedPrices.length > 0 ? 
-        deduplicatedPrices.reduce((max, current) => current.amount > max.amount ? current : max) : null;
+        deduplicatedPrices.reduce((max, current) => current.calculatedUnitPrice > max.calculatedUnitPrice ? current : max) : null;
       
+      // Calculate savings based on unit price for better comparison
       const savings = bestPrice && highestPrice && deduplicatedPrices.length > 1 ? 
-        ((Number(highestPrice.amount) - Number(bestPrice.amount)) / Number(highestPrice.amount) * 100) : 0;
+        ((highestPrice.calculatedUnitPrice - bestPrice.calculatedUnitPrice) / highestPrice.calculatedUnitPrice * 100) : 0;
 
       return {
         ...product,
         prices: deduplicatedPrices.map(price => ({
           ...price,
-          amount: Number(price.amount)
+          amount: price.amount,
+          unitPrice: price.calculatedUnitPrice
         })),
         priceComparison: {
           bestPrice: bestPrice ? {
-            amount: Number(bestPrice.amount),
+            amount: bestPrice.amount,
+            unitPrice: bestPrice.calculatedUnitPrice,
             supplier: bestPrice.supplier.name,
             supplierId: bestPrice.supplierId
           } : null,
           highestPrice: highestPrice ? {
-            amount: Number(highestPrice.amount),
+            amount: highestPrice.amount,
+            unitPrice: highestPrice.calculatedUnitPrice,
             supplier: highestPrice.supplier.name,
             supplierId: highestPrice.supplierId
           } : null,
           supplierCount: deduplicatedPrices.length,
           savings: Math.round(savings * 10) / 10,
           priceRange: deduplicatedPrices.length > 1 ? {
-            min: Number(bestPrice?.amount || 0),
-            max: Number(highestPrice?.amount || 0)
+            min: bestPrice?.amount || 0,
+            max: highestPrice?.amount || 0,
+            minUnitPrice: bestPrice?.calculatedUnitPrice || 0,
+            maxUnitPrice: highestPrice?.calculatedUnitPrice || 0
           } : null
         }
       };

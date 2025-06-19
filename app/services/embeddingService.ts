@@ -1,11 +1,9 @@
 import OpenAI from 'openai';
-import { PrismaClient } from '@prisma/client';
-
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const prisma = new PrismaClient();
+import { prisma } from '../../lib/prisma';
 
 interface StandardProduct {
   id: string;
@@ -186,9 +184,10 @@ class EmbeddingService {
           name: true
         },
         where: {
-          standardizedName: {
-            not: null
-          }
+          AND: [
+            { standardizedName: { not: null } },
+            { standardizedName: { not: '' } }
+          ]
         }
       });
 

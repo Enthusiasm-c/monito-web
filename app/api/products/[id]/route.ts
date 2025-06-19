@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../../../lib/prisma';
+import { calcUnitPrice } from '../../../lib/utils/product-normalizer';
 
 export async function GET(
   request: NextRequest,
@@ -35,18 +34,37 @@ export async function GET(
       );
     }
 
-    // Calculate price comparison data
+    // Calculate price comparison data with unit prices
     const activePrices = product.prices;
     const priceAmounts = activePrices.map(p => Number(p.amount));
     
-    const bestPrice = activePrices.length > 0 ? {
-      amount: Number(activePrices[0].amount),
-      supplier: activePrices[0].supplier.name,
-      supplierId: activePrices[0].supplier.id
+    // Calculate unit prices for comparison
+    const pricesWithUnitPrice = activePrices.map(price => {
+      const unitPrice = price.unitPrice 
+        ? Number(price.unitPrice)
+        : calcUnitPrice(Number(price.amount), 1, price.unit);
+      
+      return {
+        ...price,
+        calculatedUnitPrice: unitPrice,
+        amount: Number(price.amount)
+      };
+    });
+    
+    // Sort by unit price for better comparison
+    const sortedByUnitPrice = [...pricesWithUnitPrice].sort((a, b) => a.calculatedUnitPrice - b.calculatedUnitPrice);
+    const sortedByTotalPrice = [...pricesWithUnitPrice].sort((a, b) => a.amount - b.amount);
+    
+    const bestPrice = sortedByTotalPrice.length > 0 ? {
+      amount: sortedByTotalPrice[0].amount,
+      unitPrice: sortedByTotalPrice[0].calculatedUnitPrice,
+      supplier: sortedByTotalPrice[0].supplier.name,
+      supplierId: sortedByTotalPrice[0].supplier.id
     } : null;
 
-    const highestPrice = activePrices.length > 0 ? {
+    const highestPrice = sortedByTotalPrice.length > 0 ? {
       amount: Math.max(...priceAmounts),
+      unitPrice: sortedByUnitPrice[sortedByUnitPrice.length - 1]?.calculatedUnitPrice || 0,
       supplier: activePrices.find(p => Number(p.amount) === Math.max(...priceAmounts))?.supplier.name || '',
       supplierId: activePrices.find(p => Number(p.amount) === Math.max(...priceAmounts))?.supplier.id || ''
     } : null;
@@ -74,10 +92,11 @@ export async function GET(
         savings,
         priceRange
       },
-      prices: activePrices.map(price => ({
+      prices: pricesWithUnitPrice.map(price => ({
         id: price.id,
         amount: price.amount,
         unit: price.unit,
+        unitPrice: price.calculatedUnitPrice,
         supplier: price.supplier,
         createdAt: price.createdAt,
         updatedAt: price.updatedAt,

@@ -2,9 +2,7 @@
  * Cleanup utility to remove duplicate products and prices
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../lib/prisma';
 
 export async function cleanupDuplicateProducts() {
   console.log('🧹 Starting duplicate product cleanup...');

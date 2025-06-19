@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import fs from 'fs/promises';
 import path from 'path';
 
-const prisma = new PrismaClient();
+import { prisma } from '../../../lib/prisma';
 
 /**
  * Processing Logs API

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { standardizationService } from '../../services/centralized/StandardizationService';
+import { standardizeProducts } from '../../lib/utils/standardization';
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,15 +15,16 @@ export async function POST(request: NextRequest) {
 
     console.log(`🔧 Standardizing ${products.length} products with ChatGPT o3`);
 
-    const result = await standardizationService.standardizeProducts({ products });
+    const startTime = Date.now();
+    const results = await standardizeProducts(products);
 
     return NextResponse.json({
       success: true,
       result: {
-        products: result.products,
-        totalProcessed: result.totalProcessed,
-        tokensUsed: result.tokensUsed,
-        processingTimeMs: result.processingTimeMs
+        products: results,
+        totalProcessed: results.length,
+        tokensUsed: 0, // Token usage tracked internally
+        processingTimeMs: Date.now() - startTime
       }
     });
 

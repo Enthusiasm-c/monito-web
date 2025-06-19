@@ -1,378 +1,499 @@
-# Monito Web Architecture Documentation
-
-## 🎯 System Overview
-
-Monito Web is a comprehensive price comparison platform with intelligent invoice scanning and analysis capabilities. The system consists of a Next.js web application, PostgreSQL database, and a Telegram bot for automated invoice processing.
-
-## 🏗️ Core Architecture
-
-### **System Components**
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Web Frontend  │    │  Telegram Bot   │    │  Neon PostgreSQL│
-│   (Next.js)     │◄──►│   (Python)      │◄──►│   Database      │
-│   209.38.85.196 │    │ 209.38.85.196   │    │   Cloud Hosted  │
-│                 │    │                 │    │                 │
-│ - File Upload   │    │ - OCR Processing│    │ - Products      │
-│ - Price Mgmt    │    │ - Price Compare │    │ - Suppliers     │
-│ - Admin Panel   │    │ - AI Analysis   │    │ - Prices        │
-│ - Data Cleanup  │    │ - Unit Fix Logs │    │ - Uploads       │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-          │                        │                        │
-          └────────── REST API ────┴──── Database Queries ──┘
-```
-
-### **⚠️ CRITICAL DEPLOYMENT RULES**
-
-1. **🚫 NEVER reset database** (`npx prisma db push --force-reset`)
-2. **✅ Single Server Deployment** - All components run on 209.38.85.196:3000
-3. **✅ Local Backups Only** - Keep full database backups locally
-4. **✅ Schema Sync Required** - Always sync Prisma schema with actual DB
-
-## 📊 Database Schema
-
-### **Core Entities**
-
-1. **Products** - Standardized product catalog
-2. **Suppliers** - Vendor information and mappings
-3. **Prices** - Historical price records with validity periods
-4. **Uploads** - File processing tracking and metadata
-
-### **Key Relationships**
-
-```sql
-Product 1:N Price (Product has many prices over time)
-Supplier 1:N Price (Supplier provides prices for products)
-Upload 1:N Price (Upload can contain multiple price records)
-```
-
-## 🤖 AI-Powered Processing Pipeline
-
-### **MVP Implementation Strategy**
-
-Following the **80/20 principle** - solving 80% of problems with 20% effort:
-
-#### **Product Matching Engine**
-- **Word-based similarity** with modifier awareness
-- **Exclusive vs Descriptive modifiers** classification
-- **Unit price normalization** across canonical units
-
-#### **Price Comparison Logic**
-```typescript
-// MVP Features Implemented:
-- Supplier filtering (exclude same supplier recommendations)
-- Stale price filtering (30+ days old)
-- Unit price calculation and comparison
-- Minimum 5% savings threshold
-- Modifier-based product differentiation
-```
-
-### **Enhanced Product Similarity Algorithm**
-
-#### **Modifier Classification System**
-```typescript
-PRODUCT_MODIFIERS = {
-  // Words that fundamentally change the product (exclude if mismatch)
-  exclusive: ['sweet', 'wild', 'sea', 'water', 'bitter', 'black', 'white', ...],
-  
-  // Words that describe size/quality but don't change core product  
-  descriptive: ['big', 'large', 'small', 'fresh', 'premium', ...]
-}
-```
-
-#### **Similarity Scoring Process**
-1. **Exclusive modifier check** - Reject incompatible products immediately
-2. **Exact normalized match** - Highest priority (100 points)
-3. **Sorted word match** - Handle word order variations (95 points)
-4. **Core words validation** - Essential product words must match
-5. **Word overlap calculation** - Weighted similarity scoring
-
-## 🔧 Technical Implementation
-
-### **Web Application (Next.js)**
-
-#### **API Endpoints Structure**
-```
-/api/
-├── bot/                    # Telegram bot integration
-│   ├── prices/compare/     # Price comparison engine  
-│   ├── products/search/    # Product search with similarity
-│   └── suppliers/search/   # Supplier lookup
-├── uploads/               # File processing workflow
-│   ├── approve/          # Manual approval endpoint
-│   ├── pending/          # Queue management
-│   └── status/           # Processing status tracking
-└── admin/                # ✨ NEW: Administrative Management
-    ├── products/         # Product CRUD operations
-    │   ├── /             # List/search products with filters
-    │   └── [id]/         # Edit individual product details
-    ├── suppliers/        # Supplier CRUD operations  
-    │   ├── /             # List/search suppliers
-    │   └── [id]/         # Edit supplier contact info
-    └── data-quality/     # Data integrity tools
-```
-
-#### **🆕 Admin Panel Features**
-
-**Product Management** (`/admin/products`):
-- **Search & Filter**: By name, category, unit
-- **Unit Correction**: Fix `g` → `kg` and similar errors
-- **Price Overview**: See price ranges and supplier count
-- **Bulk Operations**: Multi-product editing capabilities
-
-**Supplier Management** (`/admin/suppliers`):
-- **Contact Details**: Edit address, phone, email
-- **Business Info**: Company information management  
-- **Upload History**: Track supplier data uploads
-- **Performance Metrics**: Price update frequency
-
-#### **Key Services**
-
-1. **PriceService** (`app/services/database/priceService.ts`)
-   - Unit price calculation with MVP approach
-   - Price history management
-   - Bulk update operations
-
-2. **Unit Price Calculator** (`app/lib/utils/unit-price-calculator.ts`)
-   - Canonical unit conversions (kg, ltr, pcs)
-   - Cross-unit price comparison
-   - Quantity normalization
-
-### **Telegram Bot (Python)**
-
-#### **Architecture Principles**
-- **Single Process Enforcement** - Strict prevention of multiple instances
-- **Modular Handler System** - Separated concerns for different operations
-- **Error-Safe Formatting** - None-safe string operations
-
-#### **Core Components**
-
-1. **Invoice Scanning Handler** (`app/handlers/invoice_scan.py`)
-   - OCR processing with OpenAI Vision API
-   - Price extraction and validation
-   - API integration for comparison
-
-2. **Database Integration** (`app/database_api.py`)
-   - Direct API calls to web application
-   - Async HTTP client configuration
-   - Response processing and error handling
-
-3. **Formatting Utils** (`app/utils/formatting.py`)
-   - None-safe price formatting
-   - Currency display functions
-   - Message formatting for Telegram
-
-#### **Bot Management**
-```bash
-# Single Instance Startup (Recommended)
-cd /opt/telegram-bot
-nohup venv/bin/python __main__.py > bot_single.log 2>&1 &
-
-# Startup Script with PID Management
-./start-bot.sh
-```
-
-### **Database Configuration**
-
-#### **PostgreSQL Extensions Required**
-```sql
--- Enable similarity search capabilities
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-```
-
-#### **Price Data Model**
-- **Amount**: Total price value
-- **Unit**: Measurement unit (kg, pcs, ltr, etc.)
-- **UnitPrice**: Calculated price per canonical unit
-- **ValidFrom/ValidTo**: Price validity period
-- **SupplierId**: Source supplier reference
-
-## 🚀 Deployment Architecture
-
-### **Production Environment**
-- **Web App**: Ubuntu 22.04 LTS (209.38.85.196:3000)
-- **Bot Server**: Ubuntu 22.04 LTS (209.38.85.196) 
-- **Database**: Neon PostgreSQL Cloud (ep-summer-shape-a1r1yz39-pooler.ap-southeast-1.aws.neon.tech)
-- **Admin Panel**: http://209.38.85.196:3000/admin
-
-### **🚀 Deployment Commands**
-
-**Server Management**:
-```bash
-# Deploy code changes to server
-scp -r app/admin root@209.38.85.196:/opt/monito-web/app/
-scp -r app/api/admin root@209.38.85.196:/opt/monito-web/app/api/
-
-# Restart web application  
-ssh root@209.38.85.196 "cd /opt/monito-web && pm2 restart monito-web"
-
-# Check server status
-ssh root@209.38.85.196 "cd /opt/monito-web && pm2 status"
-```
-
-**Database Management**:
-```bash
-# ⚠️ NEVER run this command: npx prisma db push --force-reset
-# ✅ Safe operations only:
-
-# Generate Prisma client after schema changes
-npx prisma generate
-
-# Check database connection  
-psql 'postgresql://neondb_owner:npg_h6GaENYK1qSs@ep-summer-shape-a1r1yz39-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require' -c 'SELECT COUNT(*) FROM products;'
-
-# Backup database (local only)
-pg_dump 'postgresql://...' > monito_backup_$(date +%Y%m%d).sql
-```
-
-### **Environment Variables**
-```env
-# Database
-DATABASE_URL=postgresql://[credentials]
-
-# AI Services  
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-...
-GOOGLE_API_KEY=...
-
-# Bot Authentication
-BOT_API_KEY=...
-
-# Processing Configuration
-MIN_SAVING_PCT=5
-FRESH_DAYS=7
-```
-
-## 📈 Performance Characteristics
-
-### **Price Comparison Performance**
-- **Response Time**: < 3 seconds for 10 products
-- **Accuracy**: Enhanced with modifier-aware matching
-- **Scalability**: Optimized database queries with indexing
-
-### **Bot Processing Metrics**
-- **OCR Accuracy**: Improved with AI vision preprocessing
-- **Memory Usage**: ~180MB per bot instance
-- **Concurrency**: Single instance design prevents conflicts
-
-## 🔐 Security Measures
-
-### **Authentication**
-- **Bot API**: Token-based authentication for telegram integration
-- **Admin Access**: Protected administrative endpoints
-- **Database**: SSL-enforced connections with connection pooling
-
-### **Data Validation**
-- **Product Validation**: Middleware ensures data integrity
-- **Price Validation**: Business rules enforcement
-- **Input Sanitization**: Protection against malicious data
-
-## 🧪 Testing Strategy
-
-### **Unit Testing**
-- **Price Calculator**: Unit conversion accuracy
-- **Product Matching**: Similarity algorithm validation
-- **Formatting Functions**: None-safe operations
-
-### **Integration Testing**
-- **API Endpoints**: End-to-end workflow validation
-- **Bot Processing**: Invoice scan to comparison pipeline
-- **Database Operations**: Transaction integrity
-
-## 📚 Dependencies
-
-### **Web Application**
-```json
-{
-  "@prisma/client": "^5.x",
-  "next": "15.x",
-  "openai": "^4.x",
-  "@google/generative-ai": "^0.x"
-}
-```
-
-### **Telegram Bot**
-```txt
-aiogram==3.15.0
-openai==1.62.1
-python-dotenv==1.0.1
-httpx==0.24.1
-asyncpg==0.29.0
-```
-
-## 🔄 Data Flow
-
-### **Invoice Processing Workflow**
-```
-1. User uploads invoice photo → Telegram Bot
-2. OCR extraction → OpenAI Vision API  
-3. Product matching → Enhanced similarity algorithm
-4. Price comparison → MVP comparison engine
-5. Response formatting → User notification
-```
-
-### **Price Update Workflow**
-```
-1. File upload → Web interface
-2. Data extraction → AI processing
-3. Standardization → Product normalization
-4. Validation → Business rules check
-5. Storage → Database with audit trail
-```
-
-## 🔧 Common Issues & Solutions
-
-### **Database Schema Mismatches**
-
-**Problem**: `The column 'prices.unit_price' does not exist`
-**Solution**:
-```bash
-# Remove non-existent fields from schema
-ssh root@209.38.85.196 "cd /opt/monito-web && sed -i '/unitPrice.*unit_price/d' prisma/schema.prisma"
-ssh root@209.38.85.196 "cd /opt/monito-web && npx prisma generate && pm2 restart monito-web"
-```
-
-### **Product Unit Issues** 
-
-**Problem**: Products with wrong units (g instead of kg)
-**Solution**: Use Admin Panel
-1. Go to http://209.38.85.196:3000/admin/products
-2. Search for problematic products
-3. Edit unit field from `g` to `kg`
-4. Save changes
-
-### **Bot Multiple Instances**
-
-**Problem**: Multiple bot processes running
-**Solution**:
-```bash
-# Kill all bot processes
-ssh root@209.38.85.196 "pkill -f telegram-bot"
-# Start single instance
-ssh root@209.38.85.196 "cd /opt/telegram-bot && nohup venv/bin/python __main__.py > bot.log 2>&1 &"
-```
-
-## 🎯 Current Status & Next Steps
-
-### **✅ Completed Features**
-1. **Admin Panel** - Full CRUD for products and suppliers
-2. **Modifier System** - Enhanced product matching with exclusive/descriptive modifiers  
-3. **Unit Normalization** - Canonical unit price comparisons
-4. **Single Server Deploy** - Consolidated architecture on 209.38.85.196
-5. **Database Restoration** - Working system with 2043+ products
-
-### **🚧 Known Issues**
-1. **Tomato Unit Mismatch** - Some products have `g` instead of `kg` (fixable via admin)
-2. **Client Component Warnings** - Next.js build warnings (non-critical)
-3. **API Key Validation** - Some endpoints need API key cleanup
-
-### **🎯 Immediate Priorities**
-1. **Fix Tomato Pricing** - Use admin panel to correct unit mismatches
-2. **Supplier Management** - Complete supplier admin interface
-3. **Data Quality Tools** - Automated detection of unit inconsistencies
+# 🏗️ Monito-Web Architecture Documentation
+
+**Version:** 2.0  
+**Last Updated:** 19 июня 2025  
+**Status:** Production-Ready
 
 ---
 
-*Last Updated: 2025-06-18*
-*Version: 2.0 (MVP Implementation)*
+## 📋 Table of Contents
+
+1. [Architecture Overview](#architecture-overview)
+2. [Database Layer](#database-layer)
+3. [API Layer](#api-layer)
+4. [Business Logic Layer](#business-logic-layer)
+5. [AI Integration](#ai-integration)
+6. [File Processing Pipeline](#file-processing-pipeline)
+7. [Authentication & Security](#authentication--security)
+8. [Performance & Optimization](#performance--optimization)
+9. [Deployment Architecture](#deployment-architecture)
+
+---
+
+## 🎯 Architecture Overview
+
+### System Architecture Pattern
+Monito-Web follows a **layered architecture** with clear separation of concerns:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    PRESENTATION LAYER                       │
+│  Next.js 15 + React 19 + TypeScript + Tailwind CSS        │
+└─────────────────────────────────────────────────────────────┘
+                                │
+┌─────────────────────────────────────────────────────────────┐
+│                      API LAYER                             │
+│     Next.js API Routes + Middleware + Authentication       │
+└─────────────────────────────────────────────────────────────┘
+                                │
+┌─────────────────────────────────────────────────────────────┐
+│                  BUSINESS LOGIC LAYER                      │
+│   Services + Utilities + AI Processing + Validation        │
+└─────────────────────────────────────────────────────────────┘
+                                │
+┌─────────────────────────────────────────────────────────────┐
+│                    DATA ACCESS LAYER                       │
+│              Prisma ORM + PostgreSQL (Neon)                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Core Principles
+
+1. **Single Responsibility** - Each module has one clear purpose
+2. **Dependency Injection** - Use of singletons and shared services
+3. **Data Integrity** - Strict validation at all layers
+4. **Performance First** - Optimized queries and connection pooling
+5. **AI-Enhanced** - Intelligent product matching and standardization
+
+---
+
+## 🗄️ Database Layer
+
+### Connection Management
+
+**❌ WRONG - Deprecated Pattern:**
+```typescript
+// DON'T DO THIS - Creates memory leaks
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+```
+
+**✅ CORRECT - Singleton Pattern:**
+```typescript
+// ALWAYS USE THIS
+import { prisma } from '@/lib/prisma';
+```
+
+### Database Schema Overview
+
+```sql
+-- Core Product Management
+Product {
+  id, rawName, name, standardizedName
+  category, unit, standardizedUnit
+  prices[], aliases[]
+}
+
+-- Pricing System with History
+Price {
+  id, amount, unit, unitPrice
+  supplierId, productId, uploadId
+  validFrom, validTo  -- Historical tracking
+}
+
+-- Multi-language Support
+ProductAlias {
+  id, productId, alias, language
+  -- Enables Indonesian/Spanish/English names
+}
+
+-- File Processing Workflow
+Upload {
+  id, fileName, status, approvalStatus
+  extractedData, processingDetails
+  supplierId, prices[]
+}
+
+-- Data Quality Management
+UnmatchedQueue {
+  id, rawName, normalizedName
+  context, assignedProductId
+  -- Manual review for failed matches
+}
+```
+
+### Performance Optimizations
+
+1. **Connection Pooling**: Single Prisma instance across application
+2. **Indexes**: Strategic indexes on frequently queried fields
+3. **Query Optimization**: Selective includes and proper pagination
+4. **Batch Operations**: Bulk creates and updates where possible
+
+---
+
+## 🔌 API Layer
+
+### API Route Structure
+
+```
+app/api/
+├── admin/                    # Admin-only endpoints
+│   ├── products/            # Product management
+│   ├── suppliers/           # Supplier management
+│   ├── unmatched/           # Unmatched product queue
+│   └── dictionaries/        # Language/unit dictionaries
+├── bot/                     # Telegram bot integration
+│   ├── prices/compare/      # Core price comparison engine
+│   ├── products/search/     # Product search with similarity
+│   └── suppliers/search/    # Supplier lookup
+├── products/                # Public product endpoints
+├── suppliers/               # Public supplier endpoints
+├── uploads/                 # File upload and processing
+└── standardization/         # AI-powered standardization
+```
+
+### Authentication Patterns
+
+#### Bot Authentication
+```typescript
+// Bot API endpoints use API key authentication
+import { authenticateBot } from '../../middleware';
+
+export async function POST(request: NextRequest) {
+  const authError = authenticateBot(request);
+  if (authError) return authError;
+  // ... rest of handler
+}
+```
+
+#### Admin Authentication
+```typescript
+// Admin endpoints should implement role-based auth
+// TODO: Implement proper admin authentication
+```
+
+### Error Handling Pattern
+
+**✅ Standardized Error Response:**
+```typescript
+export async function GET(request: NextRequest) {
+  try {
+    // Business logic here
+    return NextResponse.json({ data: result });
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+---
+
+## 🧠 Business Logic Layer
+
+### Service Architecture
+
+```
+app/services/
+├── core/                    # Core business services
+│   └── UnifiedGeminiService.ts
+├── database/                # Data access services
+│   ├── aliasService.ts     # Product alias management
+│   └── priceService.ts     # Price operations
+├── ai-optimized/           # AI processing services
+├── background/             # Background job processing
+└── enhanced*/              # File processing services
+```
+
+### Product Matching Pipeline
+
+1. **Normalization** (`product-normalizer.ts`)
+   - Multi-language translation (ID/EN/ES)
+   - Text cleaning and standardization
+   - Duplicate word removal
+
+2. **Alias Lookup** (`aliasService.ts`)
+   - Exact alias matching
+   - Normalized search fallback
+
+3. **Fuzzy Search** (API routes)
+   - Word-based matching
+   - OCR error correction
+   - Similarity scoring
+
+4. **AI Standardization** (`standardization.ts`)
+   - OpenAI o3-mini integration
+   - Complex product name translation
+   - Confidence scoring
+
+### Validation Layer
+
+```typescript
+// Product validation with Zod schemas
+import { productSchema } from '@/app/utils/validation';
+
+const validation = productSchema.safeParse(productData);
+if (!validation.success) {
+  return { error: validation.error.errors };
+}
+```
+
+---
+
+## 🤖 AI Integration
+
+### AI Services Architecture
+
+```
+AI Processing Pipeline:
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Document OCR   │ -> │ Product Extract │ -> │ Standardization │
+│  (Gemini 2.0)   │    │   (GPT-4o)      │    │   (o3-mini)     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         v                       v                       v
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Text Content   │    │ Raw Products    │    │ Standardized    │
+│    Extracted    │    │   Identified    │    │   Names         │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### AI Model Selection Strategy
+
+| Task | Model | Reason |
+|------|-------|--------|
+| **Document OCR** | Gemini 2.0 Flash | Fast, cost-effective for batch processing |
+| **Product Extraction** | GPT-4o | Best structured output and reasoning |
+| **Name Standardization** | o3-mini | Specialized reasoning for complex translations |
+| **Image Processing** | GPT-4o-mini + Vision | Balanced cost/performance for images |
+
+### AI Fallback Strategy
+
+```typescript
+// Multi-tier AI fallback in price comparison
+if (products.length === 0) {
+  // Tier 1: AI when no matches
+  const aiResult = await tryAIStandardization(item, "No match found");
+}
+else if (finalSimilarity === 0) {
+  // Tier 2: AI when incompatible matches
+  const aiResult = await tryAIStandardization(item, "Incompatible match");
+}
+else if (finalSimilarity < 30) {
+  // Tier 3: AI when low similarity
+  const aiResult = await tryAIStandardization(item, "Low similarity");
+}
+```
+
+---
+
+## 📄 File Processing Pipeline
+
+### Unified Processing Architecture
+
+```
+File Upload -> Document Classification -> Format-Specific Extraction -> 
+AI Standardization -> Validation -> Database Storage -> Quality Review
+```
+
+### Processing Strategies
+
+1. **Excel/CSV Files**
+   - Direct parsing with ExcelJS
+   - Batch processing for large files
+   - Smart column detection
+
+2. **PDF Documents**
+   - OCR with pdf-parse + Gemini 2.0
+   - Table extraction optimization
+   - Multi-page handling
+
+3. **Image Files**
+   - GPT-4o Vision API
+   - Image optimization and compression
+   - Automatic cropping and enhancement
+
+### Quality Assurance
+
+- **Completeness Ratio**: Percentage of successfully processed rows
+- **Confidence Scoring**: AI confidence in extracted data
+- **Manual Review Queue**: Unmatched products for admin review
+- **Validation Rules**: Comprehensive data quality checks
+
+---
+
+## 🔐 Authentication & Security
+
+### Current Security Measures
+
+1. **Bot API Authentication**
+   ```typescript
+   // API key-based authentication for Telegram bot
+   X-Bot-API-Key: <secure-api-key>
+   ```
+
+2. **Input Validation**
+   - Zod schema validation on all inputs
+   - SQL injection prevention via Prisma
+   - File type and size restrictions
+
+3. **Environment Security**
+   - Sensitive keys in environment variables
+   - No secrets committed to repository
+   - Proper `.gitignore` configuration
+
+### Security Recommendations
+
+1. **Implement Rate Limiting**
+2. **Add CORS Configuration**
+3. **Enable Request Logging**
+4. **Add Admin Role Authentication**
+5. **Implement API Versioning**
+
+---
+
+## ⚡ Performance & Optimization
+
+### Database Optimizations
+
+1. **Connection Pooling**
+   ```typescript
+   // Single Prisma instance prevents connection exhaustion
+   import { prisma } from '@/lib/prisma';
+   ```
+
+2. **Query Optimization**
+   ```typescript
+   // Strategic includes and selective fields
+   const products = await prisma.product.findMany({
+     select: { id: true, name: true, unit: true },
+     include: { prices: { where: { validTo: null } } }
+   });
+   ```
+
+3. **Indexing Strategy**
+   - Product names and standardized names
+   - Price relationships and validity dates
+   - Upload status and creation dates
+
+### AI Cost Management
+
+1. **Token Cost Monitoring** (`tokenCostMonitor.ts`)
+2. **Batch Processing** (Multiple products per AI call)
+3. **Model Selection** (Appropriate model for each task)
+4. **Caching Strategy** (Standardized names cache)
+
+### Memory Management
+
+**Before Optimization:**
+- 81 Prisma instances × 15MB = ~1.2GB memory usage
+- Multiple connection pools causing exhaustion
+
+**After Optimization:**
+- 1 Prisma singleton = ~15MB memory usage
+- Single connection pool with proper pooling
+- **~1.185GB memory savings**
+
+---
+
+## 🚀 Deployment Architecture
+
+### Production Environment
+
+```
+Internet -> Cloudflare -> Vercel Edge -> Next.js App -> Neon PostgreSQL
+                                     |
+                                     v
+                              External Services:
+                              - OpenAI API
+                              - Google Gemini
+                              - Vercel Blob Storage
+```
+
+### Environment Configuration
+
+```bash
+# Database
+DATABASE_URL=<neon-postgresql-url>
+
+# AI Services
+OPENAI_API_KEY=<openai-api-key>
+GEMINI_API_KEY=<google-gemini-key>
+
+# File Storage
+BLOB_READ_WRITE_TOKEN=<vercel-blob-token>
+
+# Processing Configuration
+MAX_FILE_SIZE_MB=10
+AI_STANDARDIZATION_ENABLED=true
+AUTO_APPROVAL_ENABLED=false
+
+# Security
+BOT_API_KEY=<telegram-bot-api-key>
+```
+
+### Monitoring & Logging
+
+1. **Processing Logs** (`processingLogger.ts`)
+2. **Error Tracking** (Console logs + structured logging)
+3. **Performance Metrics** (Token usage, processing times)
+4. **Quality Metrics** (Completeness ratios, match rates)
+
+---
+
+## 📚 Key Architectural Decisions
+
+### Why These Choices Were Made
+
+1. **Next.js 15**: Full-stack React framework with excellent TypeScript support
+2. **Prisma ORM**: Type-safe database access with great migration support
+3. **PostgreSQL**: Robust relational database with JSON support for flexibility
+4. **Multiple AI Models**: Each optimized for specific tasks
+5. **Layered Architecture**: Clear separation of concerns for maintainability
+
+### Trade-offs Considered
+
+1. **AI Cost vs. Accuracy**: Balanced model selection for cost efficiency
+2. **Processing Speed vs. Quality**: Background processing for complex operations
+3. **Flexibility vs. Performance**: Cached standardization with fallbacks
+4. **Automation vs. Control**: Manual review queue for quality assurance
+
+---
+
+## 🔄 Migration & Updates
+
+### Database Migrations
+
+```bash
+# Development
+npm run db:migrate:dev
+
+# Production
+npm run db:migrate:prod
+```
+
+### Code Updates
+
+1. **Always use singleton Prisma import**
+2. **Follow established error handling patterns**
+3. **Maintain API compatibility**
+4. **Update documentation with changes**
+
+---
+
+## 🧪 Testing Strategy
+
+### Current Testing Approach
+
+1. **Integration Tests** (`test-integration.js`)
+2. **Unit Tests** (`test-unit-functions.js`)
+3. **AI Stress Tests** (`test-ai-standardization.js`)
+4. **API Tests** (`test-bot-api.js`)
+
+### Testing Recommendations
+
+1. **Add Jest/Vitest Framework**
+2. **Implement E2E Testing**
+3. **Add Performance Testing**
+4. **Set up CI/CD Pipeline**
+
+---
+
+**📞 Contact**: For architecture questions or modifications, refer to this document and the established patterns.
+
+**🔗 Related Documents**: 
+- [RULES.md](./RULES.md) - Development rules and best practices
+- [SYSTEM_ANALYSIS_REPORT.md](./SYSTEM_ANALYSIS_REPORT.md) - System analysis and recommendations

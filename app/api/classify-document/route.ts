@@ -5,12 +5,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { documentClassifierService } from '../../../src/pipeline/document_classifier_service';
-import { PrismaClient } from '@prisma/client';
 import path from 'path';
 import fs from 'fs/promises';
 import { tmpdir } from 'os';
 
-const prisma = new PrismaClient();
+import { prisma } from '../../../lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {

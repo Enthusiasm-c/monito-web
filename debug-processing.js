@@ -1,7 +1,9 @@
+import { prisma } from 'lib/prisma';
+
 const { PrismaClient } = require('@prisma/client');
 
 async function debugProcessing() {
-  const prisma = new PrismaClient();
+  
   
   try {
     console.log('🔍 DEBUGGING FILE PROCESSING ISSUES');

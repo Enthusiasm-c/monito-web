@@ -1,8 +1,10 @@
+import { prisma } from 'lib/prisma';
+
 // Скрипт для отката автоматически обработанных файлов в статус pending_review
 const { PrismaClient } = require('@prisma/client');
 
 async function resetToPendingReview() {
-  const prisma = new PrismaClient();
+  
   
   try {
     console.log('🔄 Resetting auto-processed uploads back to pending review...');

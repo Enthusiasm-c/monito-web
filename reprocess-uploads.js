@@ -1,8 +1,10 @@
+import { prisma } from 'lib/prisma';
+
 // Скрипт для повторной обработки существующих uploads
 const { PrismaClient } = require('@prisma/client');
 
 async function reprocessPendingUploads() {
-  const prisma = new PrismaClient();
+  
   
   try {
     console.log('🔄 Reprocessing pending uploads with AI decisions...');

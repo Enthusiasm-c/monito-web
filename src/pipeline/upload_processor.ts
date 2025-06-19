@@ -3,13 +3,12 @@
  * Integrates document classification into the existing upload system
  */
 
-import { PrismaClient } from '@prisma/client';
 import { DocumentClassifier, DocumentType } from './document_classifier';
 import path from 'path';
 import fs from 'fs/promises';
 import { tmpdir } from 'os';
 
-const prisma = new PrismaClient();
+import { prisma } from '../../lib/prisma';
 
 export interface UploadProcessingResult {
   success: boolean;

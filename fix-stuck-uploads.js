@@ -1,8 +1,10 @@
+import { prisma } from 'lib/prisma';
+
 // Скрипт для исправления застрявших uploads в статусе processing
 const { PrismaClient } = require('@prisma/client');
 
 async function fixStuckUploads() {
-  const prisma = new PrismaClient();
+  
   
   try {
     console.log('🔄 Fixing stuck uploads in processing status...');

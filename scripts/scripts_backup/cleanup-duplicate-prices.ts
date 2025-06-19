@@ -3,9 +3,7 @@
  * Removes duplicate price records and keeps only the latest one for each supplier-product combination
  */
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../lib/prisma';
 
 interface DuplicateGroup {
   supplierId: string;

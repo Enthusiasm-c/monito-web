@@ -1,10 +1,146 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { authenticateBot } from '../../middleware';
 import { calculateUnitPrice, areUnitsComparable, getCanonicalUnit } from '../../../../lib/utils/unit-price-calculator';
+import { normalize, coreNoun, hasDifferentCoreNoun, calcUnitPrice } from '../../../../lib/utils/product-normalizer';
+// Embedded searchProductsWithAliases function to avoid import issues
+async function searchProductsWithAliases(query: string) {
+  const normalizedQuery = normalize(query);
+  
+  // First check for exact alias match
+  const alias = await prisma.product_alias.findUnique({
+    where: { alias: normalizedQuery },
+    select: { productId: true }
+  });
+  
+  if (alias) {
+    // Return the exact product matched by alias
+    const product = await prisma.product.findUnique({
+      where: { id: alias.productId },
+      include: {
+        prices: {
+          where: { validTo: null },
+          include: {
+            supplier: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          }
+        }
+      }
+    });
+    
+    return product ? [product] : [];
+  }
+  
+  // Fallback to regular search
+  return await prisma.product.findMany({
+    where: {
+      OR: [
+        { name: { contains: normalizedQuery, mode: 'insensitive' } },
+        { standardizedName: { contains: normalizedQuery, mode: 'insensitive' } },
+        { rawName: { contains: normalizedQuery, mode: 'insensitive' } }
+      ]
+    },
+    include: {
+      prices: {
+        where: { validTo: null },
+        include: {
+          supplier: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        }
+      }
+    },
+    take: 20
+  });
+}
+import { standardizeProducts, type StandardizedProduct } from '../../../../lib/utils/standardization';
 
-const prisma = new PrismaClient();
+// AI standardization helper function
+async function tryAIStandardization(item: ComparisonRequest, reason: string) {
+  console.log(`🤖 ${reason} for "${item.product_name}", trying AI standardization...`);
+  console.error(`DEBUG: ${reason} for: ${item.product_name}`);
+  
+  try {
+    const aiStandardized = await standardizeProducts([{
+      name: item.product_name,
+      unit: item.unit,
+      quantity: item.quantity,
+      price: item.scanned_price
+    }]);
 
+    if (aiStandardized.length > 0 && aiStandardized[0].confidence > 0.7) {
+      const standardized = aiStandardized[0];
+      console.log(`🎯 AI standardized "${item.product_name}" → "${standardized.standardizedName}"`);
+      
+      // Search again with AI standardized name
+      const aiProducts = await searchProductsWithAliases(standardized.standardizedName);
+      
+      if (aiProducts.length > 0) {
+        console.log(`✅ Found match after AI standardization: ${aiProducts[0].name}`);
+        return { products: aiProducts, standardizedName: standardized.standardizedName };
+      } else {
+        console.log(`❌ Still no match after AI standardization for "${standardized.standardizedName}"`);
+        
+        // Fallback: try searching by individual words from AI standardized name
+        const words = standardized.standardizedName.toLowerCase().split(' ').filter(w => w.length > 2);
+        if (words.length > 0) {
+          console.log(`🔍 Trying fallback search with words: ${words.join(', ')}`);
+          
+          // Collect all fallback products from all words
+          let allFallbackProducts = [];
+          for (const word of words) {
+            const fallbackProducts = await searchProductsWithAliases(word);
+            if (fallbackProducts.length > 0) {
+              console.log(`🔍 Found ${fallbackProducts.length} products for word "${word}"`);
+              allFallbackProducts.push(...fallbackProducts);
+            }
+          }
+          
+          if (allFallbackProducts.length > 0) {
+            // Remove duplicates
+            const uniqueProducts = allFallbackProducts.filter((product, index, self) => 
+              index === self.findIndex(p => p.id === product.id)
+            );
+            
+            // Find best similarity match among all fallback products
+            let bestProduct = uniqueProducts[0];
+            let bestSimilarity = calculateProductSimilarity(standardized.standardizedName, bestProduct.name);
+            
+            for (const product of uniqueProducts) {
+              const similarity = calculateProductSimilarity(standardized.standardizedName, product.name);
+              console.log(`🔍 Fallback similarity "${standardized.standardizedName}" → "${product.name}": ${similarity}`);
+              if (similarity > bestSimilarity) {
+                bestProduct = product;
+                bestSimilarity = similarity;
+              }
+            }
+            
+            if (bestSimilarity > 0) {
+              console.log(`✅ Found best fallback match "${standardized.standardizedName}" → "${bestProduct.name}" (similarity: ${bestSimilarity})`);
+              return { products: [bestProduct], standardizedName: standardized.standardizedName };
+            } else {
+              console.log(`❌ All fallback products have 0 similarity with "${standardized.standardizedName}"`);
+            }
+          }
+          console.log(`❌ No fallback matches found for any words`);
+        }
+      }
+    } else {
+      console.log(`❌ AI standardization confidence too low: ${aiStandardized[0]?.confidence || 'N/A'}`);
+    }
+  } catch (aiError) {
+    console.error('DEBUG: AI standardization failed:', aiError);
+    console.error('AI standardization failed:', aiError);
+  }
+  
+  return { products: [], standardizedName: null };
+}
 
 interface ComparisonRequest {
   product_name: string;
@@ -33,32 +169,16 @@ export async function POST(request: NextRequest) {
 
     const comparisons = await Promise.all(
       items.map(async (item: ComparisonRequest) => {
-        // Search for product - first try exact match
-        let products = await prisma.product.findMany({
-          where: {
-            OR: [
-              { name: { contains: item.product_name, mode: 'insensitive' } },
-              { standardizedName: { contains: item.product_name, mode: 'insensitive' } },
-              { rawName: { contains: item.product_name, mode: 'insensitive' } }
-            ]
-          },
-          include: {
-            prices: {
-              where: {
-                validTo: null
-              },
-              include: {
-                supplier: {
-                  select: {
-                    id: true,
-                    name: true
-                  }
-                }
-              }
-            }
-          },
-          take: 20 // Get more products to find best matches
-        });
+        // Normalize the query for better matching
+        const normalizedQuery = normalize(item.product_name);
+        
+        // Search for product - first try alias lookup and normalized search
+        let products = await searchProductsWithAliases(normalizedQuery);
+        
+        // If no products found with normalized query, try original
+        if (products.length === 0 && normalizedQuery !== item.product_name) {
+          products = await searchProductsWithAliases(item.product_name);
+        }
 
         // Enhanced search: try exact word match first
         if (products.length === 0) {
@@ -211,7 +331,42 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if we have any products
+        console.error(`DEBUG: Found ${products.length} products for "${item.product_name}"`);
         if (products.length === 0) {
+          // Try AI standardization as fallback when no products found
+          const aiResult = await tryAIStandardization(item, "No match found");
+          if (aiResult.products.length > 0) {
+            products = aiResult.products;
+          }
+        }
+
+        // If still no products found after AI attempt
+        if (products.length === 0) {
+          // Save to unmatched queue for admin review
+          try {
+            const context = {
+              scanned_price: item.scanned_price,
+              unit: item.unit,
+              quantity: item.quantity,
+              search_attempts: [
+                normalizedQuery,
+                ...(normalizedQuery !== item.product_name ? [item.product_name] : [])
+              ]
+            };
+
+            await prisma.unmatched_queue.create({
+              data: {
+                rawName: item.product_name,
+                normalizedName: normalizedQuery,
+                context,
+                supplierId: item.supplier_id
+              }
+            });
+          } catch (error) {
+            console.error('Failed to save unmatched product:', error);
+            // Don't fail the main request if unmatched save fails
+          }
+
           return {
             product_name: item.product_name,
             scanned_price: item.scanned_price,
@@ -262,21 +417,97 @@ export async function POST(request: NextRequest) {
           }, products[0]);
         }
         
-        // Final check: if best match has 0 similarity, skip this item
+        // Final check: if best match has low similarity, try AI standardization
         const finalSimilarity = calculateProductSimilarity(item.product_name, bestMatch.name);
+        console.error(`DEBUG: Final similarity for "${item.product_name}" → "${bestMatch.name}": ${finalSimilarity}`);
+        
+        let aiStandardizedName = null;
         if (finalSimilarity === 0) {
-          return {
-            product_name: item.product_name,
-            scanned_price: item.scanned_price,
-            status: 'not_found',
-            matched_product: null,
-            price_analysis: null
-          };
+          // Try AI standardization for completely incompatible matches
+          const aiResult = await tryAIStandardization(item, "Incompatible match (similarity = 0)");
+          if (aiResult.products.length > 0 && aiResult.standardizedName) {
+            // Re-run the matching logic with AI results
+            products = aiResult.products;
+            bestMatch = products[0];
+            aiStandardizedName = aiResult.standardizedName;
+            
+            // Re-calculate similarity with AI standardized products using AI standardized name
+            if (item.unit) {
+              const scannedCanonical = getCanonicalUnit(item.unit);
+              bestMatch = products.reduce((best, current) => {
+                const bestCanonical = getCanonicalUnit(best.unit);
+                const currentCanonical = getCanonicalUnit(current.unit);
+                const bestUnitMatch = bestCanonical === scannedCanonical;
+                const currentUnitMatch = currentCanonical === scannedCanonical;
+                
+                const bestScore = calculateProductSimilarity(aiStandardizedName, best.name);
+                const currentScore = calculateProductSimilarity(aiStandardizedName, current.name);
+                
+                if (currentScore === 0) return best;
+                if (bestScore === 0) return current;
+                
+                if (currentUnitMatch && !bestUnitMatch) return current;
+                if (!currentUnitMatch && bestUnitMatch) return best;
+                
+                return currentScore > bestScore ? current : best;
+              }, products[0]);
+            } else {
+              bestMatch = products.reduce((best, current) => {
+                const bestScore = calculateProductSimilarity(aiStandardizedName, best.name);
+                const currentScore = calculateProductSimilarity(aiStandardizedName, current.name);
+                
+                if (currentScore === 0) return best;
+                if (bestScore === 0) return current;
+                
+                return currentScore > bestScore ? current : best;
+              }, products[0]);
+            }
+            
+            // Re-check final similarity with AI standardized result using AI standardized name
+            const newFinalSimilarity = calculateProductSimilarity(aiStandardizedName, bestMatch.name);
+            console.error(`DEBUG: AI result similarity "${aiStandardizedName}" → "${bestMatch.name}": ${newFinalSimilarity}`);
+            
+            if (newFinalSimilarity === 0) {
+              return {
+                product_name: item.product_name,
+                scanned_price: item.scanned_price,
+                status: 'not_found',
+                matched_product: null,
+                price_analysis: null
+              };
+            }
+          } else {
+            // AI failed, return not found
+            return {
+              product_name: item.product_name,
+              scanned_price: item.scanned_price,
+              status: 'not_found',
+              matched_product: null,
+              price_analysis: null
+            };
+          }
+        } else if (finalSimilarity < 30) {
+          // Try AI standardization for low similarity matches
+          console.error(`DEBUG: Low similarity (${finalSimilarity}), trying AI...`);
+          const aiResult = await tryAIStandardization(item, `Low similarity match (${finalSimilarity})`);
+          if (aiResult.products.length > 0 && aiResult.standardizedName) {
+            // Check if AI gives us a better match using AI standardized name
+            const aiBestMatch = aiResult.products[0];
+            const aiSimilarity = calculateProductSimilarity(aiResult.standardizedName, aiBestMatch.name);
+            console.error(`DEBUG: AI similarity "${aiResult.standardizedName}" → "${aiBestMatch.name}": ${aiSimilarity} vs original: ${finalSimilarity}`);
+            
+            if (aiSimilarity > finalSimilarity) {
+              console.log(`✅ AI found better match: ${aiSimilarity} > ${finalSimilarity}`);
+              products = aiResult.products;
+              bestMatch = aiBestMatch;
+              aiStandardizedName = aiResult.standardizedName;
+            }
+          }
         }
 
-        // MVP: Calculate scanned unit price for comparison
+        // MVP: Calculate scanned unit price for comparison (M-4 requirement)
         const scannedUnitPrice = item.unit && item.quantity ? 
-          calculateUnitPrice(item.scanned_price, item.quantity, item.unit) : 
+          calcUnitPrice(item.scanned_price, item.quantity, item.unit) : 
           item.scanned_price;
 
         // Collect all prices from all matching products
@@ -305,9 +536,10 @@ export async function POST(request: NextRequest) {
               return;
             }
 
-            // MVP: Skip stale prices (older than 30 days)
+            // MVP: Skip stale prices (M-5 requirement: 7 days freshness)
             const priceAge = Date.now() - p.createdAt.getTime();
-            const isStale = priceAge > 30 * 24 * 60 * 60 * 1000; // 30 days
+            const FRESH_DAYS = 7; // M-5 requirement
+            const isStale = priceAge > FRESH_DAYS * 24 * 60 * 60 * 1000;
             if (isStale && p.validTo === null) {
               return;
             }
@@ -316,16 +548,13 @@ export async function POST(request: NextRequest) {
             const unitsMatch = scannedCanonicalUnit && priceCanonicalUnit && 
                               scannedCanonicalUnit === priceCanonicalUnit;
 
-            // Calculate unit price for this entry if possible
+            // Calculate unit price for this entry (M-4 requirement)
             let entryUnitPrice: number | null = null;
-            if (unitsMatch && product.standardizedUnit) {
-              // Try to use existing unitPrice or calculate it
-              if (p.unitPrice) {
-                entryUnitPrice = Number(p.unitPrice);
-              } else {
-                // Fallback calculation assuming amount is for 1 unit
-                entryUnitPrice = calculateUnitPrice(Number(p.amount), 1, p.unit || product.unit);
-              }
+            if (p.unitPrice) {
+              entryUnitPrice = Number(p.unitPrice);
+            } else {
+              // Calculate unit price based on unit (assuming quantity = 1 if not stored)
+              entryUnitPrice = calcUnitPrice(Number(p.amount), 1, p.unit || product.unit);
             }
 
             allPriceEntries.push({
@@ -493,15 +722,17 @@ function normalizeProductName(name: string): string {
     .trim();
 }
 
-// Product modifiers classification
+// Product modifiers classification (synchronized with product-normalizer.ts)
 const PRODUCT_MODIFIERS = {
   // Words that fundamentally change the product (exclude if mismatch)
   exclusive: [
-    'sweet', 'wild', 'sea', 'mountain', 'water', 'bitter',
+    'sweet', 'oyster', 'baby', 'local', // As per M-3 requirement
+    'cherry', 'grape', 'plum',
     'black', 'white', 'red', 'green', 'yellow', 'purple',
     'dried', 'frozen', 'canned', 'pickled', 'smoked',
+    'wild', 'sea', 'mountain', 'water', 'bitter',
     'japanese', 'chinese', 'indian', 'thai', 'korean',
-    'baby', 'young', 'old', 'mature',
+    'young', 'old', 'mature',
     'male', 'female',
     'imported', 'organic', 'conventional'
   ],
@@ -512,8 +743,7 @@ const PRODUCT_MODIFIERS = {
     'small', 'mini', 'tiny', 'little',
     'medium', 'regular', 'standard',
     'fresh', 'new', 'premium', 'grade', 'quality',
-    'whole', 'half', 'piece', 'slice',
-    'local'
+    'whole', 'half', 'piece', 'slice'
   ]
 };
 
@@ -563,6 +793,11 @@ function hasAllWords(queryWords: string[], productWords: string[]): boolean {
 function calculateProductSimilarity(query: string, productName: string): number {
   const queryWords = getWordsArray(query);
   const productWords = getWordsArray(productName);
+  
+  // CRITICAL: Check core noun match first (M-3 requirement)
+  if (hasDifferentCoreNoun(query, productName)) {
+    return 0; // "sweet potato" should not match with "potato"
+  }
   
   // CRITICAL: Exclude products with incompatible exclusive modifiers
   if (hasExclusiveModifierMismatch(query, productName)) {

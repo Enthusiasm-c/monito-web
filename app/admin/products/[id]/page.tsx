@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import AliasManager from './aliases';
 
 interface Product {
   id: string;
@@ -391,6 +392,11 @@ export default function ProductEdit({ params }: { params: Promise<{ id: string }
                   <dd className="text-sm text-gray-900 font-mono">{product.id}</dd>
                 </div>
               </div>
+            </div>
+
+            {/* Alias Manager */}
+            <div className="mt-6">
+              <AliasManager productId={product.id} productName={product.name} />
             </div>
           </div>
         )}

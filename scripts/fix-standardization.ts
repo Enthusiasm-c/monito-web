@@ -1,7 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import { standardizeProductData } from '../app/services/standardization';
 
-const prisma = new PrismaClient();
+import { prisma } from '../lib/prisma';
 
 async function fixStandardization() {
   try {

@@ -1,7 +1,6 @@
-import { PrismaClient } from '@prisma/client';
 import fs from 'fs/promises';
 
-const prisma = new PrismaClient();
+import { prisma } from '../lib/prisma';
 
 async function cleanAndReprocess() {
   try {

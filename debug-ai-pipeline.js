@@ -1,8 +1,10 @@
+import { prisma } from 'lib/prisma';
+
 // Простой тест для отладки AI pipeline
 const { PrismaClient } = require('@prisma/client');
 
 async function debugAIPipeline() {
-  const prisma = new PrismaClient();
+  
   
   try {
     console.log('🔍 Debugging AI Pipeline issue...');

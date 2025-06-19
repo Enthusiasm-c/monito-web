@@ -18,6 +18,7 @@ model Supplier {
   updatedAt   DateTime @updatedAt
   prices      Price[]
   uploads     Upload[]
+  unmatchedQueue UnmatchedQueue[]
 
   @@map("suppliers")
 }
@@ -34,9 +35,26 @@ model Product {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   prices           Price[]
+  aliases          ProductAlias[]
+  assignedFromQueue UnmatchedQueue[]
 
   @@unique([standardizedName, standardizedUnit])
   @@map("products")
+}
+
+model ProductAlias {
+  id        String   @id @default(cuid())
+  productId String
+  alias     String   @unique
+  language  String?  @default("en")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([alias])
+  @@map("product_alias")
 }
 
 model Price {
@@ -92,6 +110,63 @@ model Upload {
   
   prices             Price[]
   supplier           Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  unmatchedQueue     UnmatchedQueue[]
 
   @@map("uploads")
+}
+
+model LanguageDictionary {
+  id          String   @id @default(cuid())
+  sourceWord  String   @unique // wortel, ayam, zanahoria
+  targetWord  String   // carrot, chicken, carrot
+  language    String   // id, es, en
+  category    String?  // vegetables, meat, etc
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?  // admin user who added this
+
+  @@index([sourceWord])
+  @@index([language])
+  @@map("language_dictionary")
+}
+
+model UnitDictionary {
+  id           String   @id @default(cuid())
+  sourceUnit   String   @unique // g, kg, liter, pcs, buah
+  targetUnit   String   // g, kg, L, pcs, pcs
+  conversionFactor Float @default(1.0) // 1000 for g->kg
+  category     String?  // weight, volume, count
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String?
+
+  @@index([sourceUnit])
+  @@index([category])
+  @@map("unit_dictionary")
+}
+
+model UnmatchedQueue {
+  id             String   @id @default(cuid())
+  rawName        String   // Original product name that couldn't be matched
+  normalizedName String?  // Cleaned/normalized version
+  context        Json?    // Additional context (supplier, price, unit, etc.)
+  uploadId       String?  // Which upload this came from
+  supplierId     String?  // Supplier context
+  frequency      Int      @default(1) // How many times this appeared
+  status         String   @default("pending") // pending, assigned, ignored
+  assignedProductId String? // If manually assigned to existing product
+  assignedBy     String?  // Admin who assigned this
+  assignedAt     DateTime?
+  notes          String?  // Admin notes
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  supplier       Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  upload         Upload?   @relation(fields: [uploadId], references: [id], onDelete: SetNull)
+  assignedProduct Product? @relation(fields: [assignedProductId], references: [id], onDelete: SetNull)
+
+  @@index([rawName])
+  @@index([status])
+  @@index([supplierId])
+  @@map("unmatched_queue")
 }
