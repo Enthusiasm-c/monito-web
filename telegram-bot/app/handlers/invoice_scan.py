@@ -162,30 +162,24 @@ async def handle_invoice_photo(message: types.Message):
         # Format and send report
         report = format_comparison_report(comparison_data, supplier_name)
         
-        # Add not found items to report (limited to avoid message length issues)
-        if not_found_items:
-            report += "\n\n❓ *Products not found in database:*"
-            for idx, item in enumerate(not_found_items[:3]):  # Limit to 3 items
-                product_name = item['product_name'][:30]  # Limit length
-                report += f"\n• {product_name} - {format_price(item['scanned_price'])}"
-            if len(not_found_items) > 3:
-                report += f"\n• \\.\\.\\. and {len(not_found_items) - 3} more items"
-            report += "\n\n_These products may be new or have different names in our database\\._"
+        # Note: not_found_items are now handled within the format_comparison_report function
+        # with the 🆕 badge instead of a separate section
         
         # Limit total message length
         if len(report) > 4000:
-            report = report[:3900] + "\n\n_\\.\\.\\. message truncated due to length_"
+            report = report[:3900] + "\n\n<i>... message truncated due to length</i>"
         
-        # Try with MarkdownV2 first, fallback to plain text if it fails
+        # Use HTML parsing instead of MarkdownV2 for better compatibility
         try:
             await processing_msg.edit_text(
                 report,
-                parse_mode="MarkdownV2"
+                parse_mode="HTML"
             )
         except Exception as e:
-            logger.warning(f"MarkdownV2 failed: {e}, falling back to plain text")
-            # Remove markdown formatting and send as plain text
-            plain_report = report.replace('*', '').replace('_', '').replace('\\', '')
+            logger.warning(f"HTML parsing failed: {e}, falling back to plain text")
+            # Remove HTML formatting and send as plain text
+            import re
+            plain_report = re.sub(r'<[^>]+>', '', report)
             await processing_msg.edit_text(plain_report)
         
         # Log successful processing

@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Invoice Analysis Schema",
+  "description": "Schema for invoice analysis data structure used in Telegram bot reports",
+  "type": "object",
+  "properties": {
+    "comparisons": {
+      "type": "array",
+      "description": "Array of product comparison results",
+      "items": {
+        "type": "object",
+        "properties": {
+          "product_name": {
+            "type": "string",
+            "description": "Original product name from invoice"
+          },
+          "scanned_price": {
+            "type": "number",
+            "description": "Price from scanned invoice"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["not_found", "normal", "above_average", "overpriced", "below_average", "suspiciously_low"],
+            "description": "Price status classification"
+          },
+          "matched_product": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string", "description": "Standardized product name" },
+              "unit": { "type": "string" }
+            },
+            "required": ["id", "name", "unit"]
+          },
+          "price_analysis": {
+            "type": "object",
+            "properties": {
+              "min_price": { "type": "number" },
+              "max_price": { "type": "number" },
+              "avg_price": { "type": "number" },
+              "supplier_price": { "type": ["number", "null"] },
+              "deviation_percent": { "type": "number" },
+              "supplier_count": { "type": "number" },
+              "suppliers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "price": { "type": "number" },
+                    "product_name": { "type": "string" }
+                  }
+                }
+              },
+              "better_deals": {
+                "type": "array",
+                "description": "Up to 3 better alternatives",
+                "maxItems": 3,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "supplier": { "type": "string" },
+                    "price": { "type": "number" },
+                    "unit_price": { "type": ["number", "null"] },
+                    "product_name": { "type": "string" },
+                    "unit": { "type": "string" },
+                    "unit_match": { "type": "boolean" },
+                    "savings": { "type": "number" },
+                    "savings_percent": { "type": "number" }
+                  },
+                  "required": ["supplier", "price", "product_name", "unit", "savings", "savings_percent"]
+                }
+              },
+              "has_better_deals": { "type": "boolean" },
+              "is_best_price": { "type": "boolean" }
+            },
+            "required": ["min_price", "max_price", "avg_price", "better_deals", "has_better_deals", "is_best_price"]
+          },
+          "isNew": {
+            "type": "boolean",
+            "description": "True if product was not found in database (new/unknown item)"
+          },
+          "diffPercent": {
+            "type": "number",
+            "description": "Percentage difference from optimal price (positive = overpaying)"
+          }
+        },
+        "required": ["product_name", "scanned_price", "status"]
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total_items": { "type": "number" },
+        "found_items": { "type": "number" },
+        "overpriced_items": { "type": "number" },
+        "good_deals": { "type": "number" }
+      },
+      "required": ["total_items", "found_items", "overpriced_items", "good_deals"]
+    }
+  },
+  "required": ["comparisons", "summary"]
+}
