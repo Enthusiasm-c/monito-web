@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateBot } from '../../middleware';
 import { calculateUnitPrice, areUnitsComparable, getCanonicalUnit } from '../../../../lib/utils/unit-price-calculator';
 import { normalize, coreNoun, hasDifferentCoreNoun, calcUnitPrice } from '../../../../lib/utils/product-normalizer';
+import { prisma } from '../../../../../lib/prisma';
+import { randomUUID } from 'crypto';
 // Embedded searchProductsWithAliases function to avoid import issues
 async function searchProductsWithAliases(query: string) {
   const normalizedQuery = normalize(query);
@@ -356,6 +358,7 @@ export async function POST(request: NextRequest) {
 
             await prisma.unmatched_queue.create({
               data: {
+                id: randomUUID(),
                 rawName: item.product_name,
                 normalizedName: normalizedQuery,
                 context,
@@ -734,7 +737,23 @@ const PRODUCT_MODIFIERS = {
     'japanese', 'chinese', 'indian', 'thai', 'korean',
     'young', 'old', 'mature',
     'male', 'female',
-    'imported', 'organic', 'conventional'
+    'imported', 'organic', 'conventional',
+    // Animal product types
+    'quail', 'duck', 'goose', 'turkey', 'chicken',
+    // Plant parts
+    'flower', 'leaf', 'stem', 'root', 'seed', 'bud',
+    // Citrus varieties
+    'tangerine', 'lime', 'lemon', 'grapefruit', 'mandarin',
+    // Orange varieties
+    'valencia', 'navel', 'blood', 'bitter',
+    // Potato varieties
+    'russet', 'fingerling', 'new',
+    // Additional animal types
+    'beef', 'pork', 'lamb', 'goat', 'rabbit',
+    // Fish types
+    'tuna', 'salmon', 'cod', 'tilapia', 'mackerel', 'snapper',
+    // Milk types
+    'cow', 'goat', 'almond', 'soy', 'coconut', 'oat'
   ],
   
   // Words that describe size/quality but don't change core product
@@ -761,16 +780,20 @@ function hasExclusiveModifierMismatch(query: string, productName: string): boole
   const queryExclusives = queryWords.filter(w => PRODUCT_MODIFIERS.exclusive.includes(w));
   const productExclusives = productWords.filter(w => PRODUCT_MODIFIERS.exclusive.includes(w));
   
-  // FIXED: Only reject if query has exclusive modifiers that don't match product
-  // Allow partial queries without exclusive modifiers to match products with them
-  if (queryExclusives.length === 0) {
-    return false; // Query has no exclusive modifiers, so allow any product
+  // CRITICAL FIX: If product has exclusive modifiers but query doesn't, reject match
+  // Example: query "potato" should NOT match "Sweet Potato"
+  if (queryExclusives.length === 0 && productExclusives.length > 0) {
+    return true; // Product has exclusive modifiers that query lacks
   }
   
   // If query has exclusive modifiers, check if product conflicts
-  const conflictingModifiers = queryExclusives.filter(mod => !productExclusives.includes(mod));
+  if (queryExclusives.length > 0) {
+    const conflictingModifiers = queryExclusives.filter(mod => !productExclusives.includes(mod));
+    return conflictingModifiers.length > 0;
+  }
   
-  return conflictingModifiers.length > 0;
+  // Both have no exclusive modifiers, allow match
+  return false;
 }
 
 // Get core product words (excluding modifiers)

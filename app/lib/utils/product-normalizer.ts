@@ -151,7 +151,23 @@ export const EXCLUSIVE_MODIFIERS = [
   'cherry', 'grape', 'plum',
   'black', 'white', 'red', 'green', 'yellow', 'purple',
   'dried', 'frozen', 'canned', 'pickled', 'smoked',
-  'wild', 'sea', 'mountain', 'water', 'bitter'
+  'wild', 'sea', 'mountain', 'water', 'bitter',
+  // Animal product types
+  'quail', 'duck', 'goose', 'turkey', 'chicken',
+  // Plant parts
+  'flower', 'leaf', 'stem', 'root', 'seed', 'bud',
+  // Citrus varieties
+  'tangerine', 'lime', 'lemon', 'grapefruit', 'mandarin',
+  // Orange varieties
+  'valencia', 'navel', 'blood', 'bitter',
+  // Potato varieties
+  'russet', 'fingerling', 'new',
+  // Additional animal types
+  'beef', 'pork', 'lamb', 'goat', 'rabbit',
+  // Fish types
+  'tuna', 'salmon', 'cod', 'tilapia', 'mackerel', 'snapper',
+  // Milk types
+  'cow', 'goat', 'almond', 'soy', 'coconut', 'oat'
 ];
 
 // Descriptive modifiers that don't change the core product
