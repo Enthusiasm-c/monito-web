@@ -9,7 +9,7 @@ async function searchProductsWithAliases(query: string) {
   const normalizedQuery = normalize(query);
   
   // First check for exact alias match
-  const alias = await prisma.product_alias.findUnique({
+  const alias = await prisma.productAlias.findUnique({
     where: { alias: normalizedQuery },
     select: { productId: true }
   });
@@ -753,16 +753,20 @@ const PRODUCT_MODIFIERS = {
     // Fish types
     'tuna', 'salmon', 'cod', 'tilapia', 'mackerel', 'snapper',
     // Milk types
-    'cow', 'goat', 'almond', 'soy', 'coconut', 'oat'
+    'cow', 'goat', 'soy', 'coconut', 'oat'
   ],
   
-  // Words that describe size/quality but don't change core product
+  // Words that describe size/quality/preparation but don't change core product
   descriptive: [
     'big', 'large', 'huge', 'giant', 'jumbo',
     'small', 'mini', 'tiny', 'little',
     'medium', 'regular', 'standard',
     'fresh', 'new', 'premium', 'grade', 'quality',
-    'whole', 'half', 'piece', 'slice'
+    'whole', 'half', 'piece', 'slice',
+    // Preparation methods (descriptive, not exclusive)
+    'roasted', 'grilled', 'fried', 'steamed', 'boiled', 'raw',
+    'chopped', 'sliced', 'diced', 'minced', 'ground',
+    'paste', 'pastes', 'sauce', 'powder', 'flakes'
   ]
 };
 
@@ -780,15 +784,23 @@ function hasExclusiveModifierMismatch(query: string, productName: string): boole
   const queryExclusives = queryWords.filter(w => PRODUCT_MODIFIERS.exclusive.includes(w));
   const productExclusives = productWords.filter(w => PRODUCT_MODIFIERS.exclusive.includes(w));
   
-  // CRITICAL FIX: If product has exclusive modifiers but query doesn't, reject match
-  // Example: query "potato" should NOT match "Sweet Potato"
+  // CRITICAL FIX: Only reject if there are actual conflicting exclusive modifiers
+  // Allow: "roasted almond" → "Pastes Roasted Almond" (roasted is descriptive, pastes is descriptive)
+  // Allow: "almond" → "Roasted Almond" (no conflict with descriptive modifiers)
+  // Reject: "potato" → "Sweet Potato" (Sweet IS exclusive and conflicts with plain potato)
   if (queryExclusives.length === 0 && productExclusives.length > 0) {
-    return true; // Product has exclusive modifiers that query lacks
+    // Only reject if product has truly conflicting exclusive modifiers
+    // These are modifiers that would make the product fundamentally different
+    const strongConflictingTypes = ['sweet', 'bitter', 'sour', 
+                                  'wild', 'organic', 'baby'];
+    const hasStrongConflict = productExclusives.some(mod => strongConflictingTypes.includes(mod));
+    return hasStrongConflict;
   }
   
-  // If query has exclusive modifiers, check if product conflicts
+  // If query has exclusive modifiers, product must have compatible ones
   if (queryExclusives.length > 0) {
-    const conflictingModifiers = queryExclusives.filter(mod => !productExclusives.includes(mod));
+    // Only reject if product has different exclusive modifiers (not just missing them)
+    const conflictingModifiers = productExclusives.filter(mod => !queryExclusives.includes(mod));
     return conflictingModifiers.length > 0;
   }
   

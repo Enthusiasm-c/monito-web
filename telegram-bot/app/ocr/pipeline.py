@@ -116,6 +116,28 @@ class OCRPipeline:
         - If math doesn't work, prioritize the "Harga" column value for unit_price
         - If no separate columns, calculate: total_price = unit_price × quantity
         
+        STEP-BY-STEP EXTRACTION:
+        1. Find the table header row with column names
+        2. Identify which column is HARGA (unit price) and which is JUMLAH (total)
+        3. For each product row:
+           - Extract quantity from Qty column 
+           - Extract unit_price from HARGA column (NOT from JUMLAH!)
+           - Extract total_price from JUMLAH column
+           - VERIFY: unit_price × quantity = total_price
+           - If verification fails, re-examine which columns you identified as HARGA vs JUMLAH
+        
+        COMMON MISTAKES TO AVOID:
+        - DON'T mix up HARGA and JUMLAH columns
+        - DON'T use JUMLAH value as unit_price
+        - DON'T ignore quantity when it's > 1
+        - DON'T mix up rows in the table - each product row is independent
+        - Example: Fresh Milk 2L, Qty=2, Harga=25000, Jumlah=50000 → unit_price=25000, total_price=50000
+        
+        SPECIAL ATTENTION for products like "Fresh Milk 2L" or "Apel Fuji 2pcs":
+        - The "2L" or "2pcs" in the name is NOT the quantity
+        - Look for the actual quantity in the Qty/Jumlah Barang column
+        - Example: "Fresh Milk 2L" with Qty=2 means 2 units of 2L bottles (total 4L)
+        
         CRITICAL VALIDATION:
         - For each row, verify: Harga × Qty = Jumlah
         - If this formula doesn't match, the OCR extraction is wrong
@@ -223,18 +245,30 @@ class OCRPipeline:
             if total_price > 0 and total_price < 1000:
                 total_price = total_price * 1000
             
-            # Additional validation: check if unit_price makes sense
+            # Critical validation: check if OCR mixed up HARGA and JUMLAH columns
             quantity = float(product.get('quantity', 1))
             if quantity > 0 and total_price > 0 and unit_price > 0:
                 # Calculate expected total from unit price
                 expected_total = unit_price * quantity
-                # If they don't match within 10%, there might be an extraction error
-                if abs(expected_total - total_price) / total_price > 0.1:
-                    # OCR might have mixed up unit_price and total_price
-                    # Calculate unit price from total price
+                # Check if the math works: unit_price × quantity = total_price
+                tolerance = 0.05  # Allow 5% tolerance for rounding errors
+                
+                # Log validation details for debugging
+                logger.debug(f"Validating {product['name']}: qty={quantity}, unit={unit_price}, total={total_price}, expected={expected_total}")
+                
+                if abs(expected_total - total_price) / total_price > tolerance:
+                    # OCR likely mixed up HARGA and JUMLAH columns!
+                    # Calculate what unit price should be based on total
                     calculated_unit_price = total_price / quantity
-                    if calculated_unit_price >= 1000:  # Reasonable unit price
+                    if calculated_unit_price >= 1000:  # Reasonable unit price minimum
+                        logger.warning(f"OCR column mix-up detected for {product['name']}: "
+                                     f"qty={quantity}, extracted unit_price={unit_price}, total={total_price}, "
+                                     f"expected_total={expected_total}, calculated_unit={calculated_unit_price}")
                         unit_price = calculated_unit_price
+                    else:
+                        # If calculated unit price is too low, OCR might have extracted wrong data entirely
+                        logger.error(f"OCR extraction error for {product['name']}: "
+                                   f"qty={quantity}, unit={unit_price}, total={total_price} - math doesn't add up!")
             
             cleaned_product = {
                 'name': product['name'].strip(),

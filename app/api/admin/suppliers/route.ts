@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, phone, address, website, contactPerson, notes } = body;
+    const { name, email, phone, address, contactInfo } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -78,9 +78,7 @@ export async function POST(request: NextRequest) {
         email: email || null,
         phone: phone || null,
         address: address || null,
-        website: website || null,
-        contactPerson: contactPerson || null,
-        notes: notes || null
+        contactInfo: contactInfo || null
       }
     });
 

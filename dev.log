@@ -8,83 +8,262 @@
    - Environments: .env
 
  ✓ Starting...
- ✓ Ready in 1646ms
- ✓ Compiled /middleware in 85ms (108 modules)
-[91451d6a-644c-45bb-9193-22511d3a889b] POST http://localhost:3000/api/bot/prices/compare
- ✓ Compiled /api/bot/prices/compare in 280ms (366 modules)
- POST /api/bot/prices/compare 200 in 971ms
- ✓ Compiled in 60ms (87 modules)
- ✓ Compiled in 27ms (87 modules)
-[4a1d2cd6-35bf-4c76-afd3-aaf0f0d810e3] POST http://localhost:3000/api/bot/prices/compare
-[DEBUG] Searching for product: "romana"
-[DEBUG] Initial search found 1 products
- POST /api/bot/prices/compare 200 in 646ms
- ✓ Compiled in 36ms (87 modules)
-[be62e108-3896-463f-8fe5-4e7992c9a579] POST http://localhost:3000/api/bot/prices/compare
-[DEBUG] Searching for product: "romana"
-[DEBUG] Initial search found 1 products
-[DEBUG] Found 1 products, checking matches...
-[DEBUG] Product: Lettuce Romana Baby, Unit: kg, Prices: 1
- POST /api/bot/prices/compare 200 in 599ms
- ✓ Compiled in 67ms (87 modules)
-[0d261f21-3b05-4753-8af6-e900dc906470] POST http://localhost:3000/api/bot/prices/compare
-[DEBUG] Searching for product: "romana"
-[DEBUG] Initial search found 1 products
-[DEBUG] Found 1 products, checking matches...
-[DEBUG] Product: Lettuce Romana Baby, Unit: kg, Prices: 1
-[DEBUG] Best match: Lettuce Romana Baby, Similarity: 0
-[DEBUG] Rejecting due to 0 similarity
- POST /api/bot/prices/compare 200 in 798ms
- ✓ Compiled in 29ms (87 modules)
-[ce04409e-2415-452b-9109-32361c99a133] POST http://localhost:3000/api/bot/prices/compare
-[DEBUG] Searching for product: "romana"
-[DEBUG] Initial search found 1 products
-[DEBUG] Found 1 products, checking matches...
-[DEBUG] Product: Lettuce Romana Baby, Unit: kg, Prices: 1
-[DEBUG SIMILARITY] Query: "romana" → words: [romana]
-[DEBUG SIMILARITY] Product: "Lettuce Romana Baby" → words: [lettuce, romana, baby]
-[DEBUG SIMILARITY] Query: "romana" → words: [romana]
-[DEBUG SIMILARITY] Product: "Lettuce Romana Baby" → words: [lettuce, romana, baby]
-[DEBUG SIMILARITY] Query: "romana" → words: [romana]
-[DEBUG SIMILARITY] Product: "Lettuce Romana Baby" → words: [lettuce, romana, baby]
-[DEBUG] Best match: Lettuce Romana Baby, Similarity: 0
-[DEBUG] Rejecting due to 0 similarity
- POST /api/bot/prices/compare 200 in 627ms
- ✓ Compiled in 26ms (87 modules)
-[6803f58f-7977-46a7-a980-61efd3863534] POST http://localhost:3000/api/bot/prices/compare
-[DEBUG] Searching for product: "romana"
-[DEBUG] Initial search found 1 products
-[DEBUG] Found 1 products, checking matches...
-[DEBUG] Product: Lettuce Romana Baby, Unit: kg, Prices: 1
-[DEBUG SIMILARITY] Query: "romana" → words: [romana]
-[DEBUG SIMILARITY] Product: "Lettuce Romana Baby" → words: [lettuce, romana, baby]
-[DEBUG SIMILARITY] Rejecting due to exclusive modifier mismatch
-[DEBUG SIMILARITY] Query: "romana" → words: [romana]
-[DEBUG SIMILARITY] Product: "Lettuce Romana Baby" → words: [lettuce, romana, baby]
-[DEBUG SIMILARITY] Rejecting due to exclusive modifier mismatch
-[DEBUG SIMILARITY] Query: "romana" → words: [romana]
-[DEBUG SIMILARITY] Product: "Lettuce Romana Baby" → words: [lettuce, romana, baby]
-[DEBUG SIMILARITY] Rejecting due to exclusive modifier mismatch
-[DEBUG] Best match: Lettuce Romana Baby, Similarity: 0
-[DEBUG] Rejecting due to 0 similarity
- POST /api/bot/prices/compare 200 in 616ms
- ✓ Compiled in 31ms (87 modules)
-[3df8da38-2e72-444d-ab75-1b63d4182331] POST http://localhost:3000/api/bot/prices/compare
-[DEBUG] Searching for product: "romana"
-[DEBUG] Initial search found 1 products
-[DEBUG] Found 1 products, checking matches...
-[DEBUG] Product: Lettuce Romana Baby, Unit: kg, Prices: 1
-[DEBUG SIMILARITY] Query: "romana" → words: [romana]
-[DEBUG SIMILARITY] Product: "Lettuce Romana Baby" → words: [lettuce, romana, baby]
-[DEBUG SIMILARITY] Query: "romana" → words: [romana]
-[DEBUG SIMILARITY] Product: "Lettuce Romana Baby" → words: [lettuce, romana, baby]
-[DEBUG SIMILARITY] Query: "romana" → words: [romana]
-[DEBUG SIMILARITY] Product: "Lettuce Romana Baby" → words: [lettuce, romana, baby]
-[DEBUG] Best match: Lettuce Romana Baby, Similarity: 42.666666666666664
- POST /api/bot/prices/compare 200 in 614ms
- ✓ Compiled in 35ms (87 modules)
- ✓ Compiled in 27ms (87 modules)
- ✓ Compiled in 53ms (87 modules)
-[e92e6d51-9093-4da3-a7b8-27378b6cd0b0] POST http://localhost:3000/api/bot/prices/compare
- POST /api/bot/prices/compare 200 in 1422ms
-[?25h
+ ✓ Ready in 1134ms
+ ✓ Compiled /middleware in 99ms (108 modules)
+[47a3fd12-0fd9-4f31-9044-fd0c72533927] POST http://localhost:3000/api/bot/prices/compare
+ ✓ Compiled /api/bot/prices/compare in 281ms (371 modules)
+Bot API - Error comparing prices: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at searchProductsWithAliases (app/api/bot/prices/compare/route.ts:12:43)
+    at eval (app/api/bot/prices/compare/route.ts:178:29)
+    at Array.map (<anonymous>)
+    at POST (app/api/bot/prices/compare/route.ts:173:12)
+  10 |   
+  11 |   // First check for exact alias match
+> 12 |   const alias = await prisma.product_alias.findUnique({
+     |                                           ^
+  13 |     where: { alias: normalizedQuery },
+  14 |     select: { productId: true }
+  15 |   });
+ POST /api/bot/prices/compare 500 in 414ms
+ ⨯ ./app/api/bot/prices/compare/route.ts:5:1
+Module not found: Can't resolve '../../../../lib/prisma'
+  3 | import { calculateUnitPrice, areUnitsComparable, getCanonicalUnit } from '../../../../lib/utils/unit-price-calculator';
+  4 | import { normalize, coreNoun, hasDifferentCoreNoun, calcUnitPrice } from '../../../../lib/utils/product-normalizer';
+> 5 | import { prisma } from '../../../../lib/prisma';
+    | ^
+  6 | import { randomUUID } from 'crypto';
+  7 | // Embedded searchProductsWithAliases function to avoid import issues
+  8 | async function searchProductsWithAliases(query: string) {
+
+https://nextjs.org/docs/messages/module-not-found
+[e85446c2-71fb-4002-ad7f-ff5205f2b8ee] POST http://localhost:3000/api/bot/prices/compare
+ ⨯ ./app/api/bot/prices/compare/route.ts:5:1
+Module not found: Can't resolve '../../../../lib/prisma'
+  3 | import { calculateUnitPrice, areUnitsComparable, getCanonicalUnit } from '../../../../lib/utils/unit-price-calculator';
+  4 | import { normalize, coreNoun, hasDifferentCoreNoun, calcUnitPrice } from '../../../../lib/utils/product-normalizer';
+> 5 | import { prisma } from '../../../../lib/prisma';
+    | ^
+  6 | import { randomUUID } from 'crypto';
+  7 | // Embedded searchProductsWithAliases function to avoid import issues
+  8 | async function searchProductsWithAliases(query: string) {
+
+https://nextjs.org/docs/messages/module-not-found
+ POST /api/bot/prices/compare 500 in 591ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 51ms (180 modules)
+[df18d35a-662e-4939-bdff-0715ae3cc8fb] POST http://localhost:3000/api/bot/prices/compare
+Bot API - Error comparing prices: TypeError: Cannot read properties of undefined (reading 'findUnique')
+    at searchProductsWithAliases (app/api/bot/prices/compare/route.ts:12:43)
+    at eval (app/api/bot/prices/compare/route.ts:178:29)
+    at Array.map (<anonymous>)
+    at POST (app/api/bot/prices/compare/route.ts:173:12)
+  10 |   
+  11 |   // First check for exact alias match
+> 12 |   const alias = await prisma.product_alias.findUnique({
+     |                                           ^
+  13 |     where: { alias: normalizedQuery },
+  14 |     select: { productId: true }
+  15 |   });
+ POST /api/bot/prices/compare 500 in 74ms
+ ✓ Compiled in 43ms (138 modules)
+[cb5a7ae3-84ba-4510-9637-c2d1bd55ffe3] POST http://localhost:3000/api/bot/prices/compare
+DEBUG: Found 1 products for "Roasted almond"
+DEBUG: Final similarity for "Roasted almond" → "Pastes Roasted Almond": 0
+🤖 Incompatible match (similarity = 0) for "Roasted almond", trying AI standardization...
+DEBUG: Incompatible match (similarity = 0) for: Roasted almond
+🚀 Starting standardization of 1 products
+📊 Split 1 products into 1 chunks of max 50 each
+🔄 Processing chunk 1/1: 1 products (~120 tokens)
+✅ Chunk 1/1: standardized 1 products
+🎯 AI standardized "Roasted almond" → "Almond Roasted"
+❌ Still no match after AI standardization for "Almond Roasted"
+🔍 Trying fallback search with words: almond, roasted
+🔍 Found 14 products for word "almond"
+🔍 Found 5 products for word "roasted"
+🔍 Fallback similarity "Almond Roasted" → "Croissant Almond": 0
+🔍 Fallback similarity "Almond Roasted" → "Croissant Almond Big": 0
+🔍 Fallback similarity "Almond Roasted" → "Croissant Almond Mini": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Blanched Whole": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Blanched Whole": 0
+🔍 Fallback similarity "Almond Roasted" → "Flour Almond Extra Fine": 0
+🔍 Fallback similarity "Almond Roasted" → "Flour Almond Extra Fine": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Blanched Sliced": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Blanched Sliced": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Natural Whole": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Natural Whole": 0
+🔍 Fallback similarity "Almond Roasted" → "Milk Almond Unsweetened": 0
+🔍 Fallback similarity "Almond Roasted" → "Praline Paste Almond Hazelnut": 0
+🔍 Fallback similarity "Almond Roasted" → "Pastes Roasted Almond": 0
+🔍 Fallback similarity "Almond Roasted" → "Blanched Hazelnut Kernels Roasted": 0
+🔍 Fallback similarity "Almond Roasted" → "Blanched Hazelnut Kernels Roasted": 0
+🔍 Fallback similarity "Almond Roasted" → "Matcha With Roasted Brown Rice Powder": 0
+🔍 Fallback similarity "Almond Roasted" → "Hazelnut Roasted": 0
+❌ All fallback products have 0 similarity with "Almond Roasted"
+❌ No fallback matches found for any words
+ POST /api/bot/prices/compare 200 in 10401ms
+ ✓ Compiled in 38ms (138 modules)
+[4962d6c9-c273-446f-8bda-4a8c91ba1902] POST http://localhost:3000/api/bot/prices/compare
+DEBUG: Found 1 products for "Roasted almond"
+DEBUG: Final similarity for "Roasted almond" → "Pastes Roasted Almond": 0
+🤖 Incompatible match (similarity = 0) for "Roasted almond", trying AI standardization...
+DEBUG: Incompatible match (similarity = 0) for: Roasted almond
+🚀 Starting standardization of 1 products
+📊 Split 1 products into 1 chunks of max 50 each
+🔄 Processing chunk 1/1: 1 products (~120 tokens)
+✅ Chunk 1/1: standardized 1 products
+🎯 AI standardized "Roasted almond" → "Almond Roasted"
+❌ Still no match after AI standardization for "Almond Roasted"
+🔍 Trying fallback search with words: almond, roasted
+🔍 Found 14 products for word "almond"
+🔍 Found 5 products for word "roasted"
+🔍 Fallback similarity "Almond Roasted" → "Croissant Almond": 0
+🔍 Fallback similarity "Almond Roasted" → "Croissant Almond Big": 0
+🔍 Fallback similarity "Almond Roasted" → "Croissant Almond Mini": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Blanched Whole": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Blanched Whole": 0
+🔍 Fallback similarity "Almond Roasted" → "Flour Almond Extra Fine": 0
+🔍 Fallback similarity "Almond Roasted" → "Flour Almond Extra Fine": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Blanched Sliced": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Blanched Sliced": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Natural Whole": 0
+🔍 Fallback similarity "Almond Roasted" → "Almond Natural Whole": 0
+🔍 Fallback similarity "Almond Roasted" → "Milk Almond Unsweetened": 0
+🔍 Fallback similarity "Almond Roasted" → "Praline Paste Almond Hazelnut": 0
+🔍 Fallback similarity "Almond Roasted" → "Pastes Roasted Almond": 0
+🔍 Fallback similarity "Almond Roasted" → "Blanched Hazelnut Kernels Roasted": 0
+🔍 Fallback similarity "Almond Roasted" → "Blanched Hazelnut Kernels Roasted": 0
+🔍 Fallback similarity "Almond Roasted" → "Matcha With Roasted Brown Rice Powder": 0
+🔍 Fallback similarity "Almond Roasted" → "Hazelnut Roasted": 0
+❌ All fallback products have 0 similarity with "Almond Roasted"
+❌ No fallback matches found for any words
+ POST /api/bot/prices/compare 200 in 12296ms
+ ✓ Compiled in 45ms (54 modules)
+[c4f55065-b14a-4a5e-bf67-e05198e056ba] POST http://localhost:3000/api/bot/prices/compare
+ ✓ Compiled /api/bot/prices/compare in 24ms (138 modules)
+DEBUG: Found 1 products for "Roasted almond"
+DEBUG modifier check: "Roasted almond" vs "Pastes Roasted Almond"
+Query exclusives: [almond]
+Product exclusives: [almond]
+Conflicting modifiers: []
+DEBUG modifier check: "Roasted almond" vs "Pastes Roasted Almond"
+Query exclusives: [almond]
+Product exclusives: [almond]
+Conflicting modifiers: []
+DEBUG modifier check: "Roasted almond" vs "Pastes Roasted Almond"
+Query exclusives: [almond]
+Product exclusives: [almond]
+Conflicting modifiers: []
+DEBUG: Final similarity for "Roasted almond" → "Pastes Roasted Almond": 73.33333333333331
+DEBUG modifier check: "Roasted almond" vs "Pastes Roasted Almond"
+Query exclusives: [almond]
+Product exclusives: [almond]
+Conflicting modifiers: []
+ POST /api/bot/prices/compare 200 in 274ms
+ ✓ Compiled in 24ms (138 modules)
+ ✓ Compiled in 31ms (138 modules)
+ ✓ Compiled in 34ms (138 modules)
+[332f3809-39f5-4cd4-b69e-501d9c8e322b] POST http://localhost:3000/api/bot/prices/compare
+DEBUG: Found 1 products for "Roasted almond"
+DEBUG: Final similarity for "Roasted almond" → "Pastes Roasted Almond": 81.33333333333333
+ POST /api/bot/prices/compare 200 in 1298ms
+[36e2eb59-e5e1-47d6-af47-27168c50a676] GET http://localhost:3000/admin/suppliers
+ ○ Compiling /admin/suppliers ...
+ ✓ Compiled /admin/suppliers in 751ms (1062 modules)
+ GET /admin/suppliers 200 in 862ms
+ ✓ Compiled in 65ms (579 modules)
+[806273bb-1b1f-40c5-be3d-9c3625f98576] GET http://localhost:3000/api/admin/suppliers
+ ✓ Compiled /api/admin/suppliers in 128ms (1068 modules)
+ GET /api/admin/suppliers 200 in 1323ms
+[c6037867-e775-470a-a76e-95f1fef5eb0e] POST http://localhost:3000/api/admin/suppliers
+Error creating supplier: Error [PrismaClientValidationError]: 
+Invalid `prisma.supplier.create()` invocation:
+
+{
+  data: {
+    name: "Test Supplier",
+    email: "test@example.com",
+    phone: "+1234567890",
+    address: null,
+    website: null,
+    ~~~~~~~
+    contactPerson: "John Doe",
+    notes: null,
+?   id?: String,
+?   contactInfo?: String | Null,
+?   createdAt?: DateTime,
+?   updatedAt?: DateTime,
+?   prices?: PriceCreateNestedManyWithoutSupplierInput,
+?   uploads?: UploadCreateNestedManyWithoutSupplierInput,
+?   unmatchedQueue?: UnmatchedQueueCreateNestedManyWithoutSupplierInput
+  }
+}
+
+Unknown argument `website`. Available options are marked with ?.
+    at async POST (app/api/admin/suppliers/route.ts:75:21)
+  73 |     }
+  74 |
+> 75 |     const supplier = await prisma.supplier.create({
+     |                     ^
+  76 |       data: {
+  77 |         name,
+  78 |         email: email || null, {
+  clientVersion: '6.9.0'
+}
+ POST /api/admin/suppliers 500 in 41ms
+ ✓ Compiled in 119ms (1082 modules)
+ ✓ Compiled in 59ms (579 modules)
+ ✓ Compiled in 126ms (1082 modules)
+ ✓ Compiled in 80ms (711 modules)
+ ✓ Compiled in 89ms (579 modules)
+ ✓ Compiled in 68ms (579 modules)
+ ✓ Compiled in 88ms (579 modules)
+ ✓ Compiled in 85ms (579 modules)
+ ✓ Compiled in 91ms (579 modules)
+ ✓ Compiled in 61ms (579 modules)
+ ✓ Compiled in 56ms (579 modules)
+ ✓ Compiled in 61ms (579 modules)
+ ✓ Compiled in 97ms (579 modules)
+ ✓ Compiled in 62ms (579 modules)
+[3cf4e4df-1299-47e8-b62f-8e897dd78519] POST http://localhost:3000/api/admin/suppliers
+ POST /api/admin/suppliers 200 in 170ms
+[6b17439f-67b4-431a-80c1-f607b34aefc5] DELETE http://localhost:3000/api/admin/suppliers/cmc8tzn9l0002ou8u0nga99tg
+ ✓ Compiled /api/admin/suppliers/[id] in 82ms (699 modules)
+Error: Route "/api/admin/suppliers/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at DELETE (app/api/admin/suppliers/[id]/route.ts:107:55)
+  105 |     // Check if supplier has prices or uploads
+  106 |     const [pricesCount, uploadsCount] = await Promise.all([
+> 107 |       prisma.price.count({ where: { supplierId: params.id } }),
+      |                                                       ^
+  108 |       prisma.upload.count({ where: { supplierId: params.id } })
+  109 |     ]);
+  110 |
+Error: Route "/api/admin/suppliers/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at DELETE (app/api/admin/suppliers/[id]/route.ts:108:56)
+  106 |     const [pricesCount, uploadsCount] = await Promise.all([
+  107 |       prisma.price.count({ where: { supplierId: params.id } }),
+> 108 |       prisma.upload.count({ where: { supplierId: params.id } })
+      |                                                        ^
+  109 |     ]);
+  110 |
+  111 |     if (pricesCount > 0 || uploadsCount > 0) {
+Error: Route "/api/admin/suppliers/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at DELETE (app/api/admin/suppliers/[id]/route.ts:122:26)
+  120 |
+  121 |     await prisma.supplier.delete({
+> 122 |       where: { id: params.id }
+      |                          ^
+  123 |     });
+  124 |
+  125 |     return NextResponse.json({ success: true });
+ DELETE /api/admin/suppliers/cmc8tzn9l0002ou8u0nga99tg 200 in 1316ms
+ ✓ Compiled in 90ms (713 modules)
+ ✓ Compiled in 109ms (713 modules)
+ ✓ Compiled in 75ms (713 modules)
+[e0c35d52-626c-4f77-a0c8-68259b9838c4] POST http://localhost:3000/api/admin/suppliers
+ POST /api/admin/suppliers 200 in 146ms
+[bc41df9c-51e9-42d5-9064-d748555bfebf] DELETE http://localhost:3000/api/admin/suppliers/cmc8u0wvy0003ou8u3mtphi4r
+ DELETE /api/admin/suppliers/cmc8u0wvy0003ou8u3mtphi4r 200 in 199ms
+[4ae17083-db32-4eb2-a183-d952909190ae] GET http://localhost:3000/api/admin/suppliers
+ GET /api/admin/suppliers 200 in 889ms
+[5a9a9c94-8963-4f29-a783-0fb76c7da923] POST http://localhost:3000/api/admin/suppliers
+ POST /api/admin/suppliers 200 in 49ms

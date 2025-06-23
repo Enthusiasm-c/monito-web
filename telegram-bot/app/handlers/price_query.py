@@ -55,6 +55,10 @@ async def search_and_send_prices(message: types.Message, product_query: str):
         # Search products in database
         products = await db.search_products(product_query)
         
+        # Debug log the product data
+        if products:
+            logger.debug(f"Product data: {products[0]}")
+        
         if not products:
             await searching_msg.edit_text(
                 get_text("no_results", product=product_query),

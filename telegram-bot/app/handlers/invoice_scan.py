@@ -173,14 +173,11 @@ async def handle_invoice_photo(message: types.Message):
         try:
             await processing_msg.edit_text(
                 report,
-                parse_mode="HTML"
+                parse_mode="MarkdownV2"
             )
         except Exception as e:
-            logger.warning(f"HTML parsing failed: {e}, falling back to plain text")
-            # Remove HTML formatting and send as plain text
-            import re
-            plain_report = re.sub(r'<[^>]+>', '', report)
-            await processing_msg.edit_text(plain_report)
+            logger.warning(f"MarkdownV2 failed: {e}, falling back to plain text")
+            await processing_msg.edit_text(report, parse_mode=None)
         
         # Log successful processing
         logger.info(f"Successfully processed invoice with {len(result['products'])} products")

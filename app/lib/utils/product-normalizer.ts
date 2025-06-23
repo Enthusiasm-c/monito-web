@@ -167,7 +167,7 @@ export const EXCLUSIVE_MODIFIERS = [
   // Fish types
   'tuna', 'salmon', 'cod', 'tilapia', 'mackerel', 'snapper',
   // Milk types
-  'cow', 'goat', 'almond', 'soy', 'coconut', 'oat'
+  'cow', 'goat', 'soy', 'coconut', 'oat'
 ];
 
 // Descriptive modifiers that don't change the core product
@@ -177,7 +177,11 @@ export const DESCRIPTIVE_MODIFIERS = [
   'medium', 'regular', 'standard',
   'fresh', 'new', 'premium', 'grade', 'quality',
   'whole', 'half', 'piece', 'slice',
-  'imported', 'organic', 'conventional'
+  'imported', 'organic', 'conventional',
+  // Preparation methods (descriptive, not exclusive)
+  'roasted', 'grilled', 'fried', 'steamed', 'boiled', 'raw',
+  'chopped', 'sliced', 'diced', 'minced', 'ground',
+  'paste', 'pastes', 'sauce', 'powder', 'flakes'
 ];
 
 /**

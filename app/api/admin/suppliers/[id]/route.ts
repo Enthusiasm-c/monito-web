@@ -3,11 +3,12 @@ import { prisma } from '../../../../../lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const supplier = await prisma.supplier.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         prices: {
           where: { validTo: null },
@@ -48,11 +49,12 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
-    const { name, email, phone, address, website, contactPerson, notes } = body;
+    const { name, email, phone, address, contactInfo } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -62,15 +64,13 @@ export async function PUT(
     }
 
     const supplier = await prisma.supplier.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         email: email || null,
         phone: phone || null,
         address: address || null,
-        website: website || null,
-        contactPerson: contactPerson || null,
-        notes: notes || null,
+        contactInfo: contactInfo || null,
         updatedAt: new Date()
       },
       include: {
@@ -101,13 +101,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Check if supplier has prices or uploads
     const [pricesCount, uploadsCount] = await Promise.all([
-      prisma.price.count({ where: { supplierId: params.id } }),
-      prisma.upload.count({ where: { supplierId: params.id } })
+      prisma.price.count({ where: { supplierId: id } }),
+      prisma.upload.count({ where: { supplierId: id } })
     ]);
 
     if (pricesCount > 0 || uploadsCount > 0) {
@@ -121,7 +122,7 @@ export async function DELETE(
     }
 
     await prisma.supplier.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ success: true });
