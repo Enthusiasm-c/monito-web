@@ -33,7 +33,7 @@ export async function GET(
       }),
       prisma.upload.findMany({
         where: { supplierId: id },
-        orderBy: { uploadedAt: 'desc' },
+        orderBy: { createdAt: 'desc' },
         take: 10 // Limit to recent uploads
       }),
       Promise.all([

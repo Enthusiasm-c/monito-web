@@ -269,3 +269,4 @@ Error: Route "/api/admin/suppliers/[id]" used `params.id`. `params` should be aw
  POST /api/admin/suppliers 200 in 49ms
  ✓ Compiled in 143ms (633 modules)
  ✓ Compiled in 87ms (579 modules)
+ ✓ Compiled in 61ms (579 modules)
