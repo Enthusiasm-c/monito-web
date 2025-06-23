@@ -7,26 +7,10 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    
+    // First try simple query
     const supplier = await prisma.supplier.findUnique({
-      where: { id },
-      include: {
-        prices: {
-          where: { validTo: null },
-          include: { 
-            product: true 
-          },
-          orderBy: { amount: 'asc' }
-        },
-        uploads: {
-          orderBy: { uploadedAt: 'desc' }
-        },
-        _count: {
-          select: {
-            prices: { where: { validTo: null } },
-            uploads: true
-          }
-        }
-      }
+      where: { id }
     });
 
     if (!supplier) {
@@ -36,12 +20,44 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(supplier);
+    // Then get related data separately to avoid complex query issues
+    const [prices, uploads, priceCounts] = await Promise.all([
+      prisma.price.findMany({
+        where: { 
+          supplierId: id,
+          validTo: null 
+        },
+        include: { product: true },
+        orderBy: { amount: 'asc' },
+        take: 20 // Limit to avoid too much data
+      }),
+      prisma.upload.findMany({
+        where: { supplierId: id },
+        orderBy: { uploadedAt: 'desc' },
+        take: 10 // Limit to recent uploads
+      }),
+      Promise.all([
+        prisma.price.count({ where: { supplierId: id, validTo: null } }),
+        prisma.upload.count({ where: { supplierId: id } })
+      ])
+    ]);
+
+    const result = {
+      ...supplier,
+      prices,
+      uploads,
+      _count: {
+        prices: priceCounts[0],
+        uploads: priceCounts[1]
+      }
+    };
+
+    return NextResponse.json(result);
 
   } catch (error) {
     console.error('Error fetching supplier:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch supplier' },
+      { error: 'Failed to fetch supplier', details: error.message },
       { status: 500 }
     );
   }
