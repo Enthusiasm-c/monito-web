@@ -116,7 +116,7 @@ async def handle_invoice_photo(message: types.Message):
         
         not_found_items = []
         
-        for comp in api_response:
+        for i, comp in enumerate(api_response):
             if comp.get('status') == 'not_found':
                 not_found_items.append({
                     'product_name': comp['product_name'],
@@ -126,6 +126,11 @@ async def handle_invoice_photo(message: types.Message):
                 
             analysis = comp.get('price_analysis', {})
             scanned_price = comp['scanned_price']
+            
+            # Get quantity from original OCR data
+            quantity = 1  # default
+            if i < len(ocr_result.products):
+                quantity = ocr_result.products[i].quantity or 1
             min_price = analysis.get('min_price', scanned_price)
             
             # Get better deals from API response
@@ -147,11 +152,14 @@ async def handle_invoice_photo(message: types.Message):
                 'can_optimize': can_optimize,
                 'savings': savings,
                 'savings_percent': savings_percent,
-                'better_deals': better_deals  # Include all better deals
+                'better_deals': better_deals,  # Include all better deals
+                'quantity': quantity
             })
             
-            comparison_data['total_current'] += scanned_price
-            comparison_data['total_savings'] += savings
+            # Calculate total based on quantity * unit_price
+            item_total = scanned_price * quantity
+            comparison_data['total_current'] += item_total
+            comparison_data['total_savings'] += savings * quantity
         
         # Calculate total savings percentage
         if comparison_data['total_current'] > 0:

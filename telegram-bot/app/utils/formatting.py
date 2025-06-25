@@ -76,6 +76,8 @@ def format_comparison_report(comparison_data: Dict[str, Any], supplier_name: str
     for i, comp in enumerate(comparison_data['comparisons'], 1):
         product = comp['product_name']
         current = format_price(comp['current_price'])
+        quantity = comp.get('quantity', 1)
+        item_total = format_price(comp['current_price'] * quantity)
         
         # Get Indonesian translation if available
         matched_product = comp.get('matched_product', {})
@@ -89,7 +91,7 @@ def format_comparison_report(comparison_data: Dict[str, Any], supplier_name: str
         
         if comp['can_optimize']:
             status_emoji = "⚠️"
-            lines.append(f"{i}. **{display_name}** - {current} {status_emoji}")
+            lines.append(f"{i}. **{display_name}** - {current} x{quantity} = {item_total} {status_emoji}")
             
             # Show up to 3 better deals for this product
             better_deals = comp.get('better_deals', [])[:3]
@@ -101,7 +103,7 @@ def format_comparison_report(comparison_data: Dict[str, Any], supplier_name: str
                 )
         else:
             status_emoji = "✅"
-            lines.append(f"{i}. **{display_name}** - {current} {status_emoji}")
+            lines.append(f"{i}. **{display_name}** - {current} x{quantity} = {item_total} {status_emoji}")
     
     
     # Summary
