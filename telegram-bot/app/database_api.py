@@ -11,9 +11,10 @@ class DatabaseAPI:
     
     def __init__(self):
         from .config import settings
-        self.base_url = settings.monito_api_url
+        self.base_url = settings.monito_api_url.rstrip('/')
         self.api_key = settings.bot_api_key
         self.session = None
+        logger.info(f"DatabaseAPI initialized with base_url: {self.base_url}")
     
     async def init(self):
         """Initialize HTTP session"""
@@ -91,15 +92,21 @@ class DatabaseAPI:
                 })
         
         try:
+            url = f"{self.base_url}/prices/compare"
+            logger.info(f"Sending request to: {url}")
+            logger.info(f"Request data: {len(api_items)} items")
+            
             async with self.session.post(
-                f"{self.base_url}/prices/compare",
+                url,
                 json={'items': api_items}
             ) as response:
                 if response.status == 200:
                     data = await response.json()
                     return data.get('comparisons', [])
                 else:
-                    logger.error(f"API error: {response.status}")
+                    logger.error(f"API error: {response.status} for URL: {url}")
+                    response_text = await response.text()
+                    logger.error(f"Response: {response_text[:200]}")
                     return []
         except Exception as e:
             logger.error(f"Failed to compare prices: {e}")

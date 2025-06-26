@@ -513,7 +513,7 @@ export async function POST(request: NextRequest) {
           calcUnitPrice(item.scanned_price, item.quantity, item.unit) : 
           item.scanned_price;
 
-        // Collect all prices from all matching products
+        // Collect all prices from all matching products for statistics
         const allPriceEntries: Array<{
           price: number, 
           unitPrice: number | null,
@@ -522,7 +522,8 @@ export async function POST(request: NextRequest) {
           productName: string, 
           unit: string, 
           unitMatch: boolean,
-          createdAt: Date
+          createdAt: Date,
+          isSameSupplier: boolean
         }> = [];
         
         const scannedCanonicalUnit = item.unit ? getCanonicalUnit(item.unit) : null;
@@ -534,14 +535,9 @@ export async function POST(request: NextRequest) {
           }
           
           product.prices.forEach(p => {
-            // MVP: Skip same supplier recommendations
-            if (item.supplier_id && p.supplierId === item.supplier_id) {
-              return;
-            }
-
-            // MVP: Skip stale prices (M-5 requirement: 7 days freshness)
+            // MVP: Skip stale prices (M-5 requirement: 30 days freshness for now)
             const priceAge = Date.now() - p.createdAt.getTime();
-            const FRESH_DAYS = 7; // M-5 requirement
+            const FRESH_DAYS = 30; // Extended to 30 days for better results
             const isStale = priceAge > FRESH_DAYS * 24 * 60 * 60 * 1000;
             if (isStale && p.validTo === null) {
               return;
@@ -560,6 +556,9 @@ export async function POST(request: NextRequest) {
               entryUnitPrice = calcUnitPrice(Number(p.amount), 1, p.unit || product.unit);
             }
 
+            // Include ALL prices for statistics, but mark same supplier
+            const isSameSupplier = item.supplier_id && p.supplierId === item.supplier_id;
+
             allPriceEntries.push({
               price: Number(p.amount),
               unitPrice: entryUnitPrice,
@@ -568,7 +567,8 @@ export async function POST(request: NextRequest) {
               productName: product.name,
               unit: p.unit || product.unit,
               unitMatch: unitsMatch,
-              createdAt: p.createdAt
+              createdAt: p.createdAt,
+              isSameSupplier: isSameSupplier
             });
           });
         });
@@ -591,6 +591,11 @@ export async function POST(request: NextRequest) {
         // C-4: Get better deals with 5% minimum savings threshold
         const MIN_SAVING_PCT = Number(process.env.MIN_SAVING_PCT) || 5;
         const betterDeals = allPriceEntries.filter(entry => {
+          // Skip same supplier for recommendations
+          if (entry.isSameSupplier) {
+            return false;
+          }
+          
           if (scannedUnitPrice && entry.unitPrice && entry.unitMatch) {
             // Compare unit prices for matching units - require ≥5% savings
             const savingsPct = ((scannedUnitPrice - entry.unitPrice) / scannedUnitPrice) * 100;

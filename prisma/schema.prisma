@@ -19,6 +19,7 @@ model Supplier {
   prices      Price[]
   uploads     Upload[]
   unmatchedQueue UnmatchedQueue[]
+  priceHistory   PriceHistory[]
 
   @@map("suppliers")
 }
@@ -37,6 +38,7 @@ model Product {
   prices           Price[]
   aliases          ProductAlias[]
   assignedFromQueue UnmatchedQueue[]
+  priceHistory     PriceHistory[]
 
   @@unique([standardizedName, standardizedUnit])
   @@map("products")
@@ -111,6 +113,7 @@ model Upload {
   prices             Price[]
   supplier           Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   unmatchedQueue     UnmatchedQueue[]
+  priceHistory       PriceHistory[]
 
   @@map("uploads")
 }
@@ -169,4 +172,43 @@ model UnmatchedQueue {
   @@index([status])
   @@index([supplierId])
   @@map("unmatched_queue")
+}
+
+model PriceHistory {
+  id               String   @id @default(cuid())
+  productId        String
+  supplierId       String
+  price            Decimal
+  unit             String
+  unitPrice        Decimal?
+  quantity         Decimal? // Quantity for this price (e.g., 1 kg, 500 g)
+  changedFrom      Decimal? // Previous price
+  changePercentage Float?   // Percentage change from previous price
+  changeReason     String?  // 'upload', 'manual', 'api', 'initial'
+  changedBy        String?  // User ID who made the change
+  uploadId         String?  // Related upload if price came from file
+  notes            String?  // Optional notes about the change
+  createdAt        DateTime @default(now())
+  
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  upload   Upload?  @relation(fields: [uploadId], references: [id], onDelete: SetNull)
+  
+  @@index([productId, supplierId, createdAt(sort: Desc)])
+  @@index([supplierId, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@map("price_history")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String   // Hashed password
+  role      String   @default("viewer") // admin, manager, viewer
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("users")
 }

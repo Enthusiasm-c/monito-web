@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { SupplierProductsView } from '../../components/SupplierManagement/SupplierProductsView';
 
 interface Supplier {
   id: string;
@@ -93,19 +94,26 @@ export default function SupplierDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this supplier? This action cannot be undone.')) {
+    if (!confirm('Are you sure you want to delete this supplier? This will delete ALL related prices and uploads. This action cannot be undone.')) {
       return;
     }
 
     try {
       const response = await fetch(`/api/admin/suppliers/${supplierId}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ force: true }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete supplier');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete supplier');
       }
 
+      const result = await response.json();
+      alert(result.message || 'Supplier deleted successfully');
       router.push('/admin/suppliers');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete');
@@ -346,6 +354,14 @@ export default function SupplierDetailPage() {
             </div>
           </dl>
         </div>
+      </div>
+
+      {/* Products Section */}
+      <div className="mt-8">
+        <SupplierProductsView 
+          supplierId={supplierId} 
+          supplierName={supplier.name} 
+        />
       </div>
     </div>
   );

@@ -1,12 +1,12 @@
 # 🏪 Monito Web - B2B Price Monitoring Platform
 
 <div align="center">
-  <img src="public/logo.png" alt="Monito Web Logo" width="200" />
+  <img src="assets/logo.svg" alt="Monito Web Logo" width="200" />
   
-  [\![Next.js](https://img.shields.io/badge/Next.js-15.1-black)](https://nextjs.org/)
-  [\![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
-  [\![Prisma](https://img.shields.io/badge/Prisma-5.0-green)](https://www.prisma.io/)
-  [\![License](https://img.shields.io/badge/license-MIT-purple)](LICENSE)
+  [![Next.js](https://img.shields.io/badge/Next.js-15.1-black)](https://nextjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+  [![Prisma](https://img.shields.io/badge/Prisma-5.0-green)](https://www.prisma.io/)
+  [![License](https://img.shields.io/badge/license-MIT-purple)](LICENSE)
 </div>
 
 ## 🌟 Overview
@@ -17,19 +17,12 @@ Monito Web is a comprehensive B2B price monitoring and comparison platform desig
 
 - **📊 Multi-Supplier Price Comparison** - Compare prices across all your suppliers in real-time
 - **📄 Intelligent File Processing** - Upload price lists in any format (Excel, PDF, CSV, Images)
-- **🤖 AI-Powered Standardization** - Automatically matches "Ayam Potong" with "Chicken Fresh Cut"
+- **🤖 AI-Powered Standardization** - Automatically matches "Ayam Potong" with "Fresh Cut Chicken"
 - **📱 Telegram Bot Integration** - Check prices and scan invoices on the go
 - **📈 Analytics & Insights** - Track price trends and identify savings opportunities
 - **🔍 Smart Search** - Find products even with typos or different naming
 - **🌏 Indonesian Market Optimized** - Handles Rupiah formatting, local units, and Indonesian product names
-
-## 📚 Documentation
-
-For detailed documentation, please refer to:
-
-1. **[Architecture Overview](docs/01_ARCHITECTURE.md)** - System design, technology stack, and component details
-2. **[Bugs & Solutions](docs/02_BUGS_AND_SOLUTIONS.md)** - Common issues, solutions, and lessons learned
-3. **[Developer Guide](docs/03_DEVELOPER_GUIDE.md)** - Setup instructions, coding standards, and workflows
+- **🏗️ Admin Dashboard** - Complete management interface with inline editing and analytics
 
 ## 🚀 Quick Start
 
@@ -64,27 +57,51 @@ npm run dev
 
 Visit http://localhost:3000 to see the application.
 
-### Telegram Bot Setup (Optional)
+### Environment Variables Setup
+
+Required variables in `.env`:
+
+```env
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/monito_db
+
+# AI Services
+GOOGLE_API_KEY=your-gemini-api-key        # Primary AI (Gemini 2.0 Flash)
+OPENAI_API_KEY=your-openai-api-key        # Secondary AI (GPT-4o)
+
+# File Storage
+BLOB_READ_WRITE_TOKEN=your-vercel-blob-token
+
+# Authentication
+NEXTAUTH_SECRET=your-super-secret-key-here-at-least-32-characters-long
+NEXTAUTH_URL=http://localhost:3000
+
+# Bot Integration
+BOT_API_KEY=your-generated-api-key
+```
+
+### Admin Setup
+
+Create an admin user:
 
 ```bash
-cd telegram-bot
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-# Edit .env with bot token
-python -m app.bot
+node scripts/update-admin-password.js
 ```
+
+Login with:
+- Email: `admin@monito-web.com`
+- Password: `admin123`
 
 ## 🏗️ Project Structure
 
 ```
 monito-web/
 ├── app/                    # Next.js app directory
-│   ├── (auth)/            # Authentication pages
-│   ├── (dashboard)/       # Main application
+│   ├── admin/             # Admin dashboard with authentication
 │   ├── api/               # API routes
-│   │   └── upload-unified/ # Unified upload endpoint
+│   │   ├── upload-unified/ # Unified upload endpoint
+│   │   ├── bot/           # Telegram bot API
+│   │   └── admin/         # Admin management API
 │   ├── lib/               # Core business logic
 │   │   └── core/          # Unified architecture
 │   │       ├── BaseProcessor.ts    # Base class for all processors
@@ -94,82 +111,109 @@ monito-web/
 │   ├── services/          # Business services
 │   │   └── core/          # Core services
 │   │       └── UnifiedGeminiService.ts # Main AI processing service
-│   ├── components/        # React components
-│   └── globals.css        # Global styles
-├── prisma/               # Database schema
-├── public/               # Static assets
+│   └── components/        # React components
+├── prisma/               # Database schema and migrations
 ├── telegram-bot/         # Telegram bot (Python)
-└── docs/                 # Technical documentation
+├── docs/                 # Technical documentation
+└── scripts/              # Utility scripts
 ```
 
 ## 🔧 Core Technologies
 
 ### Frontend
 - **Next.js 15** - React framework with App Router
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Utility-first CSS
-- **Recharts** - Data visualization
+- **TypeScript** - Type safety throughout the application
+- **Tailwind CSS** - Utility-first CSS framework
+- **Recharts** - Data visualization for analytics
 
 ### Backend
 - **Node.js** - JavaScript runtime
-- **Prisma** - Type-safe ORM
-- **PostgreSQL** - Database (Neon cloud)
-- **Google Gemini AI** - Primary AI processing (Gemini 2.0 Flash)
-- **OpenAI API** - Secondary AI features
+- **Prisma** - Type-safe ORM with PostgreSQL
+- **Google Gemini 2.0 Flash** - Primary AI processing (free tier)
+- **OpenAI GPT-4o** - Secondary AI features
+- **NextAuth.js** - Authentication system
 - **Unified Architecture** - Centralized processing patterns
+
+### Database
+- **PostgreSQL** - Primary database (hosted on Neon)
+- **Prisma ORM** - Type-safe database access
+- **Connection pooling** - Optimized for performance
 
 ### Infrastructure
 - **Vercel** - Hosting platform
 - **Vercel Blob** - File storage
-- **Docker** - Containerization
-- **GitHub Actions** - CI/CD
+- **Neon** - PostgreSQL hosting
 
-## 📋 Features in Detail
+## 📋 Key Features in Detail
 
 ### 1. Intelligent File Processing
 
-The platform can process price lists in various formats:
+The platform processes price lists in various formats using a unified pipeline:
 
-- **Excel Files** (.xlsx, .xls) - Even with complex formatting
-- **PDF Documents** - Including scanned documents
+- **Excel Files** (.xlsx, .xls) - Handles complex formatting and formulas
+- **PDF Documents** - Including scanned documents with OCR
 - **CSV Files** - Standard and custom delimiters
-- **Images** - Photos of price lists using OCR
+- **Images** - Photos of price lists using AI vision
 
-### 2. AI-Powered Standardization
+**Unified Processing Pipeline:**
+```
+File Upload → Type Detection → AI Extraction → Standardization → Database Storage
+```
+
+### 2. AI-Powered Product Standardization
+
+Smart matching system that handles Indonesian product variations:
 
 ```javascript
-// Input from different suppliers:
+// Examples of automatic standardization:
 "Ayam Potong Segar"     → "Fresh Cut Chicken"
 "Aym Ptg"               → "Fresh Cut Chicken"  
 "CHICKEN FRESH (CUT)"   → "Fresh Cut Chicken"
+"wortel"                → "Carrot" (via aliases)
 ```
 
-### 3. Real-time Price Comparison
+### 3. Advanced Product Matching
 
-```javascript
-// API Response Example
-{
-  "product": "Fresh Cut Chicken",
-  "unit": "kg",
-  "prices": [
-    { "supplier": "PT Segar Jaya", "price": 35000 },
-    { "supplier": "CV Mitra Food", "price": 37000 },
-    { "supplier": "UD Berkah", "price": 34500 }
-  ],
-  "best_price": 34500,
-  "average_price": 35500,
-  "potential_savings": "5.6%"
-}
-```
+- **Alias System**: Direct mapping for common translations
+- **Multi-language Support**: Indonesian, English, Spanish
+- **Fuzzy Matching**: Handles OCR errors and typos
+- **Smart Modifiers**: Distinguishes between "sweet potato" and "potato"
+- **Unit Conversion**: Automatic g→kg, ml→L conversions
 
-### 4. Telegram Bot Commands
+### 4. Admin Dashboard Features
+
+- **Inline Editing**: Click any cell to edit products and prices
+- **Bulk Operations**: Mass delete, update, and manage data
+- **Price Analytics**: Charts and trends for individual products
+- **History Tracking**: Automatic price change logging
+- **Role-based Access**: Admin, Manager, Viewer roles
+
+### 5. Telegram Bot Integration
 
 ```
-/start - Get started
-/price chicken - Check chicken prices
-/price "minyak goreng" - Check cooking oil prices
-Send photo - Scan invoice for price comparison
+/start - Get started with the bot
+/price chicken - Check chicken prices across suppliers
+/price "minyak goreng" - Search for cooking oil prices
+Send photo - Scan invoice for price comparison with alternatives
 ```
+
+## 📊 API Endpoints
+
+### Core API
+- `POST /api/upload-unified` - Unified file upload for all formats
+- `GET /api/products` - List products with current prices
+- `GET /api/products/search` - Search products with fuzzy matching
+- `GET /api/suppliers` - List suppliers
+
+### Bot API
+- `GET /api/bot/products/search` - Product search for Telegram bot
+- `POST /api/bot/prices/compare` - Bulk price comparison with alternatives
+
+### Admin API
+- `GET/PUT/DELETE /api/admin/products/[id]` - Product management
+- `GET/PUT/DELETE /api/admin/prices/[id]` - Price management
+- `GET /api/admin/analytics/prices` - Price analytics and trends
+- `POST /api/admin/aliases` - Product alias management
 
 ## 🧪 Testing
 
@@ -180,11 +224,12 @@ npm test
 # Run with coverage
 npm run test:coverage
 
-# Run specific test file
-npm test -- ExcelProcessor.test.ts
+# Run specific test suites
+npm test -- matching-pipeline.test.ts
+npm test -- admin.test.ts
 
-# E2E tests
-npm run test:e2e
+# Test Telegram bot API
+node test-bot-api.js
 ```
 
 ## 📦 Deployment
@@ -195,116 +240,70 @@ npm run test:e2e
 # Install Vercel CLI
 npm i -g vercel
 
-# Deploy
-vercel
-
-# Production
+# Deploy to production
 vercel --prod
 ```
 
-### Docker
+### Environment Setup for Production
 
-```bash
-# Build image
-docker build -t monito-web .
-
-# Run container
-docker run -p 3000:3000 --env-file .env.production monito-web
-```
-
-### Manual Deployment
-
-```bash
-# Build application
-npm run build
-
-# Start production server
-npm start
-```
-
-## 🔒 Environment Variables
-
-### Required
+Ensure all environment variables are configured in your hosting platform:
 
 ```env
-DATABASE_URL=            # PostgreSQL connection string
-GOOGLE_API_KEY=         # Google Gemini API key (primary)
-OPENAI_API_KEY=         # OpenAI API key (secondary)
-BLOB_READ_WRITE_TOKEN=  # Vercel Blob storage
-BOT_API_KEY=            # Internal API authentication
+DATABASE_URL=your-production-database-url
+GOOGLE_API_KEY=your-gemini-api-key
+OPENAI_API_KEY=your-openai-api-key
+BLOB_READ_WRITE_TOKEN=your-vercel-blob-token
+NEXTAUTH_SECRET=your-production-secret
+NEXTAUTH_URL=https://your-domain.com
+BOT_API_KEY=your-production-bot-key
 ```
 
-### Optional
+## 🔒 Security Features
 
-```env
-NEXTAUTH_SECRET=        # For authentication
-NEXTAUTH_URL=          # App URL
-REDIS_URL=             # For caching
-SENTRY_DSN=            # Error tracking
-```
+- **Authentication**: NextAuth.js with role-based access control
+- **API Protection**: Bot API uses secure API key authentication
+- **Input Validation**: Comprehensive validation using Zod schemas
+- **SQL Injection Prevention**: Prisma ORM provides built-in protection
+- **File Security**: Type and size validation for uploads
+- **Password Hashing**: bcryptjs for secure password storage
 
-## 📊 API Endpoints
-
-### Products
-- `GET /api/products` - List products with prices
-- `GET /api/products/search` - Search products
-- `POST /api/products` - Create product
-
-### Suppliers
-- `GET /api/suppliers` - List suppliers
-- `POST /api/suppliers` - Create supplier
-- `PUT /api/suppliers/:id` - Update supplier
-
-### Upload
-- `POST /api/upload-unified` - Unified upload endpoint for all file types
-- `GET /api/upload-unified` - Health check and supported formats
-- `GET /api/uploads/status/:id` - Check processing status
-
-### Bot API
-- `GET /api/bot/products/search` - Search for bot
-- `POST /api/bot/prices/compare` - Bulk comparison
-
-## 🤝 Contributing
-
-We welcome contributions\! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### Development Process
-
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
-
-### Code Style
-
-- Use TypeScript for type safety
-- Follow ESLint rules
-- Write tests for new features
-- Update documentation
-
-## 🐛 Known Issues
-
-1. **Large PDF Processing** - PDFs over 20MB may timeout
-2. **Complex Excel Formulas** - Calculated cells may not import correctly
-3. **Telegram Bot Conflicts** - Only one instance can run per token
-
-See [Bugs & Solutions](docs/02_BUGS_AND_SOLUTIONS.md) for detailed information.
-
-## 📈 Performance
+## 📈 Performance Metrics
 
 - **Average Upload Processing**: 2-5 seconds for 1000 products
 - **Search Response Time**: <100ms for 100k products
 - **AI Standardization**: 0.5-2 seconds per product
-- **Database Queries**: Optimized with indexes
+- **Database Optimization**: Singleton connection pattern saves ~1.2GB memory
+- **Batch Processing**: Handles 200+ products per AI call
 
-## 🔐 Security
+## 📚 Documentation
 
-- Environment variables for secrets
-- API authentication required
-- Input validation and sanitization
-- SQL injection prevention via Prisma
-- Rate limiting on public endpoints
+For detailed documentation, refer to:
+
+1. **[Setup and Admin Guide](docs/SETUP_AND_ADMIN_GUIDE.md)** - Installation, configuration, and admin features
+2. **[Technical Documentation](docs/TECHNICAL_DOCUMENTATION.md)** - Architecture, matching mechanism, and implementation details
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Follow TypeScript and ESLint rules
+4. Write tests for new features
+5. Update documentation as needed
+6. Submit a pull request
+
+## 🐛 Known Issues
+
+1. **Large PDF Processing**: Files over 20MB may require chunking
+2. **Complex Excel Formulas**: Calculated cells may need manual review
+3. **Telegram Bot Limitations**: Only one instance per token
+
+## 📞 Support
+
+- **Documentation**: [docs/](docs/)
+- **Issues**: [GitHub Issues](https://github.com/your-org/monito-web/issues)
+- **Email**: support@monito-web.com
 
 ## 📝 License
 
@@ -312,23 +311,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- [OpenAI](https://openai.com) for GPT-4 API
+- [OpenAI](https://openai.com) for GPT-4o API
+- [Google](https://ai.google.dev) for Gemini 2.0 Flash API
 - [Vercel](https://vercel.com) for hosting and storage
 - [Neon](https://neon.tech) for PostgreSQL hosting
 - All our beta testers in the Indonesian HORECA industry
-
-## 📞 Support
-
-- **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/your-org/monito-web/issues)
-- **Email**: support@monito-web.com
-- **Discord**: [Join our community](https://discord.gg/monito-web)
 
 ---
 
 <div align="center">
   Made with ❤️ for the Indonesian HORECA industry
   
-  ⭐ Star us on GitHub\!
+  ⭐ Star us on GitHub!
 </div>
-EOF < /dev/null

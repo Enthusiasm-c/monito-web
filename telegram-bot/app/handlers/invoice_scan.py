@@ -126,23 +126,32 @@ async def handle_invoice_photo(message: types.Message):
                 
             analysis = comp.get('price_analysis', {})
             scanned_price = comp['scanned_price']
+            status = comp.get('status', 'unknown')
             
             # Get quantity from original OCR data
             quantity = 1  # default
-            if i < len(ocr_result.products):
-                quantity = ocr_result.products[i].quantity or 1
+            if i < len(result['products']):
+                quantity = result['products'][i].get('quantity', 1) or 1
             min_price = analysis.get('min_price', scanned_price)
             
             # Get better deals from API response
             better_deals = analysis.get('better_deals', [])
             has_better_deals = analysis.get('has_better_deals', False)
+            is_suspiciously_low = analysis.get('is_suspiciously_low', False)
             
-            # Find best supplier from better deals
-            best_supplier = better_deals[0]['supplier'] if better_deals else 'Current price is best'
-            
-            can_optimize = has_better_deals
-            savings = better_deals[0]['savings'] if better_deals else 0
-            savings_percent = better_deals[0]['savings_percent'] if better_deals else 0
+            # Handle suspiciously low prices differently
+            if status == 'suspiciously_low' or is_suspiciously_low:
+                max_price = analysis.get('max_price') or min_price or scanned_price
+                best_supplier = f'⚠️ Price too low (market range: {min_price or scanned_price:,.0f} - {max_price:,.0f})'
+                can_optimize = False  # Don't suggest optimization for suspiciously low prices
+                savings = 0
+                savings_percent = 0
+            else:
+                # Find best supplier from better deals
+                best_supplier = better_deals[0]['supplier'] if better_deals else 'Current price is best'
+                can_optimize = has_better_deals
+                savings = better_deals[0]['savings'] if better_deals else 0
+                savings_percent = better_deals[0]['savings_percent'] if better_deals else 0
             
             comparison_data['comparisons'].append({
                 'product_name': comp['product_name'],

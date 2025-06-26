@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../../lib/prisma';
+import { PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { productFieldUpdateSchema, createValidationErrorResponse } from '@/app/lib/validations/admin';
+import { z } from 'zod';
+
+const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
@@ -43,42 +49,63 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const body = await request.json();
-    const { name, standardizedName, category, unit, standardizedUnit, description, rawName } = body;
+    const productId = params.id;
+    
+    // Check authentication
+    const session = await getServerSession(authOptions);
+    if (!session || !['admin', 'manager'].includes(session.user.role)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if (!name || !unit) {
+    const body = await request.json();
+
+    // Validate request body
+    try {
+      const validatedData = productFieldUpdateSchema.parse(body);
+      var { field, value } = validatedData;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          createValidationErrorResponse(error),
+          { status: 400 }
+        );
+      }
+      throw error;
+    }
+
+    // Validate product exists
+    const product = await prisma.product.findUnique({
+      where: { id: productId }
+    });
+
+    if (!product) {
       return NextResponse.json(
-        { error: 'Name and unit are required' },
-        { status: 400 }
+        { error: 'Product not found' },
+        { status: 404 }
       );
     }
 
-    const product = await prisma.product.update({
-      where: { id: params.id },
+    // Update the product
+    const updatedProduct = await prisma.product.update({
+      where: { id: productId },
       data: {
-        name,
-        standardizedName: standardizedName || name.toLowerCase(),
-        category: category || 'Other',
-        unit,
-        standardizedUnit: standardizedUnit || unit,
-        description: description || null,
-        rawName: rawName || name,
+        [field]: value,
         updatedAt: new Date()
-      },
-      include: {
-        prices: {
-          where: { validTo: null },
-          include: { supplier: true }
-        }
       }
     });
 
-    return NextResponse.json(product);
+    return NextResponse.json({
+      success: true,
+      data: updatedProduct
+    });
 
   } catch (error) {
-    console.error('Error updating product:', error);
+    console.error('Error in PUT /api/admin/products/[id]:', error);
     return NextResponse.json(
-      { error: 'Failed to update product' },
+      { 
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
@@ -89,28 +116,61 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Check if product has prices
-    const pricesCount = await prisma.price.count({
-      where: { productId: params.id }
+    const productId = params.id;
+    
+    // Check authentication - only admins can delete products
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Admin role required' }, { status: 403 });
+    }
+
+    // Check if product exists
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      include: { _count: { select: { prices: true } } }
     });
 
-    if (pricesCount > 0) {
+    if (!product) {
       return NextResponse.json(
-        { error: 'Cannot delete product with existing prices. Archive prices first.' },
-        { status: 400 }
+        { error: 'Product not found' },
+        { status: 404 }
       );
     }
 
-    await prisma.product.delete({
-      where: { id: params.id }
+    // Delete all related prices first, then the product
+    await prisma.$transaction(async (tx) => {
+      // Delete price history
+      await tx.priceHistory.deleteMany({
+        where: { 
+          price: {
+            productId: productId
+          }
+        }
+      });
+
+      // Delete prices
+      await tx.price.deleteMany({
+        where: { productId: productId }
+      });
+
+      // Delete the product
+      await tx.product.delete({
+        where: { id: productId }
+      });
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      message: `Product "${product.name}" and ${product._count.prices} related prices deleted successfully`
+    });
 
   } catch (error) {
-    console.error('Error deleting product:', error);
+    console.error('Error in DELETE /api/admin/products/[id]:', error);
     return NextResponse.json(
-      { error: 'Failed to delete product' },
+      { 
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
