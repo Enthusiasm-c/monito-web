@@ -23,6 +23,7 @@ Monito Web is a comprehensive B2B price monitoring and comparison platform desig
 - **🔍 Smart Search** - Find products even with typos or different naming
 - **🌏 Indonesian Market Optimized** - Handles Rupiah formatting, local units, and Indonesian product names
 - **🏗️ Admin Dashboard** - Complete management interface with inline editing and analytics
+- **🔄 Refactored Architecture** - Clean, maintainable codebase with unified patterns (2024)
 
 ## 🚀 Quick Start
 
@@ -103,18 +104,27 @@ monito-web/
 │   │   ├── bot/           # Telegram bot API
 │   │   └── admin/         # Admin management API
 │   ├── lib/               # Core business logic
-│   │   └── core/          # Unified architecture
-│   │       ├── BaseProcessor.ts    # Base class for all processors
-│   │       ├── Interfaces.ts       # Unified type definitions
-│   │       ├── ErrorHandler.ts     # Centralized error handling
-│   │       └── PromptTemplates.ts  # AI prompt management
+│   │   ├── core/          # Unified architecture (refactored 2024)
+│   │   │   ├── BaseProcessor.ts    # Base class for all processors
+│   │   │   ├── Interfaces.ts       # Unified type definitions
+│   │   │   ├── ErrorHandler.ts     # Centralized error handling
+│   │   │   └── PromptTemplates.ts  # AI prompt management
+│   │   └── utils/         # Utilities
+│   │       └── unified-unit-converter.ts # Consolidated unit conversion
 │   ├── services/          # Business services
+│   │   ├── DatabaseService.ts      # Unified database operations
 │   │   └── core/          # Core services
 │   │       └── UnifiedGeminiService.ts # Main AI processing service
+│   ├── utils/             # Shared utilities
+│   │   ├── errors.ts      # Error handling with asyncHandler
+│   │   └── api-helpers.ts # Common API patterns
 │   └── components/        # React components
 ├── prisma/               # Database schema and migrations
 ├── telegram-bot/         # Telegram bot (Python)
 ├── docs/                 # Technical documentation
+│   ├── 01_ARCHITECTURE.md       # System architecture overview
+│   ├── 02_REFACTORED_ARCHITECTURE.md # 2024 refactoring details
+│   └── *.md             # Additional documentation
 └── scripts/              # Utility scripts
 ```
 
@@ -132,7 +142,7 @@ monito-web/
 - **Google Gemini 2.0 Flash** - Primary AI processing (free tier)
 - **OpenAI GPT-4o** - Secondary AI features
 - **NextAuth.js** - Authentication system
-- **Unified Architecture** - Centralized processing patterns
+- **Unified Architecture** - Refactored codebase with BaseProcessor pattern and consolidated utilities
 
 ### Database
 - **PostgreSQL** - Primary database (hosted on Neon)
@@ -197,13 +207,15 @@ Smart matching system that handles Indonesian product variations:
 Send photo - Scan invoice for price comparison with alternatives
 ```
 
-## 📊 API Endpoints
+## 📊 API Endpoints (Refactored with AsyncHandler)
 
 ### Core API
 - `POST /api/upload-unified` - Unified file upload for all formats
-- `GET /api/products` - List products with current prices
+- `GET /api/products` - List products with current prices (uses DatabaseService)
 - `GET /api/products/search` - Search products with fuzzy matching
-- `GET /api/suppliers` - List suppliers
+- `GET /api/suppliers` - List suppliers (uses DatabaseService)
+
+**Note**: All API routes now use standardized error handling with `asyncHandler` pattern for consistent responses.
 
 ### Bot API
 - `GET /api/bot/products/search` - Product search for Telegram bot

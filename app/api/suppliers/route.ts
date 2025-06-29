@@ -1,68 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../lib/prisma';
+import { databaseService } from '../../services/DatabaseService';
+import { asyncHandler, ValidationError } from '../../utils/errors';
 
-export async function GET() {
-  try {
-    const suppliers = await prisma.supplier.findMany({
-      include: {
-        _count: {
-          select: {
-            prices: true,
-            uploads: true
-          }
-        }
-      },
-      orderBy: {
-        name: 'asc'
-      }
-    });
+export const GET = asyncHandler(async () => {
+  const { suppliers } = await databaseService.getSuppliers();
+  return NextResponse.json(suppliers);
+});
 
-    return NextResponse.json(suppliers);
-  } catch (error) {
-    console.error('Error fetching suppliers:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch suppliers' },
-      { status: 500 }
-    );
+export const POST = asyncHandler(async (request: NextRequest) => {
+  const body = await request.json();
+  const { name, email, phone, address, contactInfo } = body;
+
+  if (!name) {
+    throw new ValidationError('Supplier name is required');
   }
-}
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { name, email, phone, address, contactInfo } = body;
+  const supplier = await databaseService.createSupplier({
+    name,
+    email,
+    phone,
+    address,
+    contactInfo
+  });
 
-    if (!name) {
-      return NextResponse.json(
-        { error: 'Supplier name is required' },
-        { status: 400 }
-      );
-    }
-
-    const supplier = await prisma.supplier.create({
-      data: {
-        name,
-        email,
-        phone,
-        address,
-        contactInfo
-      }
-    });
-
-    return NextResponse.json(supplier);
-  } catch (error) {
-    console.error('Error creating supplier:', error);
-    
-    if (error instanceof Error && error.message.includes('Unique constraint')) {
-      return NextResponse.json(
-        { error: 'Supplier with this name already exists' },
-        { status: 409 }
-      );
-    }
-    
-    return NextResponse.json(
-      { error: 'Failed to create supplier' },
-      { status: 500 }
-    );
-  }
-}
+  return NextResponse.json(supplier);
+});

@@ -1,8 +1,11 @@
 /**
  * Enhanced Excel/CSV Extractor
  * Processes all sheets with 100% row detection and completeness tracking
+ * Now extends BaseProcessor for consistency
  */
 
+import { BaseProcessor } from '../lib/core/BaseProcessor';
+import { ProcessOptions, ProcessingResult } from '../lib/core/Interfaces';
 import { tokenCostMonitor, type TokenUsage } from './tokenCostMonitor';
 import OpenAI from 'openai';
 
@@ -43,9 +46,7 @@ interface ExcelExtractionResult {
   errors: string[];
 }
 
-class EnhancedExcelExtractor {
-  private static instance: EnhancedExcelExtractor;
-  
+class EnhancedExcelExtractor extends BaseProcessor {
   private readonly config = {
     completenessThresholds: {
       excel: parseFloat(process.env.COMPLETENESS_THRESHOLD_EXCEL || '0.95'),
@@ -57,10 +58,38 @@ class EnhancedExcelExtractor {
   };
 
   public static getInstance(): EnhancedExcelExtractor {
-    if (!EnhancedExcelExtractor.instance) {
-      EnhancedExcelExtractor.instance = new EnhancedExcelExtractor();
-    }
-    return EnhancedExcelExtractor.instance;
+    return super.getInstance.call(this) as EnhancedExcelExtractor;
+  }
+
+  constructor() {
+    super('EnhancedExcelExtractor');
+  }
+
+  /**
+   * Required implementation from BaseProcessor
+   */
+  async processDocument(
+    fileContent: Buffer | string,
+    fileName: string,
+    options?: ProcessOptions
+  ): Promise<ProcessingResult> {
+    const fileUrl = typeof fileContent === 'string' ? fileContent : '';
+    const result = await this.extractFromFile(fileUrl, fileName);
+    
+    return {
+      success: true,
+      products: result.products,
+      supplier: result.supplier,
+      totalProducts: result.products.length,
+      processingTimeMs: result.processingTimeMs,
+      tokensUsed: result.tokensUsed,
+      costUsd: result.costUsd,
+      metadata: {
+        sheets: result.sheets,
+        completenessRatio: result.completenessRatio,
+        errors: result.errors
+      }
+    };
   }
 
   /**

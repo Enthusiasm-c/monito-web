@@ -1,10 +1,13 @@
 /**
  * Enhanced PDF Extractor  
  * Converts PDF to images and uses UnifiedGeminiService
+ * Now extends BaseProcessor for consistency
  */
 
 import { spawn } from 'child_process';
 import path from 'path';
+import { BaseProcessor } from '../lib/core/BaseProcessor';
+import { ProcessOptions, ProcessingResult } from '../lib/core/Interfaces';
 import { UnifiedGeminiService } from './core/UnifiedGeminiService';
 
 interface PdfExtractionResult {
@@ -38,8 +41,7 @@ interface ExtractedProduct {
   sourceMethod?: string;
 }
 
-class EnhancedPdfExtractor {
-  private static instance: EnhancedPdfExtractor;
+class EnhancedPdfExtractor extends BaseProcessor {
   private geminiService: UnifiedGeminiService;
   
   private readonly config = {
@@ -48,14 +50,40 @@ class EnhancedPdfExtractor {
   };
 
   public static getInstance(): EnhancedPdfExtractor {
-    if (!EnhancedPdfExtractor.instance) {
-      EnhancedPdfExtractor.instance = new EnhancedPdfExtractor();
-    }
-    return EnhancedPdfExtractor.instance;
+    return super.getInstance.call(this) as EnhancedPdfExtractor;
   }
 
   constructor() {
+    super('EnhancedPdfExtractor');
     this.geminiService = new UnifiedGeminiService();
+  }
+
+  /**
+   * Required implementation from BaseProcessor
+   */
+  async processDocument(
+    fileContent: Buffer | string,
+    fileName: string,
+    options?: ProcessOptions
+  ): Promise<ProcessingResult> {
+    // Convert buffer to URL if needed - this is a simplified implementation
+    const fileUrl = typeof fileContent === 'string' ? fileContent : '';
+    const result = await this.extractFromPdf(fileUrl, fileName);
+    
+    return {
+      success: true,
+      products: result.products,
+      supplier: result.supplier,
+      totalProducts: result.products.length,
+      processingTimeMs: result.processingTimeMs,
+      tokensUsed: result.tokensUsed,
+      costUsd: result.costUsd,
+      metadata: {
+        completenessRatio: result.completenessRatio,
+        extractionMethods: result.extractionMethods,
+        errors: result.errors
+      }
+    };
   }
 
   /**
