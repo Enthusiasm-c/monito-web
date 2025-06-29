@@ -111,7 +111,13 @@ export class JobQueue {
       
       // Check if this job is actually queued
       if (upload && upload.processingDetails) {
-        const details = upload.processingDetails as any;
+        let details;
+        if (typeof upload.processingDetails === 'string') {
+          details = JSON.parse(upload.processingDetails);
+        } else {
+          details = upload.processingDetails as any;
+        }
+        
         if (details.stage !== 'queued') {
           return; // Skip if not queued
         }
@@ -119,7 +125,12 @@ export class JobQueue {
 
       if (!upload) return; // No pending jobs
 
-      const processingDetails = upload.processingDetails as any;
+      let processingDetails;
+      if (typeof upload.processingDetails === 'string') {
+        processingDetails = JSON.parse(upload.processingDetails);
+      } else {
+        processingDetails = upload.processingDetails as any;
+      }
       const jobId = processingDetails?.jobId;
 
       console.log(`🔄 Processing job: ${jobId} for upload ${upload.id}`);
@@ -208,7 +219,13 @@ export class JobQueue {
 
       if (!upload?.processingDetails) return null;
 
-      const details = upload.processingDetails as any;
+      let details;
+      if (typeof upload.processingDetails === 'string') {
+        details = JSON.parse(upload.processingDetails);
+      } else {
+        details = upload.processingDetails as any;
+      }
+
       return {
         stage: details.stage || 'unknown',
         progress: details.progress || 0,
@@ -226,6 +243,42 @@ export class JobQueue {
    */
   async cancelJob(uploadId: string) {
     await this.updateJobStatus(uploadId, 'cancelled', 0, 'Job cancelled by user');
+  }
+
+  /**
+   * Check for existing queued jobs and start processing if any exist
+   */
+  async checkAndStartProcessing() {
+    try {
+      console.log('🔍 Checking for existing queued jobs...');
+      
+      // Find any jobs in "queued" stage
+      const queuedUploads = await prisma.upload.findMany({
+        where: { 
+          status: 'processing'
+        }
+      });
+
+      const actuallyQueuedUploads = queuedUploads.filter(upload => {
+        if (upload.processingDetails) {
+          const details = upload.processingDetails as any;
+          return details.stage === 'queued';
+        }
+        return false;
+      });
+
+      console.log(`📊 Found ${actuallyQueuedUploads.length} queued jobs`);
+
+      if (actuallyQueuedUploads.length > 0) {
+        console.log('🚀 Starting processing for queued jobs...');
+        this.startProcessing();
+      } else {
+        console.log('✅ No queued jobs found');
+      }
+
+    } catch (error) {
+      console.error('❌ Error checking for queued jobs:', error);
+    }
   }
 }
 

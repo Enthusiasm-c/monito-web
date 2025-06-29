@@ -10,8 +10,13 @@ let processorStarted = false;
 export function startBackgroundProcessor() {
   if (!processorStarted) {
     console.log('🚀 Starting background job processor...');
-    // The job queue singleton is already started when imported
-    // Just mark as started
+    
+    // Actually start the job queue processing
+    const queue = jobQueue;
+    
+    // Check for existing queued jobs and start processing
+    queue.checkAndStartProcessing();
+    
     processorStarted = true;
     console.log('✅ Background job processor started');
   }

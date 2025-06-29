@@ -316,10 +316,24 @@ export default function SuppliersPage() {
                           </Link>
                           <button
                             onClick={async () => {
-                              if (confirm('Are you sure you want to delete this supplier? This action cannot be undone.')) {
+                              const priceCount = supplier._count?.prices || 0;
+                              const hasData = priceCount > 0;
+                              
+                              let confirmMessage = 'Are you sure you want to delete this supplier?';
+                              if (hasData) {
+                                confirmMessage += `\n\nThis will permanently delete:\n- ${priceCount} price records\n- All associated data\n\nThis action cannot be undone.`;
+                              } else {
+                                confirmMessage += ' This action cannot be undone.';
+                              }
+
+                              if (confirm(confirmMessage)) {
                                 try {
                                   const response = await fetch(`/api/admin/suppliers/${supplier.id}`, {
                                     method: 'DELETE',
+                                    headers: {
+                                      'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({ force: true }),
                                   });
 
                                   if (!response.ok) {
@@ -327,6 +341,9 @@ export default function SuppliersPage() {
                                     throw new Error(error.error || 'Failed to delete supplier');
                                   }
 
+                                  const result = await response.json();
+                                  alert(result.message || 'Supplier deleted successfully');
+                                  
                                   // Refresh the suppliers list
                                   await fetchSuppliers();
                                 } catch (err) {

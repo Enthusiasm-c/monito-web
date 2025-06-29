@@ -791,3 +791,123 @@ Caused by:
 
 Import trace for requested module:
 ./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+   Reload env: .env
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ○ Compiling /api/auth/[...nextauth] ...
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ GET /api/auth/csrf 500 in 779ms
+   Reload env: .env
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ✓ Compiled /_error in 78ms (98 modules)
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ⨯ ./node_modules/next/dist/client/components/metadata/async-metadata.js
+Error: Failed to read source code from /Users/denisdomashenko/monito-web/node_modules/next/dist/client/components/metadata/async-metadata.js
+
+Caused by:
+    No such file or directory (os error 2)
+
+Import trace for requested module:
+./node_modules/next/dist/client/components/metadata/async-metadata.js
+ ✓ Compiled in 25ms (80 modules)
+ ✓ Compiled in 44ms (98 modules)
+[?25h

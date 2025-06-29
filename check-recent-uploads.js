@@ -1,6 +1,5 @@
-import { prisma } from 'lib/prisma';
-
 const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 
 async function checkRecentUploads() {
@@ -58,7 +57,7 @@ async function checkRecentUploads() {
       },
       include: {
         _count: {
-          select: { products: true }
+          select: { prices: true }
         }
       }
     });

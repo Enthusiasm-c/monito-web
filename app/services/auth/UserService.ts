@@ -2,11 +2,9 @@
  * User Service for authentication and user management
  */
 
-import { PrismaClient } from '@prisma/client';
+import { prisma } from "@/lib/prisma";
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-
-const prisma = new PrismaClient();
 
 // Validation schemas
 export const CreateUserSchema = z.object({

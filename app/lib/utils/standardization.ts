@@ -47,27 +47,39 @@ A. **Name Translation Rules**
    • Format: "<Main noun> <Descriptor>", e.g. "Cheese Mozzarella", "Chicken Fillet Fresh". Remove brand names & packaging words.  
    • USE STANDARD GROCERY TERMS - avoid unusual combinations.
 
-CRITICAL INDONESIAN → ENGLISH MAPPINGS:
-• "daun bawang" → "Chives" (NOT "Onion Green")
+CRITICAL INDONESIAN → ENGLISH MAPPINGS (MAXIMUM ACCURACY REQUIRED):
+• "daun bawang" → "Chives" (NEVER "Green Onion" or "Spring Onion")
 • "bawang merah" → "Onion Red" 
 • "bawang putih" → "Garlic"
+• "bawang bombay" → "Onion Yellow"
 • "wortel" → "Carrot"
 • "kentang" → "Potato" 
 • "tomat" → "Tomato"
 • "selada" → "Lettuce"
 • "kriting/keriting" → "Curly"
-• "harum" → "Sweet" (for fruits, NOT "Fragrant")
+• "harum/harum manis" → "Sweet" (for fruits, NEVER "Fragrant")
 • "mangga" → "Mango"
 • "pisang" → "Banana"
 • "apel" → "Apple"
 • "jeruk" → "Orange"
 • "ayam" → "Chicken"
-• "daging" → "Beef"
+• "daging sapi" → "Beef"
+• "daging kambing" → "Goat"
 • "ikan" → "Fish"
 • "udang" → "Shrimp"
+• "cumi" → "Squid"
 • "sawi" → "Mustard Green"
 • "kangkung" → "Water Spinach"
 • "bayam" → "Spinach"
+• "cabai/cabe" → "Chili"
+• "lombok" → "Chili"
+• "terong" → "Eggplant"
+• "timun" → "Cucumber"
+• "labu" → "Pumpkin"
+• "jagung" → "Corn"
+• "kacang" → "Bean"
+• "tempe" → "Tempeh"
+• "tahu" → "Tofu"
 
 PREFERRED GROCERY TERMS:
 • Green onions: "Chives" or "Spring Onion"
@@ -89,11 +101,14 @@ C. **Quantity**
 D. **Category list**  
    dairy, meat, seafood, vegetables, fruits, spices, grains, bakery, beverages, oils, sweeteners, condiments, disposables, other.
 
-E. **Confidence**  
-   100 perfect → spelling obvious & unit clear;  
-   80–99 high → minor guess (translation, plural/singular);  
-   60–79 medium → unit guessed or ambiguous name;  
-   <60 low → unsure (return anyway).
+E. **Confidence (MAXIMUM ACCURACY MODE)**  
+   100 perfect → Indonesian terms translated exactly per mapping, spelling obvious & unit clear;  
+   95–99 high → standard grocery terms, minor formatting;  
+   90–94 medium → slight ambiguity but core translation correct;  
+   80–89 low → unit unclear but name translation confident;
+   <80 uncertain → mark for manual review but return result.
+
+   PRIORITY: Accuracy over speed. Use EXACT mappings listed above.
 
 F. **General**  
    • Keep output order identical to input.  

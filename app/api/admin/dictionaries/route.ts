@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
     if (type === 'language') {
       const where = search ? {
         OR: [
-          { sourceWord: { contains: search, mode: 'insensitive' as const } },
-          { targetWord: { contains: search, mode: 'insensitive' as const } }
+          { sourceWord: { contains: search, mode: 'insensitive' } },
+          { targetWord: { contains: search, mode: 'insensitive' } }
         ]
       } : {};
 
@@ -43,8 +43,8 @@ export async function GET(request: NextRequest) {
     } else if (type === 'unit') {
       const where = search ? {
         OR: [
-          { sourceUnit: { contains: search, mode: 'insensitive' as const } },
-          { targetUnit: { contains: search, mode: 'insensitive' as const } }
+          { sourceUnit: { contains: search, mode: 'insensitive' } },
+          { targetUnit: { contains: search, mode: 'insensitive' } }
         ]
       } : {};
 

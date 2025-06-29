@@ -1,0 +1,496 @@
+{
+  "timestamp": "2025-06-28T03:39:49.980Z",
+  "testSize": 25,
+  "results": {
+    "gpt-4o": {
+      "model": "gpt-4o",
+      "success": true,
+      "processingTime": 8524,
+      "inputTokens": 1054,
+      "outputTokens": 994,
+      "totalTokens": 2048,
+      "inputCost": 0.002635,
+      "outputCost": 0.009940000000000001,
+      "totalCost": 0.012575000000000001,
+      "productsProcessed": 25,
+      "qualityMetrics": {
+        "completionRate": 100,
+        "averageConfidence": 97,
+        "categoryAccuracy": 100,
+        "unitStandardization": 100
+      },
+      "results": [
+        {
+          "originalName": "Ciabatta",
+          "standardizedName": "Bread Ciabatta",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Baguette",
+          "standardizedName": "Bread Baguette",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Bagel",
+          "standardizedName": "Bread Bagel",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Sourdough Bun",
+          "standardizedName": "Bread Sourdough Bun",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Burger Bun",
+          "standardizedName": "Bread Burger Bun",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Sourdough Baguette",
+          "standardizedName": "Bread Sourdough Baguette",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Bun",
+          "standardizedName": "Bread Bun",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Hotdog Bun",
+          "standardizedName": "Bread Hotdog Bun",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "English Muffin",
+          "standardizedName": "Bread English Muffin",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Pretzel",
+          "standardizedName": "Bread Pretzel",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Pizza Base",
+          "standardizedName": "Bread Pizza Base",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Panini",
+          "standardizedName": "Bread Panini",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Sourdough",
+          "standardizedName": "Bread Sourdough",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Multigrain",
+          "standardizedName": "Bread Multigrain",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Loaf",
+          "standardizedName": "Bread Loaf",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Sunflower Whole Wheat",
+          "standardizedName": "Bread Sunflower Whole Wheat",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Country",
+          "standardizedName": "Bread Country",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Toast",
+          "standardizedName": "Bread Toast",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Mini Baguette",
+          "standardizedName": "Bread Mini Baguette",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Crackers Multiseeds",
+          "standardizedName": "Crackers Multiseeds",
+          "originalUnit": "kg",
+          "quantity": 1,
+          "standardizedUnit": "kg",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Stroopwafel",
+          "standardizedName": "Stroopwafel",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Chocolate Cashews",
+          "standardizedName": "Snack Chocolate Cashews",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 80
+        },
+        {
+          "originalName": "Vanilla",
+          "standardizedName": "Flavor Vanilla",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 80
+        },
+        {
+          "originalName": "Lemon",
+          "standardizedName": "Flavor Lemon",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 80
+        },
+        {
+          "originalName": "Chocolate Sea Salt",
+          "standardizedName": "Snack Chocolate Sea Salt",
+          "originalUnit": "pcs",
+          "quantity": 1,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 80
+        }
+      ]
+    },
+    "o3-mini": {
+      "model": "o3-mini-2025-01-31",
+      "success": true,
+      "processingTime": 29940,
+      "inputTokens": 1056,
+      "outputTokens": 4744,
+      "totalTokens": 5800,
+      "inputCost": 0.0031680000000000002,
+      "outputCost": 0.056928,
+      "totalCost": 0.060096,
+      "productsProcessed": 25,
+      "qualityMetrics": {
+        "completionRate": 100,
+        "averageConfidence": 100,
+        "categoryAccuracy": 100,
+        "unitStandardization": 100
+      },
+      "results": [
+        {
+          "originalName": "Ciabatta",
+          "standardizedName": "Bread Ciabatta",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Baguette",
+          "standardizedName": "Bread Baguette",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Bagel",
+          "standardizedName": "Bread Bagel",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Sourdough Bun",
+          "standardizedName": "Bread Sourdough Bun",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Burger Bun",
+          "standardizedName": "Bread Burger Bun",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Sourdough Baguette",
+          "standardizedName": "Bread Sourdough Baguette",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Bun",
+          "standardizedName": "Bread Bun",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Hotdog Bun",
+          "standardizedName": "Bread Hotdog Bun",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "English Muffin",
+          "standardizedName": "Bread English Muffin",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Pretzel",
+          "standardizedName": "Pretzel",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Pizza Base",
+          "standardizedName": "Pizza Base",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Panini",
+          "standardizedName": "Bread Panini",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Sourdough",
+          "standardizedName": "Bread Sourdough",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Multigrain",
+          "standardizedName": "Bread Multigrain",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Loaf",
+          "standardizedName": "Bread Loaf",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Sunflower Whole Wheat",
+          "standardizedName": "Bread Sunflower Whole Wheat",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Country",
+          "standardizedName": "Bread Country",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Toast",
+          "standardizedName": "Bread Toast",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Mini Baguette",
+          "standardizedName": "Bread Mini Baguette",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Crackers Multiseeds",
+          "standardizedName": "Crackers Multiseeds",
+          "originalUnit": "kg",
+          "quantity": null,
+          "standardizedUnit": "kg",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Stroopwafel",
+          "standardizedName": "Stroopwafel",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Chocolate Cashews",
+          "standardizedName": "Chocolate Cashews",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Vanilla",
+          "standardizedName": "Vanilla",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Lemon",
+          "standardizedName": "Lemon",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        },
+        {
+          "originalName": "Chocolate Sea Salt",
+          "standardizedName": "Chocolate Sea Salt",
+          "originalUnit": "pcs",
+          "quantity": null,
+          "standardizedUnit": "pcs",
+          "category": "bakery",
+          "confidence": 100
+        }
+      ]
+    }
+  }
+}

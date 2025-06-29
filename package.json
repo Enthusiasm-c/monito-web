@@ -10,6 +10,11 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:playwright": "playwright test",
+    "test:playwright:headed": "playwright test --headed",
+    "test:playwright:debug": "playwright test --debug",
+    "test:suppliers": "playwright test comprehensive-supplier-crud.spec.js",
+    "test:suppliers:headed": "playwright test comprehensive-supplier-crud.spec.js --headed",
     "postinstall": "prisma generate && prisma migrate deploy"
   },
   "dependencies": {
@@ -33,6 +38,7 @@
     "openai": "^5.1.1",
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^5.3.31",
+    "playwright": "^1.53.1",
     "prisma": "^6.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -43,6 +49,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.53.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^20",
