@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AliasManager from './aliases';
+import { ProductPriceChart } from '../../components/PriceAnalytics/ProductPriceChart';
 
 interface Product {
   id: string;
@@ -391,6 +392,17 @@ export default function ProductEdit({ params }: { params: Promise<{ id: string }
                   <dt className="text-sm font-medium text-gray-500">Product ID</dt>
                   <dd className="text-sm text-gray-900 font-mono">{product.id}</dd>
                 </div>
+              </div>
+            </div>
+
+            {/* Price History Chart */}
+            <div className="mt-6 bg-white shadow rounded-lg">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-medium text-gray-900">Price History (6 Months)</h3>
+                <p className="text-sm text-gray-500 mt-1">Price dynamics across suppliers</p>
+              </div>
+              <div className="px-6 py-4">
+                <ProductPriceChart productId={product.id} />
               </div>
             </div>
 

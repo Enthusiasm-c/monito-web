@@ -105,25 +105,28 @@ class PriceAnalyticsService {
         }
       });
 
-      // Get price history
+      // Get price history for last 6 months
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      
       const priceHistory = await prisma.priceHistory.findMany({
-        where: { productId },
+        where: { 
+          productId,
+          createdAt: {
+            gte: sixMonthsAgo
+          }
+        },
         include: {
-          price: {
-            include: {
-              supplier: {
-                select: {
-                  id: true,
-                  name: true
-                }
-              }
+          supplier: {
+            select: {
+              id: true,
+              name: true
             }
           }
         },
         orderBy: {
-          changedAt: 'desc'
-        },
-        take: 100 // Last 100 changes
+          createdAt: 'desc'
+        }
       });
 
       // Transform current prices
@@ -136,10 +139,10 @@ class PriceAnalyticsService {
 
       // Transform price history
       const priceHistoryData: PricePoint[] = priceHistory.map(history => ({
-        date: history.changedAt,
-        price: history.changedTo,
+        date: history.createdAt,
+        price: parseFloat(history.price.toString()),
         supplierId: history.supplierId,
-        supplierName: history.price.supplier.name
+        supplierName: history.supplier.name
       }));
 
       // Calculate average price history by grouping by date
@@ -154,7 +157,7 @@ class PriceAnalyticsService {
         priceSpread: prices.length > 0 ? Math.max(...prices) - Math.min(...prices) : 0,
         supplierCount: currentPricesData.length,
         totalPriceChanges: priceHistory.length,
-        lastPriceChange: priceHistory.length > 0 ? priceHistory[0].changedAt : null
+        lastPriceChange: priceHistory.length > 0 ? priceHistory[0].createdAt : null
       };
 
       const analytics: ProductPriceAnalytics = {
