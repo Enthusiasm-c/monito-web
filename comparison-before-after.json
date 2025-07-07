@@ -1,0 +1,71 @@
+{
+  "timestamp": "2025-07-05T07:41:25.806Z",
+  "analysisDate": "2025-07-04T16:00:00.000Z",
+  "before": {
+    "suppliers": 20,
+    "products": 2018,
+    "prices": 2747,
+    "uploads": 53,
+    "priceHistory": 2407
+  },
+  "after": {
+    "suppliers": 20,
+    "products": 2232,
+    "prices": 2961,
+    "uploads": 78,
+    "priceHistory": 2621
+  },
+  "changes": {
+    "suppliers": 0,
+    "products": 214,
+    "prices": 214,
+    "uploads": 25,
+    "priceHistory": 214
+  },
+  "percentageGrowth": {
+    "suppliers": "0.0",
+    "products": "10.6",
+    "prices": "7.8"
+  },
+  "todayUploads": 25,
+  "newSuppliers": 0,
+  "supplierBreakdown": {
+    "Widi Wiguna": {
+      "files": 2,
+      "totalPrices": 214,
+      "statuses": [
+        "completed_with_errors",
+        "completed_with_errors"
+      ]
+    },
+    "Temporary Processing": {
+      "files": 23,
+      "totalPrices": 0,
+      "statuses": [
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed"
+      ]
+    }
+  }
+}

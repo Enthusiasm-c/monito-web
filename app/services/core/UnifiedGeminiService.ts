@@ -156,7 +156,15 @@ export class UnifiedGeminiService {
     // Excel and CSV files need preprocessing
     if (ext.endsWith('.xlsx') || ext.endsWith('.xls') || ext.endsWith('.csv')) {
       console.log(`[UnifiedGemini] Preprocessing Excel/CSV file: ${fileName}`);
-      return this.preprocessExcelFile(content, fileName);
+      try {
+        return this.preprocessExcelFile(content, fileName);
+      } catch (error: any) {
+        if (error.isExcelJSFallback) {
+          console.log(`[UnifiedGemini] Using ExcelJS fallback for: ${fileName}`);
+          return await this.preprocessExcelJSFile(error.buffer, error.fileName);
+        }
+        throw error;
+      }
     }
     
     // PDF and images can be sent directly
@@ -183,7 +191,21 @@ export class UnifiedGeminiService {
    */
   private preprocessExcelFile(content: string | Buffer, fileName: string): FileContent {
     try {
-      const workbook = XLSX.read(content, { type: Buffer.isBuffer(content) ? 'buffer' : 'string' });
+      // Try XLSX first with fallback to ExcelJS
+      let workbook;
+      try {
+        workbook = XLSX.read(content, { type: Buffer.isBuffer(content) ? 'buffer' : 'string' });
+      } catch (xlsxError: any) {
+        console.warn('⚠️ XLSX failed, trying ExcelJS fallback in UnifiedGemini:', xlsxError.message);
+        
+        // Fallback to ExcelJS for corrupted files
+        const ExcelJS = require('exceljs');
+        const excelWorkbook = new ExcelJS.Workbook();
+        const buffer = Buffer.isBuffer(content) ? content : Buffer.from(content);
+        
+        // Use ExcelJS fallback (async)
+        throw { isExcelJSFallback: true, buffer, fileName };
+      }
       
       // Find sheet with data
       let selectedSheet = null;
@@ -227,7 +249,11 @@ ${markdownTable}
 Instructions: Extract all product information from this spreadsheet data.`
       };
       
-    } catch (error) {
+    } catch (error: any) {
+      // Re-throw ExcelJS fallback signals
+      if (error.isExcelJSFallback) {
+        throw error;
+      }
       console.error('[UnifiedGemini] Excel preprocessing error:', error);
       throw new Error(`Failed to preprocess Excel file: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -440,8 +466,62 @@ Return ONLY valid JSON.`;
   }
 
   private parseGeminiResponse(content: string, fileName: string): ExtractedData {
-    // Implementation from existing code
-    return {} as ExtractedData;
+    console.log(`🔍 Parsing Gemini response for ${fileName}:`, content.substring(0, 200) + '...');
+    
+    try {
+      // Remove markdown code blocks
+      let cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+      
+      // Try to find JSON in the response
+      const jsonMatch = cleanedContent.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.log('❌ No JSON found in response');
+        return {
+          supplier: null,
+          products: [],
+          metadata: { fileName, quality: 0 }
+        };
+      }
+
+      const parsedData = JSON.parse(jsonMatch[0]);
+      console.log(`📊 Parsed data:`, parsedData);
+
+      // Handle both compact format (array) and full format (object)
+      let products = [];
+      if (Array.isArray(parsedData)) {
+        // Compact format: [{"n":"name","p":price,"u":"unit","c":"category","s":confidence}]
+        products = parsedData.map(item => ({
+          name: item.n || item.name || "",
+          price: item.p !== null ? item.p : (item.price || null),
+          unit: item.u || item.unit || null,
+          category: item.c || item.category || null,
+          confidence: item.s !== undefined ? item.s : (item.confidence || 0.9)
+        }));
+      } else if (parsedData.products && Array.isArray(parsedData.products)) {
+        // Full format: {"products": [...]}
+        products = parsedData.products;
+      }
+
+      console.log(`✅ Extracted ${products.length} products`);
+
+      return {
+        supplier: null,
+        products: products,
+        metadata: {
+          fileName,
+          quality: this.calculateQuality(products)
+        }
+      };
+
+    } catch (error) {
+      console.error('❌ Error parsing Gemini response:', error);
+      console.log('Raw content:', content);
+      return {
+        supplier: null,
+        products: [],
+        metadata: { fileName, quality: 0 }
+      };
+    }
   }
 
   private extractSupplierName(fileName: string): string {
@@ -471,6 +551,74 @@ Return ONLY valid JSON.`;
 
   private sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Preprocess Excel file using ExcelJS (fallback for corrupted files)
+   */
+  private async preprocessExcelJSFile(buffer: Buffer, fileName: string): Promise<FileContent> {
+    const ExcelJS = require('exceljs');
+    const workbook = new ExcelJS.Workbook();
+    
+    // Load the Excel file
+    await workbook.xlsx.load(buffer);
+    
+    console.log(`📊 ExcelJS: Processing file with ${workbook.worksheets.length} worksheets`);
+    
+    // Find the first worksheet with data
+    let selectedWorksheet = null;
+    let jsonData: any[][] = [];
+    
+    for (const worksheet of workbook.worksheets) {
+      if (worksheet.rowCount > 0) {
+        console.log(`   📋 Checking worksheet: "${worksheet.name}" (${worksheet.rowCount} rows)`);
+        
+        // Convert ExcelJS worksheet to array format
+        const worksheetData: any[][] = [];
+        for (let rowNum = 1; rowNum <= worksheet.rowCount; rowNum++) {
+          const row = worksheet.getRow(rowNum);
+          if (row.hasValues) {
+            const values = row.values as any[];
+            // ExcelJS includes index 0 as undefined, so we slice it off
+            worksheetData.push(values.slice(1));
+          }
+        }
+        
+        // Check if this worksheet has meaningful data
+        const hasData = worksheetData.some(row => 
+          row && row.some(cell => cell !== null && cell !== undefined && cell !== '')
+        );
+        
+        if (hasData) {
+          selectedWorksheet = worksheet.name;
+          jsonData = worksheetData;
+          break;
+        }
+      }
+    }
+    
+    if (!selectedWorksheet || jsonData.length === 0) {
+      throw new Error(`No data found in Excel file`);
+    }
+    
+    // Convert to markdown table
+    const headers = this.detectHeaders(jsonData);
+    const markdownTable = this.createMarkdownTable(jsonData, headers);
+    const rowCount = this.countDataRows(jsonData);
+    
+    console.log(`✅ ExcelJS: Successfully processed ${rowCount} rows from "${selectedWorksheet}"`);
+    
+    return {
+      type: 'text',
+      content: `Excel/CSV File: ${fileName}
+Total Rows with Data: ${rowCount}
+Detected Columns: ${headers ? headers.join(', ') : 'No headers detected'}
+
+Data Table:
+${markdownTable}
+
+Instructions: Extract all product information from this spreadsheet data.`
+    };
   }
 
   /**

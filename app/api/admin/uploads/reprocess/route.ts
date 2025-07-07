@@ -44,6 +44,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if upload has fileUrl - if not, mark as failed
+    if (!upload.url) {
+      console.log('Upload has no fileUrl - marking as failed');
+      await prisma.upload.update({
+        where: { id: uploadId },
+        data: {
+          status: 'failed',
+          errorMessage: 'File upload to Blob Storage failed - missing fileUrl',
+          approvalStatus: 'rejected'
+        }
+      });
+      
+      return NextResponse.json({
+        success: true,
+        message: 'Upload marked as failed - missing file URL',
+        uploadId: uploadId,
+        action: 'marked_failed'
+      });
+    }
+
     // Reset upload status with valid fields only
     console.log('Resetting upload status...');
     try {

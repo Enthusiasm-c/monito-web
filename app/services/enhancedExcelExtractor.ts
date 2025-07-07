@@ -5,7 +5,7 @@
  */
 
 import { BaseProcessor } from '../lib/core/BaseProcessor';
-import { ProcessOptions, ProcessingResult } from '../lib/core/Interfaces';
+import { ProcessOptions, ProcessingResult, SupplierInfo } from '../lib/core/Interfaces';
 import { tokenCostMonitor, type TokenUsage } from './tokenCostMonitor';
 import OpenAI from 'openai';
 
@@ -23,6 +23,7 @@ interface ExtractedProduct {
   price: number;
   unit: string;
   category?: string;
+  confidence: number;
   description?: string;
   sourceSheet?: string;
   sourceRow?: number;
@@ -58,7 +59,7 @@ class EnhancedExcelExtractor extends BaseProcessor {
   };
 
   public static getInstance(): EnhancedExcelExtractor {
-    return super.getInstance.call(this) as EnhancedExcelExtractor;
+    return super.getInstance() as EnhancedExcelExtractor;
   }
 
   constructor() {
@@ -76,18 +77,35 @@ class EnhancedExcelExtractor extends BaseProcessor {
     const fileUrl = typeof fileContent === 'string' ? fileContent : '';
     const result = await this.extractFromFile(fileUrl, fileName);
     
+    // Convert to unified interface format
+    const products = result.products.map(p => ({
+      name: p.name,
+      price: p.price,
+      unit: p.unit,
+      category: p.category || null,
+      confidence: p.confidence
+    }));
+
+    const supplier: SupplierInfo | undefined = result.supplier ? {
+      name: result.supplier.name,
+      email: result.supplier.email || null,
+      phone: result.supplier.phone || null,
+      address: result.supplier.address || null
+    } : undefined;
+
     return {
-      success: true,
-      products: result.products,
-      supplier: result.supplier,
-      totalProducts: result.products.length,
-      processingTimeMs: result.processingTimeMs,
-      tokensUsed: result.tokensUsed,
-      costUsd: result.costUsd,
+      documentType: 'price_list',
+      supplier,
+      products,
+      extractionQuality: result.completenessRatio,
       metadata: {
-        sheets: result.sheets,
-        completenessRatio: result.completenessRatio,
-        errors: result.errors
+        dateExtracted: new Date().toISOString(),
+        totalPages: result.sheets.length,
+        language: 'id',
+        currency: 'IDR',
+        processor: 'enhanced-excel-extractor',
+        fileName,
+        fileType: 'excel'
       }
     };
   }
@@ -160,10 +178,47 @@ class EnhancedExcelExtractor extends BaseProcessor {
    * Process Excel file with all sheets
    */
   private async processExcel(arrayBuffer: ArrayBuffer, fileName: string): Promise<ExcelExtractionResult> {
+    // Try XLSX library first
+    try {
+      const XLSX = await import('xlsx');
+      
+      let workbook;
+      try {
+        workbook = XLSX.read(arrayBuffer, { type: 'array', cellDates: true, cellNF: false });
+      } catch (xlsxError: any) {
+        console.warn('⚠️ XLSX failed with array type, trying with buffer type:', xlsxError.message);
+        workbook = XLSX.read(arrayBuffer, { type: 'buffer', cellDates: true, codepage: 65001 });
+      }
+      
+      // Process with XLSX workbook
+      return await this.processXLSXWorkbook(workbook, fileName);
+      
+    } catch (xlsxError: any) {
+      console.warn('⚠️ XLSX library failed, trying ExcelJS fallback:', xlsxError.message);
+      
+      // Fallback to ExcelJS for corrupted or incompatible files
+      try {
+        const ExcelJS = await import('exceljs');
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(Buffer.from(arrayBuffer));
+        
+        console.log('✅ ExcelJS fallback successful');
+        return await this.processExcelJSWorkbook(workbook, fileName);
+        
+      } catch (exceljsError: any) {
+        console.error('❌ Both XLSX and ExcelJS failed:', exceljsError.message);
+        throw new Error(`Excel processing failed: XLSX error: ${xlsxError.message}, ExcelJS error: ${exceljsError.message}`);
+      }
+    }
+  }
+
+  /**
+   * Process XLSX workbook
+   */
+  private async processXLSXWorkbook(workbook: any, fileName: string): Promise<ExcelExtractionResult> {
     const XLSX = await import('xlsx');
-    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
     
-    console.log(`📊 Excel file has ${workbook.SheetNames.length} sheets: ${workbook.SheetNames.join(', ')}`);
+    console.log(`📊 XLSX: Excel file has ${workbook.SheetNames.length} sheets: ${workbook.SheetNames.join(', ')}`);
 
     const allSheets: SheetProcessingResult[] = [];
     const allProducts: ExtractedProduct[] = [];
@@ -185,7 +240,7 @@ class EnhancedExcelExtractor extends BaseProcessor {
         const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
         
         // Filter out completely empty rows
-        const nonEmptyRows = rawData.filter((row: any[]) => 
+        const nonEmptyRows = (rawData as any[][]).filter((row: any[]) => 
           row && row.some(cell => cell !== null && cell !== undefined && cell !== '')
         );
 
@@ -203,7 +258,7 @@ class EnhancedExcelExtractor extends BaseProcessor {
         }
 
         // Process the sheet
-        const sheetResult = await this.processSheet(nonEmptyRows, sheetName, supplierInfo);
+        const sheetResult = await this.processSheet(nonEmptyRows as any[][], sheetName, supplierInfo);
         
         console.log(`   ✅ Sheet "${sheetName}" processed: ${sheetResult.products.length} products extracted`);
         if (sheetResult.products.length === 0 && sheetResult.errors.length > 0) {
@@ -484,6 +539,7 @@ class EnhancedExcelExtractor extends BaseProcessor {
       price,
       unit,
       category,
+      confidence: 0.9, // Rule-based extraction gets higher confidence
       sourceSheet: sheetName,
       sourceRow: rowNumber
     };
@@ -563,6 +619,7 @@ class EnhancedExcelExtractor extends BaseProcessor {
             price: Number(p.price),
             unit: p.unit || 'pcs',
             category: p.category,
+            confidence: 0.8, // LLM extracted products get 0.8 confidence
             sourceSheet: sheetName,
             sourceRow: index + 1
           }));
@@ -692,6 +749,91 @@ class EnhancedExcelExtractor extends BaseProcessor {
     
     result.push(current.trim());
     return result;
+  }
+
+  /**
+   * Process ExcelJS workbook (fallback for corrupted XLSX files)
+   */
+  private async processExcelJSWorkbook(workbook: any, fileName: string): Promise<ExcelExtractionResult> {
+    console.log(`📊 ExcelJS: Processing file with ${workbook.worksheets.length} worksheets`);
+
+    const allSheets: SheetProcessingResult[] = [];
+    const allProducts: ExtractedProduct[] = [];
+    const allErrors: string[] = [];
+    let totalRowsDetected = 0;
+    let totalRowsProcessed = 0;
+
+    // Extract supplier info from filename
+    const supplierInfo = this.extractSupplierFromFilename(fileName);
+
+    // Process each worksheet
+    for (const worksheet of workbook.worksheets) {
+      try {
+        const sheetName = worksheet.name;
+        console.log(`📄 Processing ExcelJS worksheet: "${sheetName}"`);
+
+        // Convert ExcelJS worksheet to array format
+        const rawData: any[][] = [];
+        for (let rowNum = 1; rowNum <= worksheet.rowCount; rowNum++) {
+          const row = worksheet.getRow(rowNum);
+          if (row.hasValues) {
+            const values = row.values as any[];
+            // ExcelJS includes index 0 as undefined, so we slice it off
+            rawData.push(values.slice(1));
+          }
+        }
+
+        // Filter out completely empty rows
+        const nonEmptyRows = rawData.filter(row => 
+          row && row.some(cell => cell !== null && cell !== undefined && cell !== '')
+        );
+
+        console.log(`   📋 Worksheet "${sheetName}": ${nonEmptyRows.length} non-empty rows`);
+
+        if (nonEmptyRows.length < 3) {
+          console.log(`   ⚠️ Skipping worksheet "${sheetName}": too few rows`);
+          continue;
+        }
+
+        // Check if sheet looks like price data
+        if (!this.looksLikePriceData(sheetName, nonEmptyRows)) {
+          console.log(`   ⚠️ Skipping worksheet "${sheetName}": doesn't look like price data`);
+          continue;
+        }
+
+        // Process the sheet using existing logic
+        const sheetResult = await this.processSheet(nonEmptyRows, sheetName, supplierInfo);
+        
+        console.log(`   ✅ ExcelJS worksheet "${sheetName}" processed: ${sheetResult.products.length} products extracted`);
+        if (sheetResult.products.length === 0 && sheetResult.errors.length > 0) {
+          console.log(`   ⚠️ Errors: ${sheetResult.errors.join('; ')}`);
+        }
+        
+        allSheets.push(sheetResult);
+        allProducts.push(...sheetResult.products);
+        allErrors.push(...sheetResult.errors);
+        totalRowsDetected += sheetResult.totalRows;
+        totalRowsProcessed += sheetResult.processedRows;
+
+      } catch (error) {
+        const errorMsg = `Error processing ExcelJS worksheet "${worksheet.name}": ${error}`;
+        console.error(`   ❌ ${errorMsg}`);
+        allErrors.push(errorMsg);
+      }
+    }
+
+    return {
+      supplier: supplierInfo,
+      products: allProducts,
+      sheets: allSheets,
+      totalRowsDetected,
+      totalRowsProcessed,
+      completenessRatio: totalRowsDetected > 0 ? totalRowsProcessed / totalRowsDetected : 0,
+      processingTimeMs: 0, // Will be set by caller
+      tokensUsed: 0, // ExcelJS doesn't use AI tokens
+      costUsd: 0,
+      errors: allErrors
+    };
   }
 }
 

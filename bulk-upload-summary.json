@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-07-05T07:13:00.454Z",
+  "totalFiles": 22,
+  "successful": 19,
+  "failed": 3,
+  "successRate": 86,
+  "totalProcessingTime": 515,
+  "totalProductsExtracted": 911,
+  "newSuppliersCreated": 19,
+  "typeBreakdown": {
+    "Excel": {
+      "count": 1,
+      "successful": 1,
+      "totalProducts": 0,
+      "totalTime": 30
+    },
+    "Image": {
+      "count": 2,
+      "successful": 2,
+      "totalProducts": 178,
+      "totalTime": 36939
+    },
+    "PDF": {
+      "count": 19,
+      "successful": 16,
+      "totalProducts": 733,
+      "totalTime": 413954
+    }
+  }
+}

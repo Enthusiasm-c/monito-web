@@ -1,7 +1,8 @@
 /**
  * Enhanced PDF Extractor  
- * Converts PDF to images and uses UnifiedGeminiService
- * Now extends BaseProcessor for consistency
+ * ONLY PDF to Image conversion + Gemini Vision processing
+ * No Python processing - Pure image-based extraction only
+ * Extends BaseProcessor for consistency
  */
 
 import { spawn } from 'child_process';
@@ -105,16 +106,18 @@ class EnhancedPdfExtractor extends BaseProcessor {
         throw new Error(`PDF too large: ${contentLength} bytes > ${this.config.maxFileSize} bytes`);
       }
 
-      // Convert PDF to images and process with Gemini
-      console.log(`🤖 Converting PDF to images and processing with Gemini Flash 2.0: ${fileName}`);
-      
+      // Step 1: Convert PDF to images
+      console.log(`📄 Step 1: Converting PDF to images: ${fileName}`);
       const images = await this.convertPdfToImages(fileUrl);
       
       if (images.length === 0) {
         throw new Error('Failed to convert PDF to images');
       }
-
-      console.log(`📄 Processing ${images.length} pages with Gemini...`);
+      
+      console.log(`✅ Converted to ${images.length} images`);
+      
+      // Step 2: Process images with Gemini Flash 2.0
+      console.log(`🤖 Step 2: Processing images with Gemini Flash 2.0...`);
       
       // Process each image with Gemini
       let allProducts: ExtractedProduct[] = [];
@@ -125,11 +128,15 @@ class EnhancedPdfExtractor extends BaseProcessor {
 
       for (let i = 0; i < images.length; i++) {
         try {
-          console.log(`🔍 Processing page ${i + 1}/${images.length}...`);
+          console.log(`🔍 Processing image ${i + 1}/${images.length} with Gemini Flash 2.0...`);
           
-          // Use Gemini service to process the image
-          const result = await this.geminiService.processDocument(
-            images[i],
+          // Convert base64 image to Buffer for Gemini Flash 2.0
+          const base64Data = images[i].replace(/^data:image\/[a-z]+;base64,/, '');
+          const imageBuffer = Buffer.from(base64Data, 'base64');
+          
+          // Show image to Gemini Flash 2.0
+          const geminiResult = await this.geminiService.processDocument(
+            imageBuffer,
             `${fileName}_page_${i + 1}.png`,
             {
               model: 'gemini-2.0-flash-exp',
@@ -138,13 +145,22 @@ class EnhancedPdfExtractor extends BaseProcessor {
             }
           );
 
+          // Wrap result in expected format
+          const result = {
+            success: geminiResult.products && geminiResult.products.length >= 0,
+            extractedData: geminiResult,
+            tokensUsed: 0,
+            costUsd: 0,
+            error: geminiResult.products ? undefined : 'No products found'
+          };
+
           if (result.success && result.extractedData) {
             const pageProducts = result.extractedData.products || [];
             
             // Add page info to products
             pageProducts.forEach(product => {
               product.sourcePage = i + 1;
-              product.sourceMethod = 'gemini_vision';
+              product.sourceMethod = 'pdf_to_image_gemini_flash_2.0';
             });
             
             allProducts = allProducts.concat(pageProducts);
@@ -157,23 +173,45 @@ class EnhancedPdfExtractor extends BaseProcessor {
             totalTokens += result.tokensUsed || 0;
             totalCost += result.costUsd || 0;
             
-            console.log(`✅ Page ${i + 1}: ${pageProducts.length} products extracted`);
+            console.log(`✅ Image ${i + 1}: ${pageProducts.length} products extracted by Gemini Flash 2.0`);
           } else {
-            const error = `Page ${i + 1}: ${result.error || 'Unknown error'}`;
+            const error = `Image ${i + 1}: ${result.error || 'Gemini Flash 2.0 processing failed'}`;
             errors.push(error);
             console.log(`⚠️ ${error}`);
           }
-        } catch (pageError) {
-          const error = `Page ${i + 1}: ${pageError instanceof Error ? pageError.message : 'Processing failed'}`;
+        } catch (imageError) {
+          const errorMessage = imageError instanceof Error ? imageError.message : 'Gemini Flash 2.0 processing failed';
+          const error = `Image ${i + 1}: ${errorMessage}`;
           errors.push(error);
           console.log(`❌ ${error}`);
+          
+          // Check for quota exhaustion
+          if (errorMessage.includes('quota') || errorMessage.includes('exceeded') || errorMessage.includes('limit')) {
+            console.log(`🚫 QUOTA EXHAUSTED: ${errorMessage}`);
+            console.log(`⚠️ Gemini API quota limit reached. Consider upgrading plan or try again later.`);
+            // Stop processing remaining images to avoid further quota usage
+            if (errors.filter(e => e.includes('quota')).length >= 2) {
+              console.log(`🛑 Stopping PDF processing due to quota exhaustion`);
+              break;
+            }
+          }
         }
       }
 
       const processingTime = Date.now() - startTime;
       
-      console.log(`🎉 PDF processing completed: ${allProducts.length} products from ${images.length} pages in ${processingTime}ms`);
-      console.log(`💰 Total cost: $${totalCost.toFixed(6)} (${totalTokens} tokens)`);
+      // Check if quota issues were encountered
+      const quotaErrors = errors.filter(e => e.includes('quota') || e.includes('exceeded') || e.includes('limit'));
+      
+      if (quotaErrors.length > 0) {
+        console.log(`🚫 PDF processing stopped due to API quota exhaustion: ${allProducts.length} products from ${images.length} images`);
+        console.log(`⚠️ ${quotaErrors.length} quota-related errors encountered`);
+        console.log(`💡 Recommendation: Upgrade Gemini API plan or try again later`);
+      } else {
+        console.log(`🎉 PDF→Images→Gemini Flash 2.0 completed: ${allProducts.length} products from ${images.length} images in ${processingTime}ms`);
+      }
+      
+      console.log(`💰 Gemini Flash 2.0 cost: $${totalCost.toFixed(6)} (${totalTokens} tokens)`);
 
       return {
         supplier,
@@ -185,12 +223,19 @@ class EnhancedPdfExtractor extends BaseProcessor {
         tokensUsed: totalTokens,
         costUsd: totalCost,
         errors,
+        quotaExhausted: quotaErrors.length > 0,
+        quotaErrorCount: quotaErrors.length,
         extractionMethods: {
-          aiVision: {
-            pages: images.length,
-            products: allProducts.length
+          step1_pdf_to_images: {
+            images_created: images.length
           },
-          bestMethod: 'gemini_vision'
+          step2_gemini_flash_2_0: {
+            images_processed: images.length,
+            products_extracted: allProducts.length,
+            quota_errors: quotaErrors.length
+          },
+          bestMethod: 'pdf_to_images_then_gemini_flash_2_0',
+          issues: quotaErrors.length > 0 ? ['gemini_api_quota_exhausted'] : []
         }
       };
 
@@ -205,16 +250,17 @@ class EnhancedPdfExtractor extends BaseProcessor {
         processingTimeMs: Date.now() - startTime,
         tokensUsed: 0,
         costUsd: 0,
-        errors: [`PDF extraction failed: ${error instanceof Error ? error.message : 'Unknown error'}`],
+        errors: [`PDF→Images→Gemini Flash 2.0 failed: ${error instanceof Error ? error.message : 'Unknown error'}`],
         extractionMethods: {
-          bestMethod: 'failed'
+          bestMethod: 'pdf_to_images_then_gemini_flash_2_0_failed'
         }
       };
     }
   }
 
   /**
-   * Convert PDF to base64 images using Python script
+   * Step 1: Convert PDF to base64 images using pdf_to_images.py
+   * Pure conversion only - no text extraction or processing
    */
   private async convertPdfToImages(fileUrl: string): Promise<string[]> {
     return new Promise((resolve, reject) => {

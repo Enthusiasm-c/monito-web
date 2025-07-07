@@ -17,11 +17,7 @@ const analyticsQuerySchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await getServerSession(authOptions);
-    if (!session || !['admin', 'manager', 'viewer'].includes(session.user.role)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Note: Authentication removed for public price analytics access
 
     const { searchParams } = new URL(request.url);
     const queryParams = {

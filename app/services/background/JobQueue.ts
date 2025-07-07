@@ -176,7 +176,14 @@ export class JobQueue {
 
       if (!currentUpload) return;
 
-      const currentDetails = (currentUpload.processingDetails as any) || {};
+      let currentDetails;
+      try {
+        currentDetails = typeof currentUpload.processingDetails === 'string' 
+          ? JSON.parse(currentUpload.processingDetails)
+          : (currentUpload.processingDetails as any) || {};
+      } catch (e) {
+        currentDetails = {};
+      }
       
       const updatedDetails = {
         ...currentDetails,
@@ -187,10 +194,16 @@ export class JobQueue {
         ...(error && { error })
       };
 
+      // Ensure updatedDetails is not null
+      if (!updatedDetails || typeof updatedDetails !== 'object') {
+        console.error('❌ UpdatedDetails is null or not object, skipping update');
+        return;
+      }
+
       await prisma.upload.update({
         where: { id: uploadId },
         data: {
-          processingDetails: updatedDetails,
+          processingDetails: JSON.stringify(updatedDetails),
           ...(stage === 'completed' && { status: 'completed' }),
           ...(stage === 'failed' && { status: 'failed', errorMessage: error })
         }

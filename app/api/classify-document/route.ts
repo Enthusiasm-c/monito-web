@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { documentClassifierService } from '../../../src/pipeline/document_classifier_service';
+// import { documentClassifierService } from '../../../src/pipeline/document_classifier_service';
 import path from 'path';
 import fs from 'fs/promises';
 import { tmpdir } from 'os';
@@ -14,6 +14,11 @@ import { prisma } from '../../../lib/prisma';
 export async function POST(request: NextRequest) {
   try {
     console.log('📁 Document classification request received');
+    
+    // Temporary disabled - document classifier service not available
+    return NextResponse.json({ 
+      error: 'Document classification service temporarily disabled' 
+    }, { status: 503 });
 
     const formData = await request.formData();
     const file = formData.get('file') as File;

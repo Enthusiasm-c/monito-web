@@ -1,0 +1,54 @@
+{
+  "totalProducts": 7,
+  "extractedProducts": [
+    {
+      "name": "175",
+      "price": 50,
+      "unit": "pack",
+      "sheet": "Sheet1",
+      "row": 193
+    },
+    {
+      "name": "177",
+      "price": 60,
+      "unit": "btl",
+      "sheet": "Sheet1",
+      "row": 195
+    },
+    {
+      "name": "181",
+      "price": 1,
+      "unit": "ltr",
+      "sheet": "Sheet1",
+      "row": 199
+    },
+    {
+      "name": "184",
+      "price": 330,
+      "unit": "can",
+      "sheet": "Sheet1",
+      "row": 202
+    },
+    {
+      "name": "190",
+      "price": 1,
+      "unit": "pack",
+      "sheet": "Sheet1",
+      "row": 208
+    },
+    {
+      "name": "199",
+      "price": 200,
+      "unit": "Jar",
+      "sheet": "Sheet1",
+      "row": 217
+    },
+    {
+      "name": "203",
+      "price": 18,
+      "unit": "Gln",
+      "sheet": "Sheet1",
+      "row": 224
+    }
+  ]
+}

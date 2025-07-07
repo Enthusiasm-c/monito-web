@@ -493,33 +493,84 @@ class EnhancedFileProcessor {
           continue;
         }
 
-        // Check if this exact price already exists for this product and supplier
-        const existingPrice = await prisma.price.findFirst({
-          where: {
-            productId: product.id,
-            supplierId: supplierId,
-            amount: bestProduct.bestPrice,
-            unit: bestProduct.normalizedProduct.unit,
-            validTo: null
-          }
-        });
-
-        if (existingPrice) {
-          console.log(`🔄 Price already exists for ${group.standardizedName}, skipping duplicate`);
-          continue;
-        }
-
-        // Deactivate old prices for this product and supplier
-        await prisma.price.updateMany({
+        // Check for existing active prices for this product and supplier
+        const existingPrices = await prisma.price.findMany({
           where: {
             productId: product.id,
             supplierId: supplierId,
             validTo: null
           },
-          data: {
-            validTo: new Date()
+          orderBy: {
+            validFrom: 'desc'
           }
         });
+
+        // Check if this exact price already exists
+        const exactPriceExists = existingPrices.some(price => 
+          price.amount === bestProduct.bestPrice && 
+          price.unit === bestProduct.normalizedProduct.unit
+        );
+
+        if (exactPriceExists) {
+          console.log(`🔄 Price already exists for ${group.standardizedName}, skipping duplicate`);
+          continue;
+        }
+
+        // If there are existing prices, move them to price history
+        if (existingPrices.length > 0) {
+          for (const oldPrice of existingPrices) {
+            // Calculate change percentage
+            const changePercentage = oldPrice.amount > 0 
+              ? ((bestProduct.bestPrice - oldPrice.amount) / oldPrice.amount) * 100
+              : 0;
+
+            // Create price history entry
+            await prisma.priceHistory.create({
+              data: {
+                id: `history_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                price: bestProduct.bestPrice,
+                unit: bestProduct.normalizedProduct.unit,
+                changedFrom: oldPrice.amount,
+                changePercentage: changePercentage,
+                changeReason: 'api',
+                productId: product.id,
+                supplierId: supplierId,
+                uploadId: uploadId,
+                createdAt: new Date()
+              }
+            });
+
+            console.log(`📈 Price history created: ${group.standardizedName} - $${oldPrice.amount} → $${bestProduct.bestPrice} (${changePercentage.toFixed(1)}%)`);
+          }
+
+          // Deactivate old prices
+          await prisma.price.updateMany({
+            where: {
+              productId: product.id,
+              supplierId: supplierId,
+              validTo: null
+            },
+            data: {
+              validTo: new Date()
+            }
+          });
+        } else {
+          // No existing prices, create initial price history entry
+          await prisma.priceHistory.create({
+            data: {
+              id: `history_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+              price: bestProduct.bestPrice,
+              unit: bestProduct.normalizedProduct.unit,
+              changedFrom: null,
+              changePercentage: null,
+              changeReason: 'initial',
+              productId: product.id,
+              supplierId: supplierId,
+              uploadId: uploadId,
+              createdAt: new Date()
+            }
+          });
+        }
 
         // Create new price entry
         await prisma.price.create({

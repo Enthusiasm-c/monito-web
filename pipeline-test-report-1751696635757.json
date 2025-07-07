@@ -1,0 +1,59 @@
+{
+  "totalTests": 5,
+  "successful": 4,
+  "failed": 1,
+  "formats": {
+    "PDF": {
+      "status": "working",
+      "files": 2,
+      "successful": 1,
+      "failed": 1,
+      "avgTime": 6501,
+      "avgProducts": 12,
+      "errors": [
+        {
+          "file": "test-pdf-1.pdf",
+          "error": "network timeout at: http://localhost:3000/api/upload-unified"
+        }
+      ]
+    },
+    "Excel XLSX": {
+      "status": "working",
+      "files": 3,
+      "successful": 3,
+      "failed": 0,
+      "avgTime": 36,
+      "avgProducts": 0,
+      "errors": []
+    },
+    "Excel XLS": {
+      "status": "skipped",
+      "reason": "no_test_files",
+      "files": 0,
+      "avgTime": 0,
+      "avgProducts": 0
+    },
+    "CSV": {
+      "status": "skipped",
+      "reason": "no_test_files",
+      "files": 0,
+      "avgTime": 0,
+      "avgProducts": 0
+    },
+    "JPEG": {
+      "status": "skipped",
+      "reason": "no_test_files",
+      "files": 0,
+      "avgTime": 0,
+      "avgProducts": 0
+    },
+    "PNG": {
+      "status": "skipped",
+      "reason": "no_test_files",
+      "files": 0,
+      "avgTime": 0,
+      "avgProducts": 0
+    }
+  },
+  "performance": {}
+}

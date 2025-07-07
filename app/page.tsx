@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { ProductPriceChart } from './components/PriceAnalytics/ProductPriceChart';
 
 interface Product {
   id: string;
@@ -1159,51 +1160,59 @@ export default function Home() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 {/* Price Overview */}
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Price Overview</h4>
                   
                   {selectedProduct.priceComparison.bestPrice && (
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div>
                         <span className="text-sm text-gray-600 dark:text-gray-400">Best Price:</span>
-                        <span className="text-lg font-medium text-green-600 dark:text-green-400">
+                        <div className="text-lg font-medium text-green-600 dark:text-green-400">
                           {formatCurrency(selectedProduct.priceComparison.bestPrice.amount)}
-                        </span>
+                        </div>
                       </div>
                       
                       {selectedProduct.priceComparison.highestPrice && selectedProduct.priceComparison.supplierCount > 1 && (
                         <>
-                          <div className="flex justify-between items-center">
+                          <div>
                             <span className="text-sm text-gray-600 dark:text-gray-400">Highest Price:</span>
-                            <span className="text-lg font-medium text-red-600 dark:text-red-400">
+                            <div className="text-lg font-medium text-red-600 dark:text-red-400">
                               {formatCurrency(selectedProduct.priceComparison.highestPrice.amount)}
-                            </span>
+                            </div>
                           </div>
                           
-                          <div className="flex justify-between items-center">
+                          <div>
                             <span className="text-sm text-gray-600 dark:text-gray-400">Potential Savings:</span>
-                            <span className="text-lg font-medium text-blue-600 dark:text-blue-400">
+                            <div className="text-lg font-medium text-blue-600 dark:text-blue-400">
                               {selectedProduct.priceComparison.savings}%
-                            </span>
+                            </div>
                           </div>
                         </>
                       )}
                       
-                      <div className="flex justify-between items-center">
+                      <div>
                         <span className="text-sm text-gray-600 dark:text-gray-400">Available from:</span>
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {selectedProduct.priceComparison.supplierCount} supplier{selectedProduct.priceComparison.supplierCount > 1 ? 's' : ''}
-                        </span>
+                        </div>
                       </div>
                     </div>
                   )}
                 </div>
 
+                {/* Price History Chart */}
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Price History (6 Months)</h4>
+                  <div className="bg-white dark:bg-gray-600 rounded-md p-2">
+                    <ProductPriceChart productId={selectedProduct.id} />
+                  </div>
+                </div>
+
                 {/* Supplier Prices */}
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                  <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Supplier Prices</h4>
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Current Supplier Prices</h4>
                   
                   {selectedProduct.prices && selectedProduct.prices.length > 0 ? (
                     <div className="space-y-3">

@@ -1,0 +1,43 @@
+{
+  "timestamp": "2025-07-05T07:13:53.660Z",
+  "operation": "Supplier July 2025 Bulk Upload",
+  "results": {
+    "totalFiles": 22,
+    "successful": 19,
+    "failed": 3,
+    "successRate": 86,
+    "processingTime": 515,
+    "productsExtracted": 911
+  },
+  "newSuppliers": 0,
+  "todayUploads": 1,
+  "systemStats": {
+    "totalSuppliers": 20,
+    "totalProducts": 2232,
+    "totalPrices": 2961,
+    "totalUploads": 54,
+    "totalPriceHistory": 2621
+  },
+  "priceTrackingActive": true,
+  "problems": [
+    {
+      "file": "Meat Mart 2 03_07.pdf",
+      "supplier": "Meat Mart",
+      "type": "PDF",
+      "error": "HTTP 400: {\"error\":\"File too large. Maximum size is 10MB.\"}..."
+    },
+    {
+      "file": "Meat mart 1 03_07.pdf",
+      "supplier": "Meat Mart",
+      "type": "PDF",
+      "error": "HTTP 400: {\"error\":\"File too large. Maximum size is 10MB.\"}..."
+    },
+    {
+      "file": "PT puri pangan utama 03_07.pdf",
+      "supplier": "Puri Pangan Utama",
+      "type": "PDF",
+      "error": "HTTP 400: {\"error\":\"File too large. Maximum size is 10MB.\"}..."
+    }
+  ],
+  "systemReady": true
+}

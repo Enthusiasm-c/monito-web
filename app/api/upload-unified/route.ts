@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { unifiedGeminiService } from '../../services/core/UnifiedGeminiService';
+import { enhancedPdfExtractor } from '../../services/enhancedPdfExtractor';
+import { put } from '@vercel/blob';
 
 /**
  * Unified Upload API Route
@@ -78,13 +80,32 @@ export async function POST(request: NextRequest) {
       includeMetadata: true
     };
 
-    // Process with unified Gemini service
+    // Process based on file type
     const startTime = Date.now();
-    const result = await unifiedGeminiService.processDocument(
-      buffer,
-      file.name,
-      processOptions
-    );
+    let result;
+    
+    if (file.type === 'application/pdf') {
+      console.log(`[UnifiedUpload] Using enhancedPdfExtractor for PDF: ${file.name}`);
+      
+      // Upload PDF to blob storage first for enhancedPdfExtractor
+      const blob = await put(file.name, file, {
+        access: 'public',
+        addRandomSuffix: true,
+      });
+      
+      // Use enhancedPdfExtractor for PDF→Images→Gemini Flash 2.0 process
+      result = await enhancedPdfExtractor.extractFromPdf(blob.url, file.name);
+    } else {
+      console.log(`[UnifiedUpload] Using unifiedGeminiService for ${file.type}: ${file.name}`);
+      
+      // Use unified Gemini service for other file types
+      result = await unifiedGeminiService.processDocument(
+        buffer,
+        file.name,
+        processOptions
+      );
+    }
+    
     const processingTime = Date.now() - startTime;
 
     // Enhance result with additional metadata
@@ -101,18 +122,18 @@ export async function POST(request: NextRequest) {
       },
       performance: {
         processingTimeMs: processingTime,
-        productsPerSecond: result.products.length / (processingTime / 1000),
-        avgProductProcessingTime: processingTime / result.products.length
+        productsPerSecond: (result.products?.length || 0) / (processingTime / 1000),
+        avgProductProcessingTime: (result.products?.length || 0) > 0 ? processingTime / result.products.length : 0
       }
     };
 
-    console.log(`[UnifiedUpload] Success: ${result.products.length} products extracted in ${processingTime}ms`);
+    console.log(`[UnifiedUpload] Success: ${result.products?.length || 0} products extracted in ${processingTime}ms`);
 
     return NextResponse.json({
       success: true,
       data: enhancedResult,
       stats: {
-        productsExtracted: result.products.length,
+        productsExtracted: result.products?.length || 0,
         processingTimeMs: processingTime,
         strategy: strategy,
         model: model,

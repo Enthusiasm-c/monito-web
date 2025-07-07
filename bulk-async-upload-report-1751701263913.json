@@ -1,0 +1,259 @@
+{
+  "total": 26,
+  "successful": 23,
+  "failed": 3,
+  "suppliers": {
+    "Widi Wiguna": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxgc1g00c4ou87zzhhmrz0"
+      ],
+      "types": [
+        "Excel"
+      ]
+    },
+    "Berkah Laut": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxgsoh00c7ou87fx2nvtzd"
+      ],
+      "types": [
+        "Image"
+      ]
+    },
+    "Local Parts Butcher Shop": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxhgbv00caou87yu8el8il"
+      ],
+      "types": [
+        "Image"
+      ]
+    },
+    "Pasti Enak": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxi2l600cdou87ibkaffmk"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Cheese Work": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxib1g00cgou87kbuult11"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Siap Bali": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxigq500cjou8720zt98ac"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Gioa Cheese": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxily400cmou87b7bioq4q"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Af Seafood": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxirko00cpou87mehk2avi"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Raja Boga": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxizea00csou87amsljclg"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "0z Britts": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxj7lv00cvou872elpgx74"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Shy Cow": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxjhj700cyou87cfr3gx6p"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Bali Boga Sejati": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxju7v00d1ou8769pyjt74"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Oz Britts": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxk6rq00d4ou87in20mrcb"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Seven Choice_pt Satria Pangan Sejati": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxkei100d7ou87vz3bd8qb"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Gloria Seafood Bali": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxkrrz00daou8709uqnwi3"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Sai Fresh": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxl1jm00ddou87ej4c04cu"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Benoa Fish Market": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxlb1y00dgou87i5v4h6sn"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Milk Up": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxlmie00djou876ntwm0ze"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Cheese Boutique Menu 2025-compressed": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxly9400dmou877jm3emsa"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Happy Farm Bali": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxme6m00dpou87z8bt74dw"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Pangan Lestari": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxmx0500dsou870s851122"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Alam Sari": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxnbsu00dvou87e2uzhbad"
+      ],
+      "types": [
+        "PDF"
+      ]
+    },
+    "Bali Diary": {
+      "files": 1,
+      "uploadIds": [
+        "cmcpxnwk300dyou8775ck0fq6"
+      ],
+      "types": [
+        "PDF"
+      ]
+    }
+  },
+  "errors": [
+    {
+      "file": "PT puri pangan utama 03_07.pdf",
+      "supplier": "Puri Pangan Utama",
+      "type": "PDF",
+      "error": "File size exceeds 10MB limit"
+    },
+    {
+      "file": "Meat Mart 2 03_07.pdf",
+      "supplier": "Meat Mart",
+      "type": "PDF",
+      "error": "File size exceeds 10MB limit"
+    },
+    {
+      "file": "Meat mart 1 03_07.pdf",
+      "supplier": "Meat Mart",
+      "type": "PDF",
+      "error": "File size exceeds 10MB limit"
+    }
+  ],
+  "uploadIds": [
+    "cmcpxgc1g00c4ou87zzhhmrz0",
+    "cmcpxgsoh00c7ou87fx2nvtzd",
+    "cmcpxhgbv00caou87yu8el8il",
+    "cmcpxi2l600cdou87ibkaffmk",
+    "cmcpxib1g00cgou87kbuult11",
+    "cmcpxigq500cjou8720zt98ac",
+    "cmcpxily400cmou87b7bioq4q",
+    "cmcpxirko00cpou87mehk2avi",
+    "cmcpxizea00csou87amsljclg",
+    "cmcpxj7lv00cvou872elpgx74",
+    "cmcpxjhj700cyou87cfr3gx6p",
+    "cmcpxju7v00d1ou8769pyjt74",
+    "cmcpxk6rq00d4ou87in20mrcb",
+    "cmcpxkei100d7ou87vz3bd8qb",
+    "cmcpxkrrz00daou8709uqnwi3",
+    "cmcpxl1jm00ddou87ej4c04cu",
+    "cmcpxlb1y00dgou87i5v4h6sn",
+    "cmcpxlmie00djou876ntwm0ze",
+    "cmcpxly9400dmou877jm3emsa",
+    "cmcpxme6m00dpou87z8bt74dw",
+    "cmcpxmx0500dsou870s851122",
+    "cmcpxnbsu00dvou87e2uzhbad",
+    "cmcpxnwk300dyou8775ck0fq6"
+  ]
+}
