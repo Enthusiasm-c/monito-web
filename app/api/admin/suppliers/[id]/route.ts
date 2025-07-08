@@ -182,12 +182,10 @@ export async function DELETE(
     // Force delete - remove all related data first
     if (force && (pricesCount > 0 || uploadsCount > 0)) {
       await prisma.$transaction(async (tx) => {
-        // Delete price history first (references prices)
+        // Delete price history first (has direct supplierId field)
         await tx.priceHistory.deleteMany({
           where: { 
-            price: {
-              supplierId: id
-            }
+            supplierId: id
           }
         });
 
@@ -196,12 +194,10 @@ export async function DELETE(
           where: { supplierId: id }
         });
 
-        // Delete unmatched queue items
+        // Delete unmatched queue items (has direct supplierId field)
         await tx.unmatchedQueue.deleteMany({
           where: { 
-            upload: {
-              supplierId: id
-            }
+            supplierId: id
           }
         });
 
