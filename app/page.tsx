@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ProductPriceChart } from './components/PriceAnalytics/ProductPriceChart';
+import EnhancedUploadInterface from './components/EnhancedUploadInterface';
 
 interface Product {
   id: string;
@@ -73,6 +74,7 @@ export default function Home() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [tokenUsage, setTokenUsage] = useState<{totalCostUsd: number; totalCostFormatted: string}>({totalCostUsd: 0, totalCostFormatted: '$0.0000'});
   const [pendingUploadsCount, setPendingUploadsCount] = useState<number>(0);
+  const [useEnhancedUpload, setUseEnhancedUpload] = useState(true); // Toggle for new upload interface
   // AI mode is now always enabled
 
   // Debounce search query
@@ -498,6 +500,12 @@ export default function Home() {
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Supplier Price Comparison</h1>
             </div>
             <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setUseEnhancedUpload(!useEnhancedUpload)}
+                className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                {useEnhancedUpload ? 'Use Classic Upload' : 'Use Enhanced Upload'}
+              </button>
               <a 
                 href="/admin"
                 className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium relative"
@@ -523,6 +531,12 @@ export default function Home() {
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {/* File Upload Section */}
         <div className="mb-8 px-4 sm:px-0">
+          {useEnhancedUpload ? (
+            <EnhancedUploadInterface 
+              suppliers={suppliers}
+              onUploadComplete={fetchData}
+            />
+          ) : (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Upload Price Lists</h2>
             
@@ -645,6 +659,7 @@ export default function Home() {
               </div>
             )}
           </div>
+          )}
         </div>
 
         {/* Statistics Cards */}

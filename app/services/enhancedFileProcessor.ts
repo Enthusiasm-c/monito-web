@@ -12,6 +12,7 @@ import { createProductValidator, defaultValidationRules } from '../../middleware
 import { priceValidator } from './priceValidator';
 import { optimizedImageProcessor } from './optimizedImageProcessor';
 import { dataQualityMonitor } from './dataQualityMonitor';
+import { UploadProgressTracker } from './UploadProgressTracker';
 import OpenAI from 'openai';
 import fs from 'fs/promises';
 import path from 'path';
@@ -136,6 +137,15 @@ class EnhancedFileProcessor {
 
       // Update status to processing
       await this.updateUploadStatus(uploadId, 'processing', {});
+      
+      // Start progress tracking
+      UploadProgressTracker.startTracking(uploadId);
+      await UploadProgressTracker.updateProgress(
+        uploadId,
+        'Starting file processing...',
+        5,
+        { totalProducts: 0 }
+      );
 
       // Extract data based on file type - check both MIME type and file extension
       let extractedData: ExcelExtractionResult | PdfExtractionResult;
@@ -143,15 +153,18 @@ class EnhancedFileProcessor {
       const mimeType = upload.mimeType?.toLowerCase() || '';
       
       if (mimeType.includes('pdf') || fileName.endsWith('.pdf')) {
-        extractedData = await enhancedPdfExtractor.extractFromPdf(upload.url || '', upload.originalName || '');
+        await UploadProgressTracker.updateProgress(uploadId, 'Processing PDF file...', 10);
+        extractedData = await enhancedPdfExtractor.extractFromPdf(upload.url || '', upload.originalName || '', uploadId);
       } else if (mimeType.includes('excel') || mimeType.includes('sheet') || mimeType.includes('csv') ||
                  fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.csv') ||
                  (mimeType === 'application/octet-stream' && (fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.csv')))) {
-        extractedData = await enhancedExcelExtractor.extractFromFile(upload.url || '', upload.originalName || '');
+        await UploadProgressTracker.updateProgress(uploadId, 'Processing Excel/CSV file...', 10);
+        extractedData = await enhancedExcelExtractor.extractFromFile(upload.url || '', upload.originalName || '', uploadId);
       } else if (mimeType.includes('image') || fileName.match(/\.(jpg|jpeg|png|gif|bmp)$/i)) {
+        await UploadProgressTracker.updateProgress(uploadId, 'Processing image with AI vision...', 10);
         // Process image with OpenAI Vision API
         // Use optimized image processor
-        const imageResult = await optimizedImageProcessor.processImage(upload.url || '', upload.originalName || '');
+        const imageResult = await optimizedImageProcessor.processImage(upload.url || '', upload.originalName || '', uploadId);
         
         // Convert to standard format
         extractedData = {
@@ -423,7 +436,8 @@ class EnhancedFileProcessor {
       console.log(`🤖 AI Standardization for ALL products: ${productsForAI.length} products`);
       standardizedNames = await this.standardizeProductNamesWithAI(
         productsForAI, // Process ALL products, not limited
-        metrics
+        metrics,
+        uploadId
       );
     } else {
       console.log(`⚡ AI standardization disabled or no products to process`);
@@ -471,7 +485,14 @@ class EnhancedFileProcessor {
 
     console.log(`📊 Grouped ${productsForAI.length} products into ${productGroups.size} unique products`);
 
+    // Update progress for saving phase
+    await UploadProgressTracker.updateProgress(uploadId, 'Saving products to database...', 70, {
+      totalProducts: productGroups.size,
+      savedProducts: 0
+    });
+
     // Second pass: process each unique product group
+    let processedCount = 0;
     for (const [groupKey, group] of productGroups) {
       try {
         // Find the product with the best price (lowest valid price)
@@ -611,6 +632,10 @@ class EnhancedFileProcessor {
         });
 
         productsCreated++;
+        processedCount++;
+
+        // Update progress after each product
+        await UploadProgressTracker.trackSaving(uploadId, processedCount, productGroups.size);
 
         // Log if multiple products were consolidated
         if (group.products.length > 1) {
@@ -819,7 +844,8 @@ class EnhancedFileProcessor {
    */
   private async standardizeProductNamesWithAI(
     products: Array<{name: string, category: string}>,
-    metrics: ProcessingMetrics
+    metrics: ProcessingMetrics,
+    uploadId?: string
   ): Promise<string[]> {
     try {
       if (products.length === 0) {
@@ -856,7 +882,15 @@ class EnhancedFileProcessor {
           console.log(`🤖 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(productsNeedingAI.length / batchSize)} (${batch.length} products)`);
           
           const batchProducts = batch.map(item => item.product);
-          const batchResults = await this.processBatchWithAI(batchProducts, metrics);
+          const batchIndex = Math.floor(i / batchSize);
+          const totalBatches = Math.ceil(productsNeedingAI.length / batchSize);
+          const batchResults = await this.processBatchWithAI(
+            batchProducts, 
+            metrics,
+            uploadId,
+            batchIndex,
+            totalBatches
+          );
           
           // Store results and update cache
           for (let j = 0; j < batch.length; j++) {
@@ -885,11 +919,27 @@ class EnhancedFileProcessor {
    */
   private async processBatchWithAI(
     products: Array<{name: string, category: string}>,
-    metrics: ProcessingMetrics
+    metrics: ProcessingMetrics,
+    uploadId?: string,
+    batchIndex?: number,
+    totalBatches?: number
   ): Promise<string[]> {
     const startTime = Date.now();
     
     try {
+      // Update progress if uploadId provided
+      if (uploadId && batchIndex !== undefined && totalBatches !== undefined) {
+        const progress = 30 + (batchIndex / totalBatches) * 40; // AI processing from 30% to 70%
+        await UploadProgressTracker.updateProgress(
+          uploadId,
+          `Processing batch ${batchIndex + 1}/${totalBatches} with AI...`,
+          progress,
+          { 
+            totalProducts: products.length * totalBatches,
+            processedProducts: products.length * batchIndex
+          }
+        );
+      }
       // Create batch with IDs for accurate mapping
       const productData = products.map((p, i) => ({
         id: i,

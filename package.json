@@ -25,6 +25,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",
     "@google/generative-ai": "^0.21.0",
+    "@heroicons/react": "^2.2.0",
     "@neondatabase/serverless": "^1.0.0",
     "@prisma/client": "^6.9.0",
     "@types/bcryptjs": "^2.4.6",

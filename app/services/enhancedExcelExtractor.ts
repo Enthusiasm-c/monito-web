@@ -7,6 +7,7 @@
 import { BaseProcessor } from '../lib/core/BaseProcessor';
 import { ProcessOptions, ProcessingResult, SupplierInfo } from '../lib/core/Interfaces';
 import { tokenCostMonitor, type TokenUsage } from './tokenCostMonitor';
+import { UploadProgressTracker } from './UploadProgressTracker';
 import OpenAI from 'openai';
 
 interface SheetProcessingResult {
@@ -113,7 +114,7 @@ class EnhancedExcelExtractor extends BaseProcessor {
   /**
    * Main extraction method for Excel/CSV files
    */
-  async extractFromFile(fileUrl: string, fileName: string): Promise<ExcelExtractionResult> {
+  async extractFromFile(fileUrl: string, fileName: string, uploadId?: string): Promise<ExcelExtractionResult> {
     const startTime = Date.now();
     console.log(`🔍 Enhanced Excel extraction starting: ${fileName}`);
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { UploadProgressTracker } from '@/app/services/UploadProgressTracker';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -74,8 +75,18 @@ export async function GET(
               return;
             }
             
-            // Send current status
-            await sendStatusUpdate(controller, encoder, upload);
+            // Check for in-memory progress first
+            const memoryProgress = UploadProgressTracker.getProgress(uploadId);
+            if (memoryProgress) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+                type: 'progress',
+                ...memoryProgress,
+                uploadId,
+              })}\n\n`));
+            } else {
+              // Send current status from database
+              await sendStatusUpdate(controller, encoder, upload);
+            }
             
             // Close stream if processing is complete
             if (upload.status === 'completed' || upload.status === 'failed' || 
