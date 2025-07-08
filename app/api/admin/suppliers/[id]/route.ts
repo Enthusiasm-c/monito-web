@@ -128,8 +128,21 @@ export async function DELETE(
     
     // Check authentication - only admins can delete suppliers
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Admin role required' }, { status: 403 });
+    
+    // Debug logging
+    console.log('Delete supplier - Session:', session);
+    console.log('Delete supplier - User:', session?.user);
+    console.log('Delete supplier - Role:', session?.user?.role);
+    
+    if (!session || !session.user || session.user.role !== 'admin') {
+      return NextResponse.json({ 
+        error: 'Admin role required',
+        debug: {
+          hasSession: !!session,
+          hasUser: !!session?.user,
+          userRole: session?.user?.role || 'none'
+        }
+      }, { status: 403 });
     }
     
     // Get the request body to check for force delete option
