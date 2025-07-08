@@ -136,12 +136,10 @@ export async function DELETE(
     
     if (!session || !session.user || session.user.role !== 'admin') {
       return NextResponse.json({ 
-        error: 'Admin role required',
-        debug: {
-          hasSession: !!session,
-          hasUser: !!session?.user,
-          userRole: session?.user?.role || 'none'
-        }
+        error: 'Admin role required. Please log in as an admin user.',
+        details: 'You must be logged in with an admin account to delete suppliers.',
+        currentUser: session?.user?.email || 'Not logged in',
+        userRole: session?.user?.role || 'none'
       }, { status: 403 });
     }
     
