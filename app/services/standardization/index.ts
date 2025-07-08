@@ -82,8 +82,8 @@ export function standardizeProductData(
     standardizedUnit,
     confidence,
     detectedLanguage: language,
-    detectedBrand: brandInfo.brand,
-    extractedSize: sizeInfo.size
+    detectedBrand: brandInfo.brand || undefined,
+    extractedSize: sizeInfo.size || undefined
   };
 }
 
@@ -310,39 +310,134 @@ function assembleStandardizedName(
 }
 
 /**
- * Standardize unit
+ * Standardize unit with comprehensive mapping
+ * Handles gr, g, pack, box, bunch, sisir, lembar, ribu, k, etc.
  */
 export function standardizeUnit(unit: string): string {
   if (!unit) return 'pcs';
   
-  const normalized = unit.toLowerCase().trim();
+  // Clean input: remove dots, slashes, and extra spaces before processing
+  let normalized = unit.toLowerCase()
+    .replace(/\./g, '') // Remove dots (kg. → kg)
+    .replace(/\//g, '')  // Remove slashes (kg/ → kg)
+    .trim();
   
-  // Check conversions
-  if (UNIT_CONVERSIONS[normalized]) {
-    return UNIT_CONVERSIONS[normalized];
-  }
-  
-  // Extract unit from compound (e.g., "330ml" → "ml")
-  const match = normalized.match(/\d+\s*([a-z]+)/);
-  if (match && UNIT_CONVERSIONS[match[1]]) {
-    return UNIT_CONVERSIONS[match[1]];
-  }
-  
-  // Default mappings
-  const defaultMappings: Record<string, string> = {
+  // Comprehensive unit mappings including Indonesian units
+  const unitMappings: Record<string, string> = {
+    // Weight units
+    'kg': 'kg',
+    'kilo': 'kg',
+    'kilogram': 'kg',
+    'kilograms': 'kg',
+    'g': 'g',
+    'gr': 'g',
+    'gram': 'g',
+    'grams': 'g',
+    'mg': 'mg',
+    'milligram': 'mg',
+    'lb': 'lb',
+    'lbs': 'lb',
+    'pound': 'lb',
+    'pounds': 'lb',
+    'oz': 'oz',
+    'ounce': 'oz',
+    'ounces': 'oz',
+    'ons': 'oz', // Indonesian for ounce
+    
+    // Volume units
+    'l': 'L',
+    'ltr': 'L',
+    'liter': 'L',
+    'liters': 'L',
+    'litre': 'L',
+    'litres': 'L',
+    'ml': 'mL',
+    'milliliter': 'mL',
+    'milliliters': 'mL',
+    'mililiter': 'mL', // Common Indonesian spelling
+    
+    // Count units
+    'pcs': 'pcs',
+    'pc': 'pcs',
     'piece': 'pcs',
     'pieces': 'pcs',
     'unit': 'pcs',
     'units': 'pcs',
     'item': 'pcs',
-    'items': 'pcs'
+    'items': 'pcs',
+    'ea': 'pcs',
+    'each': 'pcs',
+    
+    // Indonesian count units
+    'buah': 'pcs',
+    'butir': 'pcs',
+    'biji': 'pcs',
+    'lembar': 'sheet',
+    'potong': 'pcs',
+    'ekor': 'pcs', // for animals
+    
+    // Packaging units
+    'pack': 'pack',
+    'packs': 'pack',
+    'package': 'pack',
+    'paket': 'pack',
+    'box': 'box',
+    'boxes': 'box',
+    'dus': 'box',
+    'karton': 'carton',
+    'carton': 'carton',
+    'bottle': 'bottle',
+    'bottles': 'bottle',
+    'botol': 'bottle',
+    'can': 'can',
+    'cans': 'can',
+    'kaleng': 'can',
+    'bag': 'bag',
+    'bags': 'bag',
+    'kantong': 'bag',
+    'bungkus': 'pack',
+    
+    // Bundle/bunch units
+    'bunch': 'bunch',
+    'bundle': 'bundle',
+    'sisir': 'bunch', // for bananas
+    'ikat': 'bundle',
+    
+    // Thousand units
+    'k': '1000',
+    'ribu': '1000',
+    'rb': '1000',
+    
+    // Special Indonesian units
+    'lusin': 'dozen',
+    'dozen': 'dozen',
+    'kodi': 'score', // 20 pieces
+    'gross': 'gross', // 144 pieces
+    'rim': 'ream', // 500 sheets
+    'ream': 'ream'
   };
   
-  if (defaultMappings[normalized]) {
-    return defaultMappings[normalized];
+  // Check direct mapping
+  if (unitMappings[normalized]) {
+    return unitMappings[normalized];
   }
   
-  // Return original if no mapping
+  // Check conversions from dictionary (if exists)
+  if (UNIT_CONVERSIONS && UNIT_CONVERSIONS[normalized]) {
+    return UNIT_CONVERSIONS[normalized];
+  }
+  
+  // Extract unit from compound (e.g., "330ml" → "ml", "5kg" → "kg")
+  const match = normalized.match(/\d+\s*([a-z]+)/);
+  if (match) {
+    const extractedUnit = match[1];
+    if (unitMappings[extractedUnit]) {
+      return unitMappings[extractedUnit];
+    }
+  }
+  
+  // Log warning for unknown units and return original
+  console.warn(`⚠️ Unknown unit standardization: "${unit}" → "${normalized}"`);
   return normalized;
 }
 

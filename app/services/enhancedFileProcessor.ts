@@ -11,6 +11,7 @@ import { embeddingService } from './embeddingService';
 import { createProductValidator, defaultValidationRules } from '../../middleware/productValidation';
 import { priceValidator } from './priceValidator';
 import { optimizedImageProcessor } from './optimizedImageProcessor';
+import { dataQualityMonitor } from './dataQualityMonitor';
 import OpenAI from 'openai';
 import fs from 'fs/promises';
 import path from 'path';
@@ -48,6 +49,7 @@ interface ProcessingMetrics {
 class EnhancedFileProcessor {
   private static instance: EnhancedFileProcessor;
   private processingLogger: ProcessingLogger;
+  private standardizationCache: Map<string, string>;
 
   public static getInstance(): EnhancedFileProcessor {
     if (!EnhancedFileProcessor.instance) {
@@ -58,6 +60,7 @@ class EnhancedFileProcessor {
 
   constructor() {
     this.processingLogger = new ProcessingLogger();
+    this.standardizationCache = new Map<string, string>();
   }
   
   /**
@@ -291,10 +294,23 @@ class EnhancedFileProcessor {
         errors: metrics.errors
       });
 
+      // Generate quality report
+      const qualityReport = dataQualityMonitor.generateReport(extractedData.totalRowsProcessed);
+      
+      // Update approval status if quality issues found
+      if (qualityReport.needsReview) {
+        needsApproval = true;
+        console.log(`🚨 Upload flagged for review due to data quality issues`);
+      }
+
       console.log(`✅ Enhanced processing completed: ${uploadId}`);
       console.log(`   📊 Completeness: ${(completenessRatio * 100).toFixed(1)}%`);
       console.log(`   🛍️ Products: ${productsCreated}`);
       console.log(`   💰 Cost: $${metrics.totalCostUsd.toFixed(4)}`);
+      
+      if (qualityReport.nullPrices > 0 || qualityReport.invalidUnits > 0) {
+        console.log(`   ⚠️ Quality issues: ${qualityReport.nullPrices} null prices, ${qualityReport.invalidUnits} invalid units`);
+      }
 
       return {
         success: status !== 'failed',
@@ -374,11 +390,23 @@ class EnhancedFileProcessor {
     }
 
     console.log(`📦 Processing ${validProducts.length} valid products...`);
+    
+    // Reset quality monitor for this batch
+    dataQualityMonitor.reset();
 
     // Prepare products for batch AI standardization
     const productsForAI = validProducts.map(item => {
       const normalizedProduct = dataNormalizer.normalizeProduct(item);
       const category = normalizedProduct.category || this.categorizeProduct(normalizedProduct.name);
+      
+      // Monitor data quality
+      dataQualityMonitor.checkProductQuality({
+        name: item.name,
+        price: normalizedProduct.price,
+        unit: normalizedProduct.unit,
+        quantity: item.quantity
+      });
+      
       return {
         name: normalizedProduct.name,
         category: category,
@@ -387,21 +415,18 @@ class EnhancedFileProcessor {
       };
     });
 
-    // Batch AI standardization (limited products and skip if too many total products)
-    const maxAiProducts = parseInt(process.env.MAX_AI_STANDARDIZATION_PRODUCTS || '20');
-    const maxTotalForAI = parseInt(process.env.MAX_PRODUCTS_FOR_AI_STANDARDIZATION || '50');
-    
+    // AI standardization for ALL products
     let standardizedNames: string[] = [];
-    const aiStandardizationEnabled = process.env.AI_STANDARDIZATION_ENABLED === 'true';
+    const aiStandardizationEnabled = process.env.AI_STANDARDIZATION_ENABLED !== 'false'; // Default to enabled
     
-    if (aiStandardizationEnabled && productsForAI.length <= maxTotalForAI) {
-      console.log(`🤖 AI Batch Standardization: ${Math.min(maxAiProducts, productsForAI.length)} products`);
+    if (aiStandardizationEnabled && productsForAI.length > 0) {
+      console.log(`🤖 AI Standardization for ALL products: ${productsForAI.length} products`);
       standardizedNames = await this.standardizeProductNamesWithAI(
-        productsForAI.slice(0, maxAiProducts),
+        productsForAI, // Process ALL products, not limited
         metrics
       );
     } else {
-      console.log(`⚡ Skipping AI standardization: disabled or ${productsForAI.length} products > ${maxTotalForAI} limit`);
+      console.log(`⚡ AI standardization disabled or no products to process`);
     }
 
     // Group products by standardized name + unit to prevent duplicates
@@ -420,8 +445,8 @@ class EnhancedFileProcessor {
     for (let i = 0; i < productsForAI.length; i++) {
       const { originalItem, normalizedProduct, category } = productsForAI[i];
       
-      // Use AI standardization for first 20, fallback for rest
-      const standardizedName = i < standardizedNames.length 
+      // Use AI standardization for ALL products, fallback only if AI failed
+      const standardizedName = i < standardizedNames.length && standardizedNames[i]
         ? standardizedNames[i]
         : this.simpleStandardizeProductName(normalizedProduct.name);
         
@@ -790,70 +815,64 @@ class EnhancedFileProcessor {
   }
 
   /**
-   * Standardize product names using AI in batches
+   * Standardize product names using AI in batches with caching
    */
   private async standardizeProductNamesWithAI(
     products: Array<{name: string, category: string}>,
     metrics: ProcessingMetrics
   ): Promise<string[]> {
     try {
-      // For performance, limit AI standardization to first 20 products
-      const maxProducts = parseInt(process.env.MAX_AI_STANDARDIZATION_PRODUCTS || '20');
-      const limitedProducts = products.slice(0, maxProducts);
-      
-      if (limitedProducts.length === 0) {
+      if (products.length === 0) {
         return [];
       }
 
-      const startTime = Date.now();
+      const results: string[] = [];
+      const productsNeedingAI: Array<{index: number, product: {name: string, category: string}}> = [];
       
-      // Create batch prompt for multiple products
-      const productList = limitedProducts.map((p, i) => 
-        `${i + 1}. "${p.name}" (category: ${p.category})`
-      ).join('\n');
-
-      const response = await openai.chat.completions.create({
-        model: process.env.LLM_MODEL || 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a product name standardizer. Convert product names to lowercase, standardized format suitable for matching. Remove brand names, keep essential descriptors. Return one standardized name per line, in the same order as input.'
-          },
-          {
-            role: 'user',
-            content: `Standardize these product names:\n${productList}\n\nReturn only the standardized names, one per line:`
-          }
-        ],
-        max_tokens: limitedProducts.length * 20,
-        temperature: 0
-      });
-
-      const content = response.choices[0]?.message?.content?.trim() || '';
-      const standardizedNames = content.split('\n')
-        .map(line => line.trim())
-        .filter(line => line.length > 0);
-      
-      // Track token usage
-      if (response.usage) {
-        const usage = tokenCostMonitor.trackUsage({
-          inputTokens: response.usage.prompt_tokens,
-          outputTokens: response.usage.completion_tokens,
-          model: process.env.LLM_MODEL || 'gpt-o3-mini'
-        });
+      // Check cache first
+      let cacheHits = 0;
+      for (let i = 0; i < products.length; i++) {
+        const cacheKey = `${products[i].name.toLowerCase()}|${products[i].category}`;
+        const cached = this.standardizationCache.get(cacheKey);
         
-        metrics.totalTokensUsed += response.usage.prompt_tokens + response.usage.completion_tokens;
-        metrics.totalCostUsd += usage.totalCost;
-      }
-
-      console.log(`🤖 AI Batch Standardization: ${limitedProducts.length} products in ${Date.now() - startTime}ms`);
-      
-      // Fill in any missing standardized names with fallback
-      const result: string[] = [];
-      for (let i = 0; i < limitedProducts.length; i++) {
-        result.push(standardizedNames[i] || limitedProducts[i].name.toLowerCase().trim());
+        if (cached) {
+          results[i] = cached;
+          cacheHits++;
+        } else {
+          productsNeedingAI.push({ index: i, product: products[i] });
+        }
       }
       
-      return result;
+      if (cacheHits > 0) {
+        console.log(`💾 Cache hits: ${cacheHits}/${products.length} products`);
+      }
+      
+      // Process uncached products through AI in batches
+      if (productsNeedingAI.length > 0) {
+        const batchSize = 50;
+        
+        for (let i = 0; i < productsNeedingAI.length; i += batchSize) {
+          const batch = productsNeedingAI.slice(i, i + batchSize);
+          console.log(`🤖 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(productsNeedingAI.length / batchSize)} (${batch.length} products)`);
+          
+          const batchProducts = batch.map(item => item.product);
+          const batchResults = await this.processBatchWithAI(batchProducts, metrics);
+          
+          // Store results and update cache
+          for (let j = 0; j < batch.length; j++) {
+            const originalIndex = batch[j].index;
+            const standardizedName = batchResults[j];
+            const cacheKey = `${batch[j].product.name.toLowerCase()}|${batch[j].product.category}`;
+            
+            results[originalIndex] = standardizedName;
+            this.standardizationCache.set(cacheKey, standardizedName);
+          }
+        }
+        
+        console.log(`📊 Total LLM calls saved by cache: ${cacheHits} (${(cacheHits / products.length * 100).toFixed(1)}%)`);
+      }
+      
+      return results;
 
     } catch (error) {
       console.error(`❌ AI batch standardization failed:`, error);
@@ -862,7 +881,133 @@ class EnhancedFileProcessor {
   }
 
   /**
-   * Fallback: Simple standardization without AI
+   * Process a single batch of products with o3-mini AI using ID-based mapping
+   */
+  private async processBatchWithAI(
+    products: Array<{name: string, category: string}>,
+    metrics: ProcessingMetrics
+  ): Promise<string[]> {
+    const startTime = Date.now();
+    
+    try {
+      // Create batch with IDs for accurate mapping
+      const productData = products.map((p, i) => ({
+        id: i,
+        name: p.name,
+        category: p.category
+      }));
+
+      const response = await openai.chat.completions.create({
+        model: 'o3-mini', // Use o3-mini specifically for standardization
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert product name standardizer for Indonesian wholesale markets. 
+
+Your task is to standardize product names by:
+1. Translating Indonesian names to English (apel -> Apple, wortel -> Carrot, tomat -> Tomato)
+2. Proper capitalization (Apple Fuji, not apple fuji)
+3. Removing unnecessary modifiers but keeping important descriptors
+4. Standardizing units and sizes
+5. Removing brand names unless essential for identification
+
+Common Indonesian translations:
+- apel = Apple
+- wortel = Carrot  
+- tomat = Tomato
+- bawang = Onion
+- kentang = Potato
+- ayam = Chicken
+- sapi = Beef
+- ikan = Fish
+- sayur = Vegetable
+- buah = Fruit
+- daging = Meat
+- gula = Sugar
+- garam = Salt
+- minyak = Oil
+- tepung = Flour
+- telur = Egg
+- susu = Milk
+- beras = Rice
+
+Return a JSON array with objects containing "id" and "nameStd" fields.
+IMPORTANT: Include ALL products in your response, even if the name doesn't change.`
+          },
+          {
+            role: 'user',
+            content: `Standardize these product names:\n${JSON.stringify(productData, null, 2)}\n\nReturn JSON array with format: [{"id": 0, "nameStd": "Standardized Name"}, ...]`
+          }
+        ],
+        max_tokens: products.length * 50,
+        temperature: 0
+      });
+
+      const content = response.choices[0]?.message?.content?.trim() || '';
+      
+      // Parse JSON response
+      let standardizedData: Array<{id: number, nameStd: string}> = [];
+      try {
+        // Clean JSON if wrapped in markdown
+        let cleanContent = content;
+        if (cleanContent.includes('```json')) {
+          cleanContent = cleanContent.replace(/```json\s*/g, '').replace(/```/g, '');
+        } else if (cleanContent.includes('```')) {
+          cleanContent = cleanContent.replace(/```\s*/g, '');
+        }
+        
+        standardizedData = JSON.parse(cleanContent);
+      } catch (parseError) {
+        console.error('❌ Failed to parse AI response as JSON:', parseError);
+        console.error('Raw response:', content);
+        // Fallback to line-based parsing if JSON fails
+        return products.map(p => p.name);
+      }
+      
+      // Create ID map for proper alignment
+      const idToNameMap = new Map<number, string>();
+      standardizedData.forEach(item => {
+        if (typeof item.id === 'number' && item.nameStd) {
+          idToNameMap.set(item.id, item.nameStd);
+        }
+      });
+      
+      // Track token usage
+      if (response.usage) {
+        const usage = tokenCostMonitor.trackUsage({
+          inputTokens: response.usage.prompt_tokens,
+          outputTokens: response.usage.completion_tokens,
+          model: 'o3-mini'
+        });
+        
+        metrics.totalTokensUsed += response.usage.prompt_tokens + response.usage.completion_tokens;
+        metrics.totalCostUsd += usage.totalCost;
+      }
+
+      console.log(`🤖 AI Batch processed: ${products.length} products in ${Date.now() - startTime}ms`);
+      
+      // Map results by ID to maintain correct order
+      const result: string[] = [];
+      for (let i = 0; i < products.length; i++) {
+        const standardizedName = idToNameMap.get(i);
+        if (standardizedName) {
+          result.push(standardizedName);
+        } else {
+          console.warn(`⚠️ Missing standardization for product ID ${i}: "${products[i].name}"`);
+          result.push(products[i].name); // Fallback to original
+        }
+      }
+      
+      return result;
+
+    } catch (error) {
+      console.error(`❌ Batch AI processing failed:`, error);
+      return products.map(p => p.name); // Return original names on error
+    }
+  }
+
+  /**
+   * Fallback: Basic standardization (should use AI for all products)
    */
   private simpleStandardizeProductName(productName: string): string {
     return productName

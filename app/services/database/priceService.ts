@@ -31,10 +31,19 @@ export class PriceService {
   static async createPrice(data: CreatePriceInput, tx?: Prisma.TransactionClient) {
     const client = tx || prisma;
     
-    // Calculate unit price if possible
-    const unitPrice = data.quantity 
-      ? calculateUnitPrice(data.amount, data.quantity, data.unit)
-      : calculateUnitPrice(data.amount, 1, data.unit); // Assume 1 unit if no quantity
+    // Calculate unit price with proper error handling
+    let unitPrice: number;
+    try {
+      unitPrice = calculateUnitPrice(data.amount, data.quantity, data.unit);
+    } catch (error) {
+      console.error(`❌ Unit price calculation failed: ${error}`);
+      // If quantity is 0, this is a critical error
+      if (data.quantity === 0) {
+        throw new Error('Cannot create price with quantity 0');
+      }
+      // For other errors, use simple calculation
+      unitPrice = data.amount / (data.quantity || 1);
+    }
     
     return await client.price.create({
       data: {
@@ -91,10 +100,19 @@ export class PriceService {
         });
       }
       
-      // Calculate unit price if possible
-      const unitPrice = data.quantity 
-        ? calculateUnitPrice(data.amount, data.quantity, data.unit)
-        : calculateUnitPrice(data.amount, 1, data.unit); // Assume 1 unit if no quantity
+      // Calculate unit price with proper error handling
+      let unitPrice: number;
+      try {
+        unitPrice = calculateUnitPrice(data.amount, data.quantity, data.unit);
+      } catch (error) {
+        console.error(`❌ Unit price calculation failed: ${error}`);
+        // If quantity is 0, this is a critical error
+        if (data.quantity === 0) {
+          throw new Error('Cannot create price with quantity 0');
+        }
+        // For other errors, use simple calculation
+        unitPrice = data.amount / (data.quantity || 1);
+      }
       
       // Create new price record
       const newPrice = await transactionClient.price.create({

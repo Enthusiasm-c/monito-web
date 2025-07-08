@@ -65,9 +65,11 @@ export class DataNormalizer {
 
   /**
    * Normalize price strings to numeric values
+   * Handles K/M suffixes, Indonesian number formats, and validates ranges
    */
   normalizePrice(priceStr: string | number | null | undefined): NormalizationResult {
     if (priceStr === null || priceStr === undefined || priceStr === '') {
+      console.warn('⚠️ Price normalization: received null/undefined price');
       return { value: null };
     }
 
@@ -83,17 +85,66 @@ export class DataNormalizer {
     // Remove thousands separators (dots or commas followed by exactly 3 digits)
     cleanPrice = cleanPrice.replace(/[.,](?=\d{3}(?!\d))/g, '');
 
-    // Extract numeric value (including decimals)
-    const priceMatch = cleanPrice.match(/(\d+(?:[.,]\d{1,2})?)/);
-    if (priceMatch) {
-      let priceValue = priceMatch[1];
+    // Handle K/M suffixes (e.g., "50K" = 50000, "1.5M" = 1500000)
+    const suffixMatch = cleanPrice.match(/^(\d+(?:[.,]\d+)?)\s*([kKmM]|rb|ribu)?\s*$/);
+    if (suffixMatch) {
+      let priceValue = suffixMatch[1];
+      const suffix = suffixMatch[2];
+      
       // Handle decimal separator (convert comma to dot)
       priceValue = priceValue.replace(',', '.');
       
       try {
-        const numericValue = parseFloat(priceValue);
+        let numericValue = parseFloat(priceValue);
+        
+        // Apply suffix multipliers
+        if (suffix) {
+          const lowerSuffix = suffix.toLowerCase();
+          if (lowerSuffix === 'k' || lowerSuffix === 'rb' || lowerSuffix === 'ribu') {
+            numericValue *= 1000;
+          } else if (lowerSuffix === 'm') {
+            numericValue *= 1000000;
+          }
+        }
+        
+        // Validate price range (IDR typically 100 - 10,000,000 for groceries)
+        if (numericValue < 100) {
+          console.warn(`⚠️ Price too low: ${numericValue} from "${originalValue}"`);
+          return { value: null, originalValue };
+        }
+        
+        if (numericValue > 10000000) {
+          console.warn(`⚠️ Price too high: ${numericValue} from "${originalValue}"`);
+          return { value: null, originalValue };
+        }
+        
         return {
-          value: numericValue > 0 ? numericValue : null,
+          value: numericValue,
+          originalValue
+        };
+      } catch (error) {
+        console.error(`❌ Price parsing error: "${originalValue}"`, error);
+        return { value: null, originalValue };
+      }
+    }
+
+    // Extract numeric value without suffix (fallback)
+    const priceMatch = cleanPrice.match(/(\d+(?:[.,]\d{1,2})?)/);
+    if (priceMatch) {
+      let priceValue = priceMatch[1];
+      priceValue = priceValue.replace(',', '.');
+      
+      try {
+        const numericValue = parseFloat(priceValue);
+        
+        // Validate range
+        if (numericValue < 100 || numericValue > 10000000) {
+          console.warn(`⚠️ Price out of range: ${numericValue} from "${originalValue}"`);
+          return { value: null, originalValue };
+        }
+        
+        return {
+          value: numericValue,
           originalValue
         };
       } catch (error) {
@@ -101,6 +152,7 @@ export class DataNormalizer {
       }
     }
 
+    console.warn(`⚠️ Failed to parse price: "${originalValue}"`);
     return { value: null, originalValue };
   }
 

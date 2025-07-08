@@ -1,0 +1,256 @@
+{
+  "totalProducts": 3183,
+  "totalPrices": 4509,
+  "issues": {
+    "indonesianNames": [
+      {
+        "id": "product_1751871501306_avo875cxf",
+        "name": "Tomato & Onion Beef Sausages"
+      },
+      {
+        "id": "product_1751873647428_systg5p8i",
+        "name": "Tomato Tw"
+      },
+      {
+        "id": "product_1751872258570_l59h3cj2d",
+        "name": "Tomato"
+      },
+      {
+        "id": "product_1751872261260_oig8gwa01",
+        "name": "New Orleans Tomato"
+      },
+      {
+        "id": "product_1751873664124_knrpsz89b",
+        "name": "Pear Yellow Regular"
+      },
+      {
+        "id": "product_1751872500224_gs0yfclb9",
+        "name": "Dragon Tomato Tapenade"
+      },
+      {
+        "id": "product_1751872500644_y8ydghl9f",
+        "name": "Tomato Tapenade"
+      },
+      {
+        "id": "product_1751872507171_jjr0mqiqa",
+        "name": "Tomato Ketchup"
+      },
+      {
+        "id": "product_1751872574684_r9xrfnxvw",
+        "name": "Tomato & Cheese Salad"
+      },
+      {
+        "id": "product_1751873806133_v2kobomm1",
+        "name": "Frikandellen Mini Balls"
+      },
+      {
+        "id": "product_1751873561092_x0p7cxcx1",
+        "name": "Tomato Chereey Yellow"
+      },
+      {
+        "id": "product_1751873835126_2vkiv9hwm",
+        "name": "Pikantwurst Austria"
+      },
+      {
+        "id": "product_1751870797912_9opwnju2p",
+        "name": "Trout Regular Smoked"
+      },
+      {
+        "id": "product_1751871509192_0uzyaqe1i",
+        "name": "Tomato & Onion Beef Burger (1 Pack = 2 Pcs)"
+      },
+      {
+        "id": "product_1751870840795_xr67hfdxi",
+        "name": "Lettuce Baby Arugula"
+      },
+      {
+        "id": "product_1751870842721_5glgnzzzg",
+        "name": "Lettuce Wild Arugula"
+      },
+      {
+        "id": "product_1751870852580_b6tzk3av9",
+        "name": "Tomato Cherry Green"
+      },
+      {
+        "id": "product_1751870852385_asz9t9dzh",
+        "name": "Tomato Cherry Red"
+      },
+      {
+        "id": "product_1751870852189_izl0la1en",
+        "name": "Tomato"
+      },
+      {
+        "id": "product_1751870852770_m95unvjeq",
+        "name": "Tomato Cherry Yellow"
+      },
+      {
+        "id": "product_1751870868656_9l31pu8lx",
+        "name": "Sausage Frikandel"
+      },
+      {
+        "id": "product_1751870876497_1dggkn5m4",
+        "name": "Pikantwurst Austria"
+      },
+      {
+        "id": "product_1751870895470_pc2wbh259",
+        "name": "Arugula Baby"
+      },
+      {
+        "id": "product_1751870895662_zxc4a2uxx",
+        "name": "Arugula Roquette Standard"
+      },
+      {
+        "id": "product_1751870895853_dr4o9pg8k",
+        "name": "Arugula Wasabi"
+      },
+      {
+        "id": "product_1751870896045_1sc8wtjwe",
+        "name": "Arugula Wild Red Vein"
+      },
+      {
+        "id": "product_1751870896237_xjpk53wjt",
+        "name": "Arugula Wild Sylvetta"
+      },
+      {
+        "id": "product_1751873981564_0jjh6uj96",
+        "name": "Kuta/seminyak/kerobokan/canggu/pererenan"
+      },
+      {
+        "id": "product_1751874777986_3if4pmzze",
+        "name": "Tomato Onion Beef Sausages"
+      },
+      {
+        "id": "product_1751874787105_3dt5r198i",
+        "name": "Tomato Onion Beef Burger 1pack 2pcs"
+      },
+      {
+        "id": "product_1751874860760_la61y0yz8",
+        "name": "Baked Bean In Tomato Sauce"
+      },
+      {
+        "id": "product_1751874861685_acc4jjm04",
+        "name": "Baked Bean In Tomato Sauce"
+      },
+      {
+        "id": "product_1751874862939_vsnatp93k",
+        "name": "Whole Peeled Tomatoes"
+      },
+      {
+        "id": "product_1751874863367_ohbzgge97",
+        "name": "Whole Peeled Tomatoes"
+      },
+      {
+        "id": "product_1751874865061_37gz5l487",
+        "name": "Tomato Paste ( 22% - 24"
+      },
+      {
+        "id": "product_1751874865490_wkputtpl6",
+        "name": "Tomato Paste 22/24"
+      },
+      {
+        "id": "product_1751874873420_adlnlken3",
+        "name": "Diced Tomatoes"
+      },
+      {
+        "id": "product_1751874883467_vhsfp5yi6",
+        "name": "Mazzetta Sundried Tomatoe"
+      },
+      {
+        "id": "product_1751874872991_tug5dmfjh",
+        "name": "Tomato Paste (k"
+      },
+      {
+        "id": "product_1751874887806_3b313abai",
+        "name": "Heinz Heinz Tomato Paste"
+      },
+      {
+        "id": "product_1751874919387_pb00irxso",
+        "name": "Aku Sauce Tomato 2 50ml"
+      },
+      {
+        "id": "product_1751874919809_03k53sylp",
+        "name": "Aku Sauce Tomato 5 7kg"
+      },
+      {
+        "id": "product_1751875340605_tvgsifjt3",
+        "name": "Arugula"
+      },
+      {
+        "id": "product_1751875091983_by4ltwxfi",
+        "name": "Apel Local Tanggung"
+      },
+      {
+        "id": "product_1751875336581_axwy8nsxv",
+        "name": "Tomato Beef"
+      },
+      {
+        "id": "product_1751875337042_zh7bnxa19",
+        "name": "Tomato Cery Red"
+      },
+      {
+        "id": "product_1751875337482_jr4bs6cny",
+        "name": "Tomato Cery Yellow"
+      },
+      {
+        "id": "product_1751875337918_hyi2lch2i",
+        "name": "Tomato Green"
+      },
+      {
+        "id": "product_1751875338374_0u8gwxv2r",
+        "name": "Tomato Red"
+      },
+      {
+        "id": "product_1751875341044_lf9xbghvg",
+        "name": "Baby Arugula"
+      },
+      {
+        "id": "product_1751875347703_8y0is05zp",
+        "name": "Wild Arugula"
+      },
+      {
+        "id": "product_1751875442986_uy6d6guiu",
+        "name": "Cherry Yellow Tomato"
+      },
+      {
+        "id": "product_1751875443416_vp7quqspn",
+        "name": "Sweety Tomato Cherry"
+      },
+      {
+        "id": "product_1751875444278_npxqn4v2d",
+        "name": "Cluster Cherry Tomato"
+      },
+      {
+        "id": "product_1751875444708_fptotpqa5",
+        "name": "Plum Tomato"
+      },
+      {
+        "id": "product_1751875446181_v0ctz1wsu",
+        "name": "Beef Tomato"
+      },
+      {
+        "id": "product_1751873647855_tmcg04wjf",
+        "name": "Tomato Cerry Red"
+      }
+    ],
+    "nullPrices": [],
+    "invalidUnits": [],
+    "missingUnitPrices": [],
+    "duplicateProducts": [],
+    "outOfRangePrices": [
+      {
+        "id": "price_1751873206687_r7wnwuzyr",
+        "amount": 11052800,
+        "productName": "Hazelnut Praline Paste"
+      }
+    ]
+  },
+  "summary": {
+    "indonesianNamesCount": 57,
+    "nullPricesCount": 0,
+    "invalidUnitsCount": 0,
+    "missingUnitPricesCount": 0,
+    "duplicateProductsCount": 0,
+    "outOfRangePricesCount": 1,
+    "percentageWithIssues": 1.7907634307257305
+  }
+}

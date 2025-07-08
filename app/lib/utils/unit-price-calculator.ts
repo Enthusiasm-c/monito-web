@@ -58,17 +58,26 @@ export const UNIT_CONVERSIONS: Record<string, UnitConversion> = {
 /**
  * Calculate unit price (price per canonical unit)
  * @param totalPrice - Total price for the quantity
- * @param quantity - Quantity in original units
+ * @param quantity - Quantity in original units (defaults to 1 if missing)
  * @param unit - Unit string (e.g., "kg", "g", "pcs")
- * @returns Price per canonical unit, or null if conversion not possible
+ * @returns Price per canonical unit
  */
 export function calculateUnitPrice(
   totalPrice: number,
-  quantity: number,
+  quantity: number | null | undefined,
   unit: string
-): number | null {
-  if (totalPrice <= 0 || quantity <= 0) {
-    return null;
+): number {
+  // Validate price
+  if (totalPrice <= 0) {
+    throw new Error(`Invalid price: ${totalPrice}`);
+  }
+
+  // Handle missing quantity - assume 1 unit
+  const effectiveQuantity = quantity && quantity > 0 ? quantity : 1;
+  
+  // Handle zero quantity explicitly
+  if (quantity === 0) {
+    throw new Error('Quantity cannot be zero for unit price calculation');
   }
 
   // Normalize unit string
@@ -77,21 +86,31 @@ export function calculateUnitPrice(
   // Find conversion
   const conversion = UNIT_CONVERSIONS[normalizedUnit];
   if (!conversion) {
-    // Unknown unit - can't calculate unit price
-    return null;
+    // Unknown unit - still calculate per-unit price with quantity
+    console.warn(`⚠️ Unknown unit for unit price calc: "${unit}"`);
+    return totalPrice / effectiveQuantity;
   }
 
   try {
     // Calculate canonical units
-    const canonicalUnits = quantity * conversion.multiplier;
+    const canonicalUnits = effectiveQuantity * conversion.multiplier;
     if (canonicalUnits <= 0) {
-      return null;
+      throw new Error(`Invalid canonical units: ${canonicalUnits}`);
     }
 
     // Return price per canonical unit
-    return totalPrice / canonicalUnits;
+    const unitPrice = totalPrice / canonicalUnits;
+    
+    // Validate result
+    if (!isFinite(unitPrice) || isNaN(unitPrice)) {
+      throw new Error(`Invalid unit price calculation result: ${unitPrice}`);
+    }
+    
+    return unitPrice;
   } catch (error) {
-    return null;
+    console.error(`❌ Unit price calculation error: ${error}`);
+    // Fallback to simple per-item price
+    return totalPrice / effectiveQuantity;
   }
 }
 
