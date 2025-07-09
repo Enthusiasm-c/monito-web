@@ -92,7 +92,7 @@ model Upload {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   fileName           String?
-  processingDetails  String?
+  processingDetails  Json?
   url                String?
   completenessRatio  Float?
   processingCostUsd  Float?

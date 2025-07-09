@@ -65,7 +65,7 @@ export class UploadProgressTracker {
       await prisma.upload.update({
         where: { id: uploadId },
         data: {
-          processingDetails: currentProgress.details as any,
+          processingDetails: currentProgress.details,
           status: currentProgress.status === 'completed' ? 'completed' : 
                  currentProgress.status === 'failed' ? 'failed' : 'processing'
         }
