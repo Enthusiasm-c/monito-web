@@ -10,6 +10,7 @@ import path from 'path';
 import { BaseProcessor } from '../lib/core/BaseProcessor';
 import { ProcessOptions, ProcessingResult } from '../lib/core/Interfaces';
 import { UnifiedGeminiService } from './core/UnifiedGeminiService';
+import { UploadProgressTracker } from './UploadProgressTracker';
 
 interface PdfExtractionResult {
   supplier?: {
@@ -90,7 +91,7 @@ class EnhancedPdfExtractor extends BaseProcessor {
   /**
    * Main extraction method for PDF files - converts to images and uses Gemini
    */
-  async extractFromPdf(fileUrl: string, fileName: string): Promise<PdfExtractionResult> {
+  async extractFromPdf(fileUrl: string, fileName: string, uploadId?: string): Promise<PdfExtractionResult> {
     const startTime = Date.now();
     console.log(`🔍 PDF extraction starting: ${fileName}`);
 
@@ -129,6 +130,20 @@ class EnhancedPdfExtractor extends BaseProcessor {
       for (let i = 0; i < images.length; i++) {
         try {
           console.log(`🔍 Processing image ${i + 1}/${images.length} with Gemini Flash 2.0...`);
+          
+          // Update progress during image processing
+          if (uploadId) {
+            const progress = 10 + ((i + 1) / images.length) * 20; // Progress from 10% to 30%
+            await UploadProgressTracker.updateProgress(
+              uploadId, 
+              `Processing PDF page ${i + 1} of ${images.length}...`, 
+              progress,
+              {
+                totalRows: images.length,
+                processedRows: i + 1
+              }
+            );
+          }
           
           // Convert base64 image to Buffer for Gemini Flash 2.0
           const base64Data = images[i].replace(/^data:image\/[a-z]+;base64,/, '');
@@ -174,6 +189,20 @@ class EnhancedPdfExtractor extends BaseProcessor {
             totalCost += result.costUsd || 0;
             
             console.log(`✅ Image ${i + 1}: ${pageProducts.length} products extracted by Gemini Flash 2.0`);
+            
+            // Update progress with extraction details
+            if (uploadId) {
+              await UploadProgressTracker.updateProgress(
+                uploadId, 
+                `Extracted ${allProducts.length} products from ${i + 1} pages...`, 
+                10 + ((i + 1) / images.length) * 20,
+                {
+                  extractedProducts: allProducts.length,
+                  totalRows: images.length,
+                  processedRows: i + 1
+                }
+              );
+            }
           } else {
             const error = `Image ${i + 1}: ${result.error || 'Gemini Flash 2.0 processing failed'}`;
             errors.push(error);

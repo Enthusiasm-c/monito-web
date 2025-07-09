@@ -65,7 +65,7 @@ export class OptimizedImageProcessor {
   /**
    * Process image with optimizations
    */
-  async processImage(imageUrl: string, fileName: string): Promise<ImageProcessingResult> {
+  async processImage(imageUrl: string, fileName: string, uploadId?: string): Promise<ImageProcessingResult> {
     const startTime = Date.now();
     const errors: string[] = [];
     let preprocessingTime = 0;
