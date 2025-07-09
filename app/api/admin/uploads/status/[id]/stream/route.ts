@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { UploadProgressTracker } from '@/app/services/UploadProgressTracker';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -75,18 +74,27 @@ export async function GET(
               return;
             }
             
-            // Check for in-memory progress first
-            const memoryProgress = UploadProgressTracker.getProgress(uploadId);
-            if (memoryProgress) {
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-                type: 'progress',
-                ...memoryProgress,
-                uploadId,
-              })}\n\n`));
-            } else {
-              // Send current status from database
-              await sendStatusUpdate(controller, encoder, upload);
+            // Send current status from database
+            let processingDetails = upload.processingDetails;
+            if (typeof processingDetails === 'string') {
+              try {
+                processingDetails = JSON.parse(processingDetails);
+              } catch (e) {
+                console.error('[SSE] Error parsing processingDetails:', e);
+                processingDetails = {};
+              }
             }
+
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+              type: 'progress',
+              uploadId,
+              status: upload.status,
+              currentStep: processingDetails?.stage || 'Unknown',
+              progress: processingDetails?.progress || 0,
+              detailedProgress: processingDetails || {},
+            })}
+
+`));
             
             // Close stream if processing is complete
             if (upload.status === 'completed' || upload.status === 'failed' || 
@@ -149,181 +157,3 @@ export async function GET(
   });
 }
 
-async function sendStatus(
-  controller: ReadableStreamDefaultController,
-  encoder: TextEncoder,
-  uploadId: string
-) {
-  try {
-    console.log('[SSE] Sending initial status for upload:', uploadId);
-    
-    const upload = await prisma.upload.findUnique({
-      where: { id: uploadId },
-      select: {
-        id: true,
-        status: true,
-        errorMessage: true,
-        extractedData: true,
-        totalRowsDetected: true,
-        totalRowsProcessed: true,
-        createdAt: true,
-        updatedAt: true,
-        rejectionReason: true,
-        approvalStatus: true,
-      }
-    });
-    
-    if (!upload) {
-      console.log('[SSE] Upload not found during initial status:', uploadId);
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-        type: 'error',
-        message: 'Upload not found',
-      })}\n\n`));
-      return;
-    }
-    
-    console.log('[SSE] Upload found, status:', upload.status);
-    
-    // Send initial steps based on status
-    const steps = getProcessingSteps(upload);
-    console.log('[SSE] Initial steps to send:', steps.length);
-    
-    for (const step of steps) {
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-        type: 'step',
-        ...step,
-      })}\n\n`));
-    }
-  } catch (error) {
-    console.error('[SSE] Error sending initial status:', error);
-    console.error('[SSE] Error details:', {
-      name: error instanceof Error ? error.name : 'Unknown',
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-      type: 'error',
-      message: error instanceof Error ? error.message : 'Failed to fetch initial status',
-    })}\n\n`));
-  }
-}
-
-async function sendStatusUpdate(
-  controller: ReadableStreamDefaultController,
-  encoder: TextEncoder,
-  upload: any
-) {
-  const metadata = (upload.extractedData as any)?.metadata || {};
-  
-  // Determine current step based on metadata
-  if (metadata.extractionStarted && !metadata.extractionCompleted) {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-      type: 'step',
-      step: 'extraction',
-      status: 'processing',
-      message: `Extracting data... ${metadata.rowsProcessed || 0} rows processed`,
-    })}\n\n`));
-  } else if (metadata.extractionCompleted && !metadata.aiProcessingStarted) {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-      type: 'step',
-      step: 'extraction',
-      status: 'completed',
-      message: `Extracted ${metadata.totalRows || 0} rows`,
-    })}\n\n`));
-  } else if (metadata.aiProcessingStarted && !metadata.aiProcessingCompleted) {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-      type: 'step',
-      step: 'ai_processing',
-      status: 'processing',
-      message: 'AI is analyzing products...',
-    })}\n\n`));
-  } else if (metadata.aiProcessingCompleted) {
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-      type: 'step',
-      step: 'ai_processing',
-      status: 'completed',
-      message: `AI processed ${metadata.productsProcessed || 0} products`,
-    })}\n\n`));
-  }
-}
-
-function getProcessingSteps(upload: any): ProcessingStep[] {
-  const steps: ProcessingStep[] = [];
-  const metadata = (upload.extractedData as any)?.metadata || {};
-  
-  // Upload step
-  steps.push({
-    step: 'upload',
-    status: 'completed',
-    message: 'File uploaded successfully',
-  });
-  
-  // Validation step
-  if (upload.status !== 'pending') {
-    steps.push({
-      step: 'validation',
-      status: 'completed',
-      message: 'File validation passed',
-    });
-  }
-  
-  // Processing steps based on status
-  if (upload.status === 'processing') {
-    steps.push({
-      step: 'processing',
-      status: 'processing',
-      message: 'Processing file...',
-    });
-  } else if (upload.status === 'completed' || upload.status === 'approved' || 
-             upload.status === 'rejected' || upload.status === 'pending_review') {
-    steps.push({
-      step: 'processing',
-      status: 'completed',
-      message: `Processed ${upload.totalRowsProcessed || 0} rows`,
-    });
-    
-    if (upload.status === 'pending_review') {
-      steps.push({
-        step: 'review',
-        status: 'processing',
-        message: 'Awaiting manual review',
-      });
-    } else if (upload.status === 'approved') {
-      steps.push({
-        step: 'review',
-        status: 'completed',
-        message: 'Approved by admin',
-      });
-    } else if (upload.status === 'rejected') {
-      steps.push({
-        step: 'review',
-        status: 'error',
-        message: `Rejected: ${upload.rejectionReason || 'No reason provided'}`,
-      });
-    }
-  } else if (upload.status === 'failed') {
-    steps.push({
-      step: 'processing',
-      status: 'error',
-      message: upload.errorMessage || 'Processing failed',
-    });
-  }
-  
-  return steps;
-}
-
-// Helper function to send updates programmatically
-export function sendProcessingUpdate(uploadId: string, step: ProcessingStep) {
-  const controller = activeConnections.get(uploadId);
-  if (controller) {
-    const encoder = new TextEncoder();
-    try {
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify({
-        type: 'step',
-        ...step,
-      })}\n\n`));
-    } catch (error) {
-      console.error('Error sending update:', error);
-    }
-  }
-}
