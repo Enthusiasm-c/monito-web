@@ -989,7 +989,7 @@ IMPORTANT: Include ALL products in your response, even if the name doesn't chang
             content: `Standardize these product names:\n${JSON.stringify(productData, null, 2)}\n\nReturn JSON array with format: [{"id": 0, "nameStd": "Standardized Name"}, ...]`
           }
         ],
-        max_tokens: products.length * 50,
+        max_completion_tokens: products.length * 50,
         temperature: 0
       });
 
