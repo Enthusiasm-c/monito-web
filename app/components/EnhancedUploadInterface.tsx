@@ -214,6 +214,25 @@ export default function EnhancedUploadInterface({ suppliers, onUploadComplete }:
 
   // Handle progress updates from SSE
   const handleProgressUpdate = (itemId: string, data: any) => {
+    // If we have direct progress data, use it
+    if (data.type === 'progress' && data.progress !== undefined) {
+      updateUploadItem(itemId, {
+        currentStep: data.currentStep || 'Processing...',
+        progress: data.progress,
+        detailedProgress: data.details || {}
+      });
+      
+      if (data.status === 'completed') {
+        updateUploadItem(itemId, {
+          status: 'completed',
+          endTime: Date.now()
+        });
+        setActiveUploads(prev => prev - 1);
+      }
+      return;
+    }
+    
+    // Fallback to step-based progress
     const progressMap: Record<string, number> = {
       'upload': 20,
       'validation': 30,

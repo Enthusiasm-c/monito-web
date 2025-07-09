@@ -113,7 +113,7 @@ export async function GET(
             clearInterval(interval);
             activeConnections.delete(uploadId);
           }
-        }, 1000); // Poll every second
+        }, 500); // Poll every 500ms for more responsive updates
         
         // Clean up on disconnect
         request.signal.addEventListener('abort', () => {

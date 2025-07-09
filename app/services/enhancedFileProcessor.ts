@@ -97,6 +97,10 @@ class EnhancedFileProcessor {
     try {
       console.log(`🚀 Enhanced processing starting for upload: ${uploadId}`);
       
+      // Start progress tracking
+      UploadProgressTracker.startTracking(uploadId);
+      await UploadProgressTracker.updateProgress(uploadId, 'Starting file processing...', 5);
+      
       // Perform automatic cleanup before processing
       await this.performAutomaticCleanup();
       
@@ -636,6 +640,14 @@ class EnhancedFileProcessor {
 
         // Update progress after each product
         await UploadProgressTracker.trackSaving(uploadId, processedCount, productGroups.size);
+        
+        // Force immediate progress update every 5 products
+        if (processedCount % 5 === 0) {
+          await UploadProgressTracker.updateProgress(uploadId, `Saving products to database...`, 70 + (processedCount / productGroups.size) * 20, {
+            totalProducts: productGroups.size,
+            savedProducts: processedCount
+          });
+        }
 
         // Log if multiple products were consolidated
         if (group.products.length > 1) {
