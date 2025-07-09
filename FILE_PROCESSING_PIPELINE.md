@@ -9,8 +9,11 @@ This document describes the complete file processing pipeline for the Monito Web
 ```
 File Upload → Format Detection → AI Extraction → Data Normalization → AI Standardization → Database Storage
      ↓              ↓                ↓               ↓                  ↓                    ↓
- Multi-format    Type Analysis    Gemini/GPT     Price Validation    o3-mini/GPT-4o     PostgreSQL
+ Multi-format    Type Analysis    Gemini/GPT     Price Validation    o3-mini         PostgreSQL
   Support        & Routing        Processing      & Cleaning        Translation        with Prisma
+     ↓              ↓                ↓               ↓                  ↓                    ↓
+  Parallel      Progress         Real-time      Data Quality      Batch            Transaction
+ Processing     Tracking         Updates        Assurance        Processing         Management
 ```
 
 ## 📁 Supported File Formats
@@ -109,6 +112,7 @@ Return structured JSON format.
 - **Name Standardization**: Consistent formatting and capitalization
 - **Batch Processing**: Handle 50 products per request
 - **Context Awareness**: Understand product categories
+- **Updated API**: Now uses `max_completion_tokens` instead of `max_tokens`
 
 #### Standardization Prompt:
 ```typescript
@@ -151,6 +155,8 @@ Content-Type: multipart/form-data
 2. **Supplier Handling**: Create or find existing supplier
 3. **Upload Record**: Create database entry with pending status
 4. **Queue Processing**: Add to background processing queue
+5. **Progress Tracking**: Initialize UploadProgressTracker for real-time updates
+6. **Parallel Support**: Up to 3 concurrent uploads allowed
 
 ### Step 2: Format Detection & Routing
 **File**: `app/services/enhancedFileProcessor.ts`
@@ -296,6 +302,20 @@ CREATE TABLE Price (
   updatedAt DATETIME
 );
 
+-- Upload table (updated)
+CREATE TABLE Upload (
+  id STRING PRIMARY KEY,
+  fileName STRING,
+  fileUrl STRING,
+  fileSize INT,
+  status STRING,
+  supplierId STRING,
+  metadata JSON,
+  processingDetails JSON,  -- Changed from STRING to JSON for detailed progress
+  createdAt DATETIME,
+  updatedAt DATETIME
+);
+
 -- Price history for analytics
 CREATE TABLE PriceHistory (
   id STRING PRIMARY KEY,
@@ -351,12 +371,29 @@ for (const normalizedProduct of products) {
 
 ## 📊 Processing Metrics & Monitoring
 
+### Real-time Progress Tracking
+```typescript
+// UploadProgressTracker service
+interface ProgressUpdate {
+  uploadId: string;
+  stage: 'uploading' | 'extracting' | 'standardizing' | 'storing';
+  progress: number;  // 0-100
+  currentStep: string;
+  totalSteps: number;
+  message: string;
+  timestamp: Date;
+}
+
+// SSE endpoint for real-time updates
+GET /api/admin/uploads/status/[id]/stream
+```
+
 ### Token Usage Tracking
 ```typescript
 // Track AI service costs
 interface TokenUsage {
   inputTokens: number;
-  outputTokens: number;
+  outputTokens: number;  // Now uses max_completion_tokens for o3-mini
   model: string;
   totalCost: number;
 }
@@ -498,12 +535,17 @@ interface ProductValidation {
 2. **Indonesian Translation**: o3-mini properly translates "apel fuji" → "Apple Fuji"  
 3. **Batch Processing**: Handles large uploads efficiently
 4. **Error Recovery**: Better fallback mechanisms
+5. **Product Name Fix**: Resolved incorrect product names in database
 
 ### Enhanced Features
 1. **Improved Prompts**: More context-aware standardization
 2. **Better Extraction**: Enhanced Gemini vision processing
 3. **Performance**: Optimized batch sizes and memory usage
 4. **Monitoring**: Comprehensive token usage tracking
+5. **Real-time Progress**: UploadProgressTracker with SSE integration
+6. **Parallel Processing**: Support for up to 3 simultaneous uploads
+7. **Schema Updates**: processingDetails field changed to Json type
+8. **OpenAI API Update**: max_tokens replaced with max_completion_tokens
 
 ## 📋 Future Roadmap
 
@@ -522,7 +564,7 @@ interface ProductValidation {
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: July 7, 2025  
+**Document Version**: 1.1  
+**Last Updated**: July 9, 2025  
 **Status**: Production Ready ✅  
-**Next Review**: July 14, 2025
+**Next Review**: July 16, 2025

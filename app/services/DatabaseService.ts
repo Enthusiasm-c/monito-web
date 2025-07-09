@@ -33,9 +33,18 @@ export class DatabaseService {
   /**
    * Supplier operations
    */
-  async getSuppliers(pagination?: PaginationParams) {
+  async getSuppliers(pagination?: PaginationParams, search?: string) {
     try {
+      const where: any = search ? {
+        OR: [
+          { name: { contains: search, mode: 'insensitive' as const } },
+          { email: { contains: search, mode: 'insensitive' as const } },
+          { phone: { contains: search, mode: 'insensitive' as const } }
+        ]
+      } : {};
+
       const query: any = {
+        where,
         include: {
           _count: {
             select: {
@@ -56,10 +65,10 @@ export class DatabaseService {
 
       const [suppliers, total] = await Promise.all([
         prisma.supplier.findMany(query),
-        pagination ? prisma.supplier.count() : Promise.resolve(0)
+        prisma.supplier.count({ where })
       ]);
 
-      return pagination ? { suppliers, total } : { suppliers };
+      return { suppliers, total };
     } catch (error) {
       throw new DatabaseError('Failed to fetch suppliers', error);
     }

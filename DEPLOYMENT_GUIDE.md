@@ -6,8 +6,8 @@
 - **Server**: 209.38.85.196:3000 ✅ **ONLINE**
 - **Process Manager**: PM2 (auto-restart enabled)
 - **Database**: Neon PostgreSQL (3,183 products, 31 suppliers)
-- **Last Deployment**: July 7, 2025
-- **Version**: 2.0.0 (Production Ready)
+- **Last Deployment**: July 9, 2025
+- **Version**: 2.1.0 (Production Ready)
 
 ### Key Features Deployed
 - ✅ **Price Analytics API** - Public access (authentication removed)
@@ -15,6 +15,8 @@
 - ✅ **July 2025 Data** - Complete supplier integration
 - ✅ **Database Cleanup** - Failed uploads and duplicates removed
 - ✅ **Auto-restart** - PM2 configured with system startup
+- ✅ **Real-time Progress** - SSE-based upload progress tracking
+- ✅ **Parallel Uploads** - Support for up to 3 simultaneous uploads
 
 ## 📋 System Requirements
 
@@ -202,6 +204,20 @@ pm2 save
 
 # Test auto-start (reboot server)
 sudo reboot
+```
+
+### SSE Configuration for Real-time Updates
+```bash
+# PM2 configuration for SSE support
+pm2 start "npm start" --name monito-web --max-memory-restart 1G --kill-timeout 5000
+
+# nginx configuration for SSE
+# Add to nginx server block:
+proxy_set_header Connection '';
+proxy_http_version 1.1;
+proxy_buffering off;
+proxy_cache off;
+proxy_read_timeout 86400s;
 ```
 
 ## 📈 Monitoring & Health Checks
@@ -393,6 +409,10 @@ curl http://209.38.85.196:3000/api/products?limit=1
 - **Database Cleanup**: 18 failed suppliers removed
 - **Data Integration**: 3,183 products from 31 suppliers
 - **Interactive Charts**: Added timeline and comparison views
+- **Real-time Progress**: Added UploadProgressTracker service with SSE
+- **Parallel Processing**: Support for up to 3 simultaneous uploads
+- **Schema Updates**: processingDetails field changed to Json type
+- **OpenAI Updates**: max_tokens replaced with max_completion_tokens
 
 ### Key API Changes
 ```bash
@@ -429,6 +449,6 @@ GET /api/admin/analytics/prices?type=comparison&productId=xxx # ✅ Public
 
 **Current Status**: ✅ **PRODUCTION READY & DEPLOYED**
 
-**Last Updated**: July 7, 2025  
-**Deployment Version**: 2.0.0  
-**Next Review**: July 14, 2025
+**Last Updated**: July 9, 2025  
+**Deployment Version**: 2.1.0  
+**Next Review**: July 16, 2025

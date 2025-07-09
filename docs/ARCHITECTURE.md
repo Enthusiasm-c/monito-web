@@ -52,7 +52,7 @@ Monito Web is a **B2B price monitoring and comparison platform** designed for th
 
 ### AI/ML Services
 - **Primary LLM**: Google Gemini 2.0 Flash (free tier, high performance)
-- **Secondary LLM**: OpenAI GPT-4o and GPT-4o-mini
+- **Secondary LLM**: OpenAI o3-mini (updated API with max_completion_tokens)
 - **OCR**: Google Gemini Vision API
 - **Architecture**: **BaseProcessor inheritance pattern**
 - **Error Handling**: **Standardized AsyncHandler with custom error classes**
@@ -142,6 +142,7 @@ const unitPrice = price / (quantity / 1000); // duplicate logic
 - **DatabaseService**: Unified database operations with error handling
 - **AsyncHandler**: Standardized error handling for all API routes
 - **Unified Unit Converter**: Single source for all unit conversions
+- **UploadProgressTracker**: Real-time progress tracking service with SSE
 
 #### Legacy Components (DEPRECATED - DO NOT USE)
 - ❌ `enhancedFileProcessor.ts` - Replaced by BaseProcessor pattern
@@ -237,18 +238,19 @@ model Price {
 }
 
 model Upload {
-  id          String    @id @default(cuid())
-  fileName    String
-  fileUrl     String
-  fileSize    Int
-  status      String    // 'pending', 'processing', 'completed', 'failed'
-  supplierId  String?
-  metadata    Json?
-  prices      Price[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id                String    @id @default(cuid())
+  fileName          String
+  fileUrl           String
+  fileSize          Int
+  status            String    // 'pending', 'processing', 'completed', 'failed'
+  supplierId        String?
+  metadata          Json?
+  processingDetails Json?     // Changed from String to Json for detailed progress
+  prices            Price[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
   
-  supplier    Supplier? @relation(fields: [supplierId], references: [id])
+  supplier          Supplier? @relation(fields: [supplierId], references: [id])
 }
 ```
 
@@ -314,6 +316,7 @@ const pagination = parsePaginationParams(request);
 - `GET /api/admin/uploads/status/[id]/stream` - Real-time updates via SSE
 - `POST /api/admin/uploads/approve` - Approve processed data
 - `POST /api/admin/uploads/reject` - Reject and reprocess
+- `GET /api/admin/uploads/progress/[id]` - Detailed progress information
 
 ---
 
@@ -323,6 +326,7 @@ const pagination = parsePaginationParams(request);
 - **NextAuth.js** integration (prepared but not fully implemented)
 - **Environment-based** API key protection
 - **Request validation** on all endpoints
+- **Temporary bypass** for supplier deletion operations (authentication disabled)
 
 ### Data Protection
 - **Input sanitization** via Prisma and validation middleware
@@ -342,8 +346,11 @@ const pagination = parsePaginationParams(request);
 ### 1. File Upload Process
 ```
 User uploads file → Vercel Blob Storage → File type detection → 
-Appropriate processor (PDF/Excel) → AI extraction → 
+Appropriate processor (PDF/Excel) → AI extraction (with progress tracking) → 
 Product standardization → Database storage → Admin review
+
+Parallel Processing: Up to 3 files can be processed simultaneously
+Progress Updates: Real-time via SSE through UploadProgressTracker
 ```
 
 ### 2. AI Processing Pipeline

@@ -67,6 +67,8 @@ MAX_FILE_SIZE_MB="10"
 AI_VISION_MAX_PAGES="8"
 COMPLETENESS_THRESHOLD_EXCEL="0.95"
 LLM_FALLBACK_ENABLED="true"
+MAX_PARALLEL_UPLOADS="3"
+ENABLE_PROGRESS_TRACKING="true"
 ```
 
 ---
@@ -80,6 +82,7 @@ monito-web/
 │   ├── api/                      # API routes (use AsyncHandler!)
 │   ├── lib/core/                 # BaseProcessor & core classes
 │   ├── services/                 # Business logic (extend BaseProcessor!)
+│   │   └── UploadProgressTracker # Real-time progress tracking service
 │   ├── utils/                    # Shared utilities
 │   └── components/               # React components
 ├── prisma/                       # Database schema
@@ -139,6 +142,26 @@ import { databaseService } from '../../services/DatabaseService';
 export const GET = asyncHandler(async (request: NextRequest) => {
   const data = await databaseService.getData();
   return NextResponse.json(data);
+});
+
+// ✅ CORRECT: SSE endpoint for real-time updates
+export const GET = asyncHandler(async (request: NextRequest) => {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      // Send progress updates
+      const progress = await uploadProgressTracker.getProgress(uploadId);
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify(progress)}\n\n`));
+    }
+  });
+  
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
 });
 
 // ✅ CORRECT: New processor
@@ -397,6 +420,13 @@ const response = await fetch('/api/upload-unified', {
   method: 'POST',
   body: formData
 });
+
+// Monitor progress via SSE
+const eventSource = new EventSource(`/api/admin/uploads/status/${uploadId}/stream`);
+eventSource.onmessage = (event) => {
+  const progress = JSON.parse(event.data);
+  console.log(`Upload progress: ${progress.progress}%`);
+};
 ```
 
 #### Search Products
@@ -468,6 +498,10 @@ npx prisma db seed
 
 # Generate types
 npx prisma generate
+
+# Update schema for processingDetails change
+# Note: processingDetails field changed from String? to Json?
+npx prisma migrate dev --name update-processing-details-to-json
 ```
 
 ### Database Performance
@@ -523,9 +557,18 @@ npm run dev
 # Test API directly
 curl -X GET http://localhost:3000/api/products
 
+# Test SSE endpoint
+curl -N http://localhost:3000/api/admin/uploads/status/[uploadId]/stream
+
+# Test SSE endpoints with curl
+curl -N -H "Accept: text/event-stream" http://localhost:3000/api/admin/uploads/status/[uploadId]/stream
+
 # Check environment variables
 echo $GOOGLE_API_KEY
 echo $OPENAI_API_KEY
+
+# OpenAI API errors (max_tokens deprecated)
+# Fix: max_tokens changed to max_completion_tokens for o3-mini
 ```
 
 #### 4. Duplication Check Failures
@@ -590,6 +633,11 @@ node --inspect app/api/your-route/route.ts
 - Implement request queuing for high load
 - Monitor token usage and costs
 - Use appropriate model for task complexity
+- Enable parallel processing (up to 3 concurrent uploads)
+- Track progress with UploadProgressTracker service
+- Use max_completion_tokens for o3-mini API calls
+- Track progress with UploadProgressTracker service
+- Use max_completion_tokens for o3-mini API calls
 
 ---
 

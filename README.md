@@ -25,6 +25,10 @@ Monito Web is a comprehensive B2B price monitoring and comparison platform desig
 - **🌏 Indonesian Market Optimized** - Handles Rupiah formatting, local units, and Indonesian product names
 - **🏗️ Admin Dashboard** - Complete management interface with inline editing and analytics
 - **🔄 Clean Architecture** - Unified patterns with BaseProcessor and consolidated utilities
+- **📊 Real-time Progress Tracking** - Live upload progress with Server-Sent Events (SSE)
+- **⚡ Parallel Processing** - Support for up to 3 simultaneous file uploads
+- **📊 Real-time Progress Tracking** - Live upload progress with Server-Sent Events (SSE)
+- **⚡ Parallel Processing** - Support for up to 3 simultaneous file uploads
 
 ## 📊 Current Database Status (July 2025)
 
@@ -220,7 +224,8 @@ PUT /api/admin/products/[id]
 - **Server**: 209.38.85.196:3000 ✅ Online
 - **Process**: PM2 managed with auto-restart
 - **Database**: 3,183 products, 31 suppliers
-- **Last Deployment**: July 7, 2025
+- **Real-time Updates**: SSE for live progress tracking
+- **Last Deployment**: July 9, 2025
 
 ### Deployment Commands
 ```bash
@@ -272,6 +277,14 @@ curl -X GET "http://209.38.85.196:3000/api/products?limit=5"
 - **Price Analytics Fix**: Public API access restored
 - **Database Cleanup**: Removed failed uploads and duplicates
 - **Performance Optimization**: Enhanced file processing pipeline
+- **Real-time Progress**: Added SSE-based upload progress tracking
+- **Parallel Uploads**: Support for up to 3 simultaneous file uploads
+- **Schema Updates**: processingDetails field changed from String to Json type
+- **AI Model Updates**: OpenAI API now uses max_completion_tokens for o3-mini
+- **Real-time Progress**: Added SSE-based upload progress tracking
+- **Parallel Uploads**: Support for up to 3 simultaneous file uploads
+- **Schema Updates**: processingDetails field changed from String to Json type
+- **AI Model Updates**: OpenAI API now uses max_completion_tokens for o3-mini
 
 ## 🔒 Security & Performance
 
@@ -342,6 +355,6 @@ This project is proprietary software developed for Indonesian HORECA market pric
   
 </div>
 
-**Last Updated**: July 7, 2025  
-**Version**: 2.0.0  
+**Last Updated**: July 9, 2025  
+**Version**: 2.1.0  
 **Status**: Production Deployed ✅
