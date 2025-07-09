@@ -22,8 +22,6 @@ export function startBackgroundProcessor() {
   }
 }
 
-// Auto-start DISABLED to prevent JobQueue cycling issues
-// if (typeof window === 'undefined') {
-//   startBackgroundProcessor();
-// }
-console.log('⚠️ Background processor auto-start DISABLED - using synchronous processing');
+if (typeof window === 'undefined') {
+  startBackgroundProcessor();
+}

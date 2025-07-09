@@ -118,58 +118,30 @@ export async function POST(request: NextRequest) {
 
     console.log(`✅ Upload record created: ${upload.id} with URL: ${upload.url}`);
 
-    // SYNCHRONOUS PROCESSING - Bypass problematic JobQueue
-    console.log(`🔄 Starting SYNCHRONOUS processing (JobQueue disabled)`);
-    
-    try {
-      // Direct import and process
-      const { AsyncFileProcessor } = await import('../../services/background/AsyncFileProcessor');
-      const processor = new AsyncFileProcessor();
-      
-      // Process immediately
-      const processingResult = await processor.processFile({
-        uploadId: upload.id,
-        fileUrl: blob.url,
-        fileName: file.name,
-        fileType: file.type,
-        supplierId: finalSupplierId,
-        options: {
-          autoApprove,
-          batchSize
-        }
-      });
-      
-      console.log(`✅ Synchronous processing completed: ${processingResult.success ? 'SUCCESS' : 'FAILED'}`);
-      
-      return NextResponse.json({
-        success: true,
-        uploadId: upload.id,
-        fileUrl: blob.url,
-        message: 'File uploaded and processed synchronously',
-        status: processingResult.success ? 'completed' : 'failed',
-        batchSize,
-        processingResult
-      });
-      
-    } catch (processingError) {
-      console.error('❌ Synchronous processing failed:', processingError);
-      
-      // Mark upload as failed
-      await prisma.upload.update({
-        where: { id: upload.id },
-        data: {
-          status: 'failed',
-          errorMessage: processingError instanceof Error ? processingError.message : 'Processing failed'
-        }
-      });
-      
-      return NextResponse.json({
-        success: false,
-        uploadId: upload.id,
-        error: processingError instanceof Error ? processingError.message : 'Processing failed',
-        status: 'failed'
-      }, { status: 500 });
-    }
+    // Add job to queue for background processing
+    console.log(`🔄 Adding job to queue for upload: ${upload.id}`);
+    await jobQueue.addJob({
+      uploadId: upload.id,
+      fileUrl: blob.url,
+      fileName: file.name,
+      fileType: file.type,
+      supplierId: finalSupplierId,
+      options: {
+        autoApprove,
+        batchSize
+      }
+    });
+
+    console.log(`✅ Job added to queue for upload: ${upload.id}`);
+
+    return NextResponse.json({
+      success: true,
+      uploadId: upload.id,
+      fileUrl: blob.url,
+      message: 'File uploaded and queued for processing',
+      status: 'queued',
+      batchSize
+    });
 
   } catch (error) {
     console.error('❌ Async upload failed:', error);
