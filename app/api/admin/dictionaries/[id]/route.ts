@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { databaseService } from '../../../../../services/DatabaseService';
-import { asyncHandler } from '../../../../../utils/errors';
+import { databaseService } from '../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../utils/errors';
 
 // PUT /api/admin/dictionaries/[id] - Update dictionary entry
 export const PUT = asyncHandler(async (

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AsyncFileProcessor } from '../../../../services/background/AsyncFileProcessor';
-import { databaseService } from '../../../../../services/DatabaseService';
-import { asyncHandler } from '../../../../../utils/errors';
+import { databaseService } from '../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../utils/errors';
 
 export const POST = asyncHandler(async (request: NextRequest) => {
     // Parse request body
@@ -43,7 +43,10 @@ export const POST = asyncHandler(async (request: NextRequest) => {
     // Check if upload has fileUrl - if not, mark as failed
     if (!upload.url) {
       console.log('Upload has no fileUrl - marking as failed');
-      await databaseService.updateUpload({
+      await databaseService.updateUpload(uploadId, {
+        status: 'failed',
+        error: 'Missing file URL',
+      });
       
       return NextResponse.json({
         success: true,
@@ -56,7 +59,11 @@ export const POST = asyncHandler(async (request: NextRequest) => {
     // Reset upload status with valid fields only
     console.log('Resetting upload status...');
     try {
-      await databaseService.updateUpload({
+      await databaseService.updateUpload(uploadId, {
+        status: 'pending',
+        error: null,
+        processedAt: null,
+      });
       console.log('Upload status reset to pending');
     } catch (updateError) {
       console.error('Database update failed:', updateError);
@@ -80,7 +87,10 @@ export const POST = asyncHandler(async (request: NextRequest) => {
         console.error('Background processing failed:', bgError);
         // Update upload status to failed
         try {
-          await databaseService.updateUpload({
+          await databaseService.updateUpload(uploadId, {
+            status: 'failed',
+            error: bgError.message || 'Background processing failed',
+          });
         } catch (updateErr) {
           console.error('Failed to update error status:', updateErr);
         }

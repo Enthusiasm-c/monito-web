@@ -1,6 +1,33 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    products: 0,
+    suppliers: 0,
+    pendingUploads: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+        setStats({
+          products: data.products || 0,
+          suppliers: data.suppliers || 0,
+          pendingUploads: data.pendingUploads || 0
+        });
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   return (
     <div className="px-4 py-6 sm:px-0">
       <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">
@@ -127,19 +154,19 @@ export default function AdminDashboard() {
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-blue-600">
-                2043
+                {stats.products.toLocaleString()}
               </div>
               <div className="text-sm text-blue-600">Total Products</div>
             </div>
             <div className="bg-green-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-green-600">
-                -
+                {stats.suppliers}
               </div>
               <div className="text-sm text-green-600">Active Suppliers</div>
             </div>
             <div className="bg-yellow-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-yellow-600">
-                -
+                {stats.pendingUploads || '-'}
               </div>
               <div className="text-sm text-yellow-600">Pending Uploads</div>
             </div>

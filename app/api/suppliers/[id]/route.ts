@@ -52,7 +52,6 @@ export const PUT = asyncHandler(async (
         address: address?.trim() || null,
         contactInfo: contactInfo?.trim() || null,
         updatedAt: new Date()
-      }
     });
 
     return NextResponse.json(supplier);

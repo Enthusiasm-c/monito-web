@@ -104,7 +104,7 @@ export default function SuppliersPage() {
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-semibold text-gray-900">Suppliers Management</h1>
           <p className="mt-2 text-sm text-gray-700">
-            A list of all the suppliers in your account including their name, title, email and role.
+            Total suppliers: {pagination ? pagination.total : '-'}. Showing {suppliers.length} suppliers on this page.
           </p>
         </div>
       </div>

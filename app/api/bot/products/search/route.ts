@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateBot } from '../../middleware';
 
-import { databaseService } from '../../../../../services/DatabaseService';
-import { asyncHandler } from '../../../../../utils/errors';
+import { databaseService } from '../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../utils/errors';
 
 // Simple product search API for Telegram bot
 export const GET = asyncHandler(async (request: NextRequest) => {

@@ -64,7 +64,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to fetch suppliers', error);
     }
-  }
+  },
 
   async createSupplier(data: {
     name: string;
@@ -81,7 +81,7 @@ export const databaseService = {
       }
       throw new DatabaseError('Failed to create supplier', error);
     }
-  }
+  },
 
   async getSupplierById(id: string) {
     try {
@@ -106,7 +106,7 @@ export const databaseService = {
       if (error instanceof NotFoundError) throw error;
       throw new DatabaseError('Failed to fetch supplier', error);
     }
-  }
+  },
 
   async getSupplierByName(name: string) {
     try {
@@ -121,7 +121,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to fetch supplier by name', error);
     }
-  }
+  },
 
   async updateSupplier(id: string, data: Partial<{
     name: string;
@@ -144,7 +144,7 @@ export const databaseService = {
       }
       throw new DatabaseError('Failed to update supplier', error);
     }
-  }
+  },
 
   async upsertSupplier(data: {
     where: { name: string },
@@ -156,7 +156,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to upsert supplier', error);
     }
-  }
+  },
 
   async deleteSupplier(id: string) {
     try {
@@ -169,7 +169,7 @@ export const databaseService = {
       }
       throw new DatabaseError('Failed to delete supplier', error);
     }
-  }
+  },
 
   /**
    * Product operations
@@ -242,7 +242,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to fetch products', error);
     }
-  }
+  },
 
   async getProductsBySupplier(supplierId: string) {
     try {
@@ -276,7 +276,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to fetch products by supplier', error);
     }
-  }
+  },
 
   async createProduct(data: {
     name: string;
@@ -299,7 +299,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to create product', error);
     }
-  }
+  },
 
   async getProductById(id: string) {
     try {
@@ -323,7 +323,7 @@ export const databaseService = {
       if (error instanceof NotFoundError) throw error;
       throw new DatabaseError('Failed to fetch product', error);
     }
-  }
+  },
 
   async upsertProduct(data: any) {
     try {
@@ -331,7 +331,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to upsert product', error);
     }
-  }
+  },
 
   /**
    * Price operations
@@ -363,7 +363,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to fetch related prices', error);
     }
-  }
+  },
 
   async upsertPrice(data: any) {
     try {
@@ -371,7 +371,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to upsert price', error);
     }
-  }
+  },
 
   async getPrices(options: any) {
     try {
@@ -379,7 +379,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to fetch prices', error);
     }
-  }
+  },
 
   async getPriceById(id: string) {
     try {
@@ -393,7 +393,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to fetch price by id', error);
     }
-  }
+  },
 
   async updatePrice(id: string, data: any) {
     try {
@@ -404,7 +404,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to update price', error);
     }
-  }
+  },
 
   async deletePriceHistory(tx: Prisma.TransactionClient, data: any) {
     try {
@@ -412,7 +412,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to delete price history', error);
     }
-  }
+  },
 
   async deletePrice(tx: Prisma.TransactionClient, data: any) {
     try {
@@ -420,7 +420,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to delete price', error);
     }
-  }
+  },
 
   /**
    * Upload operations
@@ -452,7 +452,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to create upload record', error);
     }
-  }
+  },
 
   async updateUpload(id: string, data: any) {
     try {
@@ -463,7 +463,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to update upload', error);
     }
-  }
+  },
 
   async updateUpload(id: string, data: any) {
     try {
@@ -474,7 +474,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to update upload', error);
     }
-  }
+  },
 
   async updateUploadStatus(id: string, status: string, metadata?: any) {
     try {
@@ -495,7 +495,7 @@ export const databaseService = {
       }
       throw new DatabaseError('Failed to update upload status', error);
     }
-  }
+  },
 
   async getUploadById(id: string) {
     try {
@@ -513,7 +513,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to fetch upload by id', error);
     }
-  }
+  },
 
   async getUploads(options: any) {
     try {
@@ -521,7 +521,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to fetch uploads', error);
     }
-  }
+  },
 
   async findFirstUpload(options: any) {
     try {
@@ -529,7 +529,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to find first upload', error);
     }
-  }
+  },
 
   async findFirstUpload(options: any) {
     try {
@@ -537,7 +537,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to find first upload', error);
     }
-  }
+  },
 
   async groupUploadsBy(options: any) {
     try {
@@ -545,7 +545,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to group uploads by', error);
     }
-  }
+  },
 
   /**
    * Statistics and analytics
@@ -579,7 +579,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to fetch statistics', error);
     }
-  }
+  },
 
   /**
    * Bulk operations
@@ -593,7 +593,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to bulk create products', error);
     }
-  }
+  },
 
   async bulkCreatePrices(prices: any[]) {
     try {
@@ -604,7 +604,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to bulk create prices', error);
     }
-  }
+  },
 
   /**
    * Transaction support
@@ -617,7 +617,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Transaction failed', error);
     }
-  }
+  },
 
   async executeRaw(query: any) {
     try {
@@ -625,7 +625,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to execute raw query', error);
     }
-  }
+  },
 
   /**
    * Health check
@@ -676,7 +676,7 @@ export const databaseService = {
     } catch (error) {
       throw new DatabaseError('Failed to delete suppliers', error);
     }
-  }
+  },
 
   async deleteUploads(data: any) {
     try {

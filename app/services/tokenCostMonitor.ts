@@ -19,11 +19,11 @@ interface CostCalculation {
 }
 
 export const tokenCostMonitor = {
-  totalCostUsd: number = 0,
-  monthlyUsage: Map<string, number> = new Map(); // model -> cost
+  totalCostUsd: 0,
+  monthlyUsage: new Map<string, number>(), // model -> cost
 
   // Cost per 1K tokens in USD (from environment)
-  costs = {
+  costs: {
     
     // Legacy model names for backward compatibility
     'gpt-o3': {
@@ -42,7 +42,7 @@ export const tokenCostMonitor = {
       input: parseFloat(process.env.OPENAI_GPT35_INPUT_COST_PER_1K || '0.0005'),
       output: parseFloat(process.env.OPENAI_GPT35_OUTPUT_COST_PER_1K || '0.0015')
     }
-  };
+  },
 
   
 
@@ -68,14 +68,14 @@ export const tokenCostMonitor = {
     console.log(`💰 Token Usage: ${usage.inputTokens} in + ${usage.outputTokens} out = $${cost.totalCost.toFixed(4)} (${usage.model})`);
     
     return cost;
-  }
+  },
 
   /**
    * Get current total costs
    */
   getTotalCost(): number {
     return tokenCostMonitor.totalCostUsd;
-  }
+  },
 
   /**
    * Get monthly usage by model
@@ -92,7 +92,7 @@ export const tokenCostMonitor = {
     }
     
     return result;
-  }
+  },
 
   /**
    * Get detailed usage statistics
@@ -104,7 +104,7 @@ export const tokenCostMonitor = {
       supportedModels: Object.keys(tokenCostMonitor.costs),
       costRates: tokenCostMonitor.costs
     };
-  }
+  },
 
   /**
    * Reset usage statistics (for testing)
@@ -112,7 +112,7 @@ export const tokenCostMonitor = {
   reset(): void {
     tokenCostMonitor.totalCostUsd = 0;
     tokenCostMonitor.monthlyUsage.clear();
-  }
+  },
 
   /**
    * Normalize model names for consistent tracking
@@ -126,7 +126,7 @@ export const tokenCostMonitor = {
     if (model.includes('gpt-3.5')) return 'gpt-3.5-turbo';
     
     return model;
-  }
+  },
 
   /**
    * Format cost for display
@@ -138,7 +138,7 @@ export const tokenCostMonitor = {
       return `$${cost.toFixed(5)}`; // Show small costs with 5 decimal places
     }
     return `$${cost.toFixed(4)}`; // Standard 4 decimal places for larger costs
-  }
+  },
 
   /**
    * Simple cost calculation for a total token count
@@ -159,7 +159,7 @@ export const tokenCostMonitor = {
       const calc = tokenCostMonitor.calculateCostDetailed(tokensOrUsage);
       return calc.totalCost;
     }
-  }
+  },
 
   /**
    * Detailed cost calculation with input/output breakdown
@@ -183,7 +183,7 @@ export const tokenCostMonitor = {
     const totalCost = inputCost + outputCost;
 
     return { inputCost, outputCost, totalCost, currency: 'USD' };
-  }
+  },
 
   /**
    * Check if cost exceeds daily budget (optional warning)

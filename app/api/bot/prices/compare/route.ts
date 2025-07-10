@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateBot } from '../../middleware';
 import { calculateUnitPrice, areUnitsComparable, getCanonicalUnit } from '../../../../lib/utils/unit-price-calculator';
 import { normalize, coreNoun, hasDifferentCoreNoun, calculateProductSimilarity } from '../../../../lib/utils/product-normalizer';
-import { databaseService } from '../../../../../services/DatabaseService';
-import { asyncHandler } from '../../../../../utils/errors';
+import { databaseService } from '../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../utils/errors';
 import { randomUUID } from 'crypto';
 // Embedded searchProductsWithAliases function to avoid import issues
 async function searchProductsWithAliases(query: string) {
@@ -24,6 +24,21 @@ async function searchProductsWithAliases(query: string) {
   
   // Fallback to regular search
   return await databaseService.getProducts({
+    where: {
+      OR: [
+        { name: { contains: query, mode: 'insensitive' } },
+        { standardizedName: { contains: query, mode: 'insensitive' } },
+        { rawName: { contains: query, mode: 'insensitive' } }
+      ]
+    },
+    include: {
+      prices: {
+        include: {
+          supplier: true
+        }
+      }
+    }
+  });
 }
 import { standardizeProducts, type StandardizedProduct } from '../../../../lib/utils/standardization';
 
@@ -160,6 +175,17 @@ export async function POST(request: NextRequest) {
             }));
 
             products = await databaseService.getProducts({
+              where: {
+                AND: allWordsConditions
+              },
+              include: {
+                prices: {
+                  include: {
+                    supplier: true
+                  }
+                }
+              }
+            });
           }
         }
 
@@ -177,6 +203,17 @@ export async function POST(request: NextRequest) {
             }));
 
             products = await databaseService.getProducts({
+              where: {
+                OR: wordConditions
+              },
+              include: {
+                prices: {
+                  include: {
+                    supplier: true
+                  }
+                }
+              }
+            });
           }
         }
 
@@ -184,6 +221,21 @@ export async function POST(request: NextRequest) {
         if (products.length === 0 && item.product_name.length >= 4) {
           const query = item.product_name.toLowerCase();
           products = await databaseService.getProducts({
+            where: {
+              OR: [
+                { name: { contains: query, mode: 'insensitive' } },
+                { standardizedName: { contains: query, mode: 'insensitive' } },
+                { rawName: { contains: query, mode: 'insensitive' } }
+              ]
+            },
+            include: {
+              prices: {
+                include: {
+                  supplier: true
+                }
+              }
+            }
+          });
         }
 
         // If no products found, try fuzzy search for common misspellings
@@ -202,6 +254,21 @@ export async function POST(request: NextRequest) {
           for (const variant of variations) {
             if (variant !== item.product_name) {
               products = await databaseService.getProducts({
+                where: {
+                  OR: [
+                    { name: { contains: variant, mode: 'insensitive' } },
+                    { standardizedName: { contains: variant, mode: 'insensitive' } },
+                    { rawName: { contains: variant, mode: 'insensitive' } }
+                  ]
+                },
+                include: {
+                  prices: {
+                    include: {
+                      supplier: true
+                    }
+                  }
+                }
+              });
               
               if (products.length > 0) break;
             }
@@ -766,4 +833,4 @@ function calculateProductSimilarity(query: string, productName: string): number 
   const finalScore = (wordOverlapScore + exactMatchBonus + descriptiveBonus - extraWordsPenalty) * 80;
   return Math.max(0, Math.min(90, finalScore)); // Cap at 90 to reserve 95+ for exact matches
 }
-
+}

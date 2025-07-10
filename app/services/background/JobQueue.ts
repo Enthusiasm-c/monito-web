@@ -60,7 +60,7 @@ export const jobQueue = {
     jobQueue.startProcessing();
     
     return jobId;
-  }
+  },
 
   /**
    * Start the job processing loop
@@ -74,7 +74,7 @@ export const jobQueue = {
     jobQueue.processingInterval = setInterval(async () => {
       await jobQueue.processNextJob();
     }, 2000); // Check for jobs every 2 seconds
-  }
+  },
 
   /**
    * Stop the job processing loop
@@ -86,7 +86,7 @@ export const jobQueue = {
     }
     jobQueue.isProcessing = false;
     console.log('⏹️ Job queue processor stopped');
-  }
+  },
 
   /**
    * Process the next pending job
@@ -149,7 +149,7 @@ export const jobQueue = {
     } catch (error) {
       console.error('❌ Job processing error:', error);
     }
-  }
+  },
 
   /**
    * Update job status and progress
@@ -206,7 +206,7 @@ export const jobQueue = {
     } catch (error) {
       console.error('❌ Failed to update job status:', error);
     }
-  }
+  },
 
   /**
    * Get job status
@@ -241,14 +241,14 @@ export const jobQueue = {
       console.error('❌ Failed to get job status:', error);
       return null;
     }
-  }
+  },
 
   /**
    * Cancel a job
    */
   async cancelJob(uploadId: string) {
     await jobQueue.updateJobStatus(uploadId, 'cancelled', 0, 'Job cancelled by user');
-  }
+  },
 
   /**
    * Check for existing queued jobs and start processing if any exist

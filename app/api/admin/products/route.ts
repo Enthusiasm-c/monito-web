@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { databaseService } from '../../../../services/DatabaseService';
-import { asyncHandler } from '../../../../utils/errors';
+import { databaseService } from '../../../services/DatabaseService';
+import { asyncHandler } from '../../../utils/errors';
 
 export const GET = asyncHandler(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
@@ -26,22 +26,22 @@ export const GET = asyncHandler(async (request: NextRequest) => {
       ]
     };
 
-    const [products, total] = await Promise.all([
-      databaseService.getProducts({
-        where,
-        include: {
-          prices: {
-            where: { validTo: null },
-            include: { supplier: true },
-            orderBy: { amount: 'asc' }
-          }
-        },
-        orderBy: { name: 'asc' },
-        skip,
-        take: limit,
-      }),
-      databaseService.getProductsCount({ where })
-    ]);
+    const searchOptions = {
+      search: search,
+      category: category || 'All Categories',
+      sortBy: 'name',
+      sortOrder: 'asc' as const
+    };
+    
+    const paginationParams = {
+      page: page,
+      limit: limit,
+      offset: skip
+    };
+    
+    const result = await databaseService.getProducts(searchOptions, paginationParams);
+    const products = result.products;
+    const total = result.total;
 
     return NextResponse.json({
       products,

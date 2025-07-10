@@ -21,7 +21,7 @@ export const priceValidator = {
   
   // Price ranges for different product categories in IDR
   // Updated based on actual Indonesian market data
-  categories: Record<string, ProductCategory> = {
+  categories: {
     // Dairy products
     cheese: {
       keywords: ['cheese', 'keju', 'mozzarella', 'cheddar', 'parmesan', 'gouda', 'brie', 'mascarpone', 'ricotta'],
@@ -95,22 +95,22 @@ export const priceValidator = {
       maxPrice: 10000000, // 10M IDR (premium imports like pistachios)
       commonUnits: ['kg', 'gr', 'pack']
     }
-  };
+  },
   
   // General price bounds for unknown products
-  generalBounds = {
+  generalBounds: {
     minPrice: 500,       // 500 IDR absolute minimum (for very small items)
     maxPrice: 50000000,  // 50M IDR absolute maximum
     suspiciouslyLow: 1000,     // Below 1k is suspicious (unless unit pricing)
     suspiciouslyHigh: 10000000 // Above 10M is suspicious
-  };
+  },
 
   public static getInstance(): PriceValidator {
     if (!PriceValidator.instance) {
       PriceValidator.instance = new PriceValidator();
     }
     return PriceValidator.instance;
-  }
+  },
 
   /**
    * Validate a single product's price
@@ -204,7 +204,7 @@ export const priceValidator = {
     }
 
     return result;
-  }
+  },
 
   /**
    * Validate a batch of products
@@ -247,7 +247,7 @@ export const priceValidator = {
     };
 
     return { results, summary };
-  }
+  },
 
   /**
    * Detect product category based on name and optional category hint
@@ -271,7 +271,7 @@ export const priceValidator = {
     }
     
     return null;
-  }
+  },
 
   /**
    * Check if price looks like a parsing error
@@ -296,7 +296,7 @@ export const priceValidator = {
     }
     
     return false;
-  }
+  },
 
   /**
    * Suggest corrected price if parsing error is suspected

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { databaseService } from '../../../services/DatabaseService';
-import { asyncHandler } from '../../../utils/errors';
+import { databaseService } from '@/app/services/DatabaseService';
+import { asyncHandler } from '@/app/utils/errors';
 
 export const GET = asyncHandler(async () => {
     const [

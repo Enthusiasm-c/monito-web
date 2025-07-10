@@ -8,33 +8,17 @@ export const GET = asyncHandler(async (request: NextRequest) => {
   const search = searchParams.get('search') || '';
   const pagination = parsePaginationParams(request);
 
-  const where = search ? {
-    OR: [
-      { name: { contains: search, mode: 'insensitive' as const } },
-      { email: { contains: search, mode: 'insensitive' as const } },
-      { phone: { contains: search, mode: 'insensitive' as const } }
-    ]
-  } : {};
-
-  const [suppliers, total] = await Promise.all([
-    databaseService.getSuppliers({
-      where,
-      include: {
-        _count: {
-          select: {
-            prices: true,
-            uploads: true
-          }
-        }
-      },
-      orderBy: {
-        name: 'asc'
-      },
-      skip: pagination.offset,
-      take: pagination.limit,
-    }),
-    databaseService.getSuppliersCount({ where })
-  ]);
+  const result = await databaseService.getSuppliers(
+    { 
+      page: pagination.page, 
+      limit: pagination.limit, 
+      offset: pagination.offset 
+    }, 
+    search
+  );
+  
+  const suppliers = result.suppliers;
+  const total = result.total;
 
   return NextResponse.json({
     suppliers,

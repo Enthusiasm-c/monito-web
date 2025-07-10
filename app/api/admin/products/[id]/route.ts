@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../../auth/[...nextauth]/route';
 import { databaseService } from '../../../../services/DatabaseService';
 import { asyncHandler } from '../../../../utils/errors';
+import { productFieldUpdateSchema } from '../../../../lib/schemas/product';
+import { z } from 'zod';
+import { createValidationErrorResponse } from '../../../../utils/validation';
 
 export const GET = asyncHandler(async (
   request: NextRequest,
@@ -61,8 +66,7 @@ export const PUT = asyncHandler(async (
     const updatedProduct = await databaseService.updateProduct(productId, {
         [field]: value,
         updatedAt: new Date()
-      }
-    });
+      });
 
     return NextResponse.json({
       success: true,
