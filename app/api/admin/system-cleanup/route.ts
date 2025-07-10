@@ -34,10 +34,10 @@ export const POST = asyncHandler(async (request: NextRequest) => {
 
     // Verify cleanup
     const afterCounts = {
-      uploads: await prisma.upload.count(),
-      products: await prisma.product.count(),
-      prices: await prisma.price.count(),
-      suppliers: await prisma.supplier.count()
+      uploads: await databaseService.getUploadsCount(),
+      products: await databaseService.getProductsCount(),
+      prices: await databaseService.getPricesCount(),
+      suppliers: await databaseService.getSuppliersCount()
     };
 
     console.log('📊 After cleanup:', afterCounts);

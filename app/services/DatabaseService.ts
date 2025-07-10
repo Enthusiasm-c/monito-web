@@ -171,6 +171,155 @@ export const databaseService = {
     }
   },
 
+  async getSupplierWithDetails(id: string) {
+    try {
+      const supplier = await prisma.supplier.findUnique({
+        where: { id },
+        include: {
+          prices: {
+            where: {
+              validTo: null // Only current prices
+            },
+            include: {
+              product: true
+            },
+            orderBy: {
+              createdAt: 'desc'
+            }
+          },
+          uploads: {
+            orderBy: {
+              createdAt: 'desc'
+            }
+          },
+          _count: {
+            select: {
+              prices: true,
+              uploads: true
+            }
+          }
+        }
+      });
+
+      if (!supplier) {
+        throw new NotFoundError('Supplier', id);
+      }
+
+      return supplier;
+    } catch (error) {
+      if (error instanceof NotFoundError) throw error;
+      throw new DatabaseError('Failed to fetch supplier with details', error);
+    }
+  },
+
+  async getSupplierPrices(supplierId: string, limit?: number) {
+    try {
+      const query: any = {
+        where: {
+          supplierId,
+          validTo: null // Only current prices
+        },
+        include: {
+          product: true
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      };
+
+      if (limit) {
+        query.take = limit;
+      }
+
+      return await prisma.price.findMany(query);
+    } catch (error) {
+      throw new DatabaseError('Failed to fetch supplier prices', error);
+    }
+  },
+
+  async getSupplierUploads(supplierId: string, limit?: number) {
+    try {
+      const query: any = {
+        where: {
+          supplierId
+        },
+        include: {
+          prices: {
+            include: {
+              product: true
+            }
+          },
+          _count: {
+            select: {
+              prices: true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      };
+
+      if (limit) {
+        query.take = limit;
+      }
+
+      return await prisma.upload.findMany(query);
+    } catch (error) {
+      throw new DatabaseError('Failed to fetch supplier uploads', error);
+    }
+  },
+
+  async deleteSupplierWithRelations(id: string, force: boolean = false) {
+    try {
+      // First check if supplier exists
+      const supplier = await prisma.supplier.findUnique({
+        where: { id },
+        include: {
+          _count: {
+            select: {
+              prices: true,
+              uploads: true
+            }
+          }
+        }
+      });
+
+      if (!supplier) {
+        throw new NotFoundError('Supplier', id);
+      }
+
+      // If force delete is false, check for existing relations
+      if (!force && (supplier._count.prices > 0 || supplier._count.uploads > 0)) {
+        throw new ConflictError(
+          `Cannot delete supplier with existing relations. Found ${supplier._count.prices} prices and ${supplier._count.uploads} uploads. Use force=true to delete all relations.`
+        );
+      }
+
+      // Use transaction to ensure all operations succeed or fail together
+      return await prisma.$transaction(async (tx) => {
+        if (force) {
+          // Delete all related data first
+          await tx.price.deleteMany({
+            where: { supplierId: id }
+          });
+
+          await tx.upload.deleteMany({
+            where: { supplierId: id }
+          });
+        }
+
+        // Delete the supplier
+        return await tx.supplier.delete({
+          where: { id }
+        });
+      });
+    } catch (error) {
+      if (error instanceof NotFoundError || error instanceof ConflictError) throw error;
+      throw new DatabaseError('Failed to delete supplier with relations', error);
+    }
+  },
+
   /**
    * Product operations
    */
@@ -465,17 +614,6 @@ export const databaseService = {
     }
   },
 
-  async updateUpload(id: string, data: any) {
-    try {
-      return await prisma.upload.update({
-        where: { id },
-        data
-      });
-    } catch (error) {
-      throw new DatabaseError('Failed to update upload', error);
-    }
-  },
-
   async updateUploadStatus(id: string, status: string, metadata?: any) {
     try {
       const dataToUpdate: any = {
@@ -531,19 +669,173 @@ export const databaseService = {
     }
   },
 
-  async findFirstUpload(options: any) {
-    try {
-      return await prisma.upload.findFirst(options);
-    } catch (error) {
-      throw new DatabaseError('Failed to find first upload', error);
-    }
-  },
-
   async groupUploadsBy(options: any) {
     try {
       return await prisma.upload.groupBy(options);
     } catch (error) {
       throw new DatabaseError('Failed to group uploads by', error);
+    }
+  },
+
+  /**
+   * Unmatched Queue operations
+   */
+  async getUnmatchedQueueEntry(id: string) {
+    try {
+      const unmatchedEntry = await prisma.unmatchedQueue.findUnique({
+        where: { id },
+        include: {
+          upload: {
+            include: {
+              supplier: true
+            }
+          },
+          product: true,
+          assignedByUser: true
+        }
+      });
+
+      if (!unmatchedEntry) {
+        throw new NotFoundError('Unmatched queue entry', id);
+      }
+
+      return unmatchedEntry;
+    } catch (error) {
+      if (error instanceof NotFoundError) throw error;
+      throw new DatabaseError('Failed to fetch unmatched queue entry', error);
+    }
+  },
+
+  async assignUnmatchedToProduct(
+    unmatchedId: string, 
+    productId: string, 
+    assignedBy: string, 
+    notes?: string
+  ) {
+    try {
+      return await prisma.$transaction(async (tx) => {
+        // First, get the unmatched entry to verify it exists
+        const unmatchedEntry = await tx.unmatchedQueue.findUnique({
+          where: { id: unmatchedId }
+        });
+
+        if (!unmatchedEntry) {
+          throw new NotFoundError('Unmatched queue entry', unmatchedId);
+        }
+
+        // Verify the product exists
+        const product = await tx.product.findUnique({
+          where: { id: productId }
+        });
+
+        if (!product) {
+          throw new NotFoundError('Product', productId);
+        }
+
+        // Update the unmatched entry
+        const updated = await tx.unmatchedQueue.update({
+          where: { id: unmatchedId },
+          data: {
+            status: 'assigned',
+            productId: productId,
+            assignedBy: assignedBy,
+            assignedAt: new Date(),
+            notes: notes
+          },
+          include: {
+            product: true,
+            assignedByUser: true
+          }
+        });
+
+        return updated;
+      });
+    } catch (error) {
+      if (error instanceof NotFoundError) throw error;
+      throw new DatabaseError('Failed to assign unmatched entry to product', error);
+    }
+  },
+
+  async ignoreUnmatchedEntry(id: string, assignedBy: string, notes?: string) {
+    try {
+      const updated = await prisma.unmatchedQueue.update({
+        where: { id },
+        data: {
+          status: 'ignored',
+          assignedBy: assignedBy,
+          assignedAt: new Date(),
+          notes: notes
+        },
+        include: {
+          assignedByUser: true
+        }
+      });
+
+      return updated;
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundError('Unmatched queue entry', id);
+      }
+      throw new DatabaseError('Failed to ignore unmatched entry', error);
+    }
+  },
+
+  async deleteUnmatchedEntry(id: string) {
+    try {
+      return await prisma.unmatchedQueue.delete({
+        where: { id }
+      });
+    } catch (error: any) {
+      if (error.code === 'P2025') {
+        throw new NotFoundError('Unmatched queue entry', id);
+      }
+      throw new DatabaseError('Failed to delete unmatched entry', error);
+    }
+  },
+
+  /**
+   * Product Alias operations
+   */
+  async createProductAlias(productId: string, alias: string, language?: string) {
+    try {
+      // Verify the product exists
+      const product = await prisma.product.findUnique({
+        where: { id: productId }
+      });
+
+      if (!product) {
+        throw new NotFoundError('Product', productId);
+      }
+
+      return await prisma.productAlias.create({
+        data: {
+          productId: productId,
+          alias: alias,
+          language: language || 'en'
+        },
+        include: {
+          product: true
+        }
+      });
+    } catch (error: any) {
+      if (error instanceof NotFoundError) throw error;
+      if (error.code === 'P2002') {
+        throw new ConflictError('Product alias already exists');
+      }
+      throw new DatabaseError('Failed to create product alias', error);
+    }
+  },
+
+  async getProductAlias(where: any) {
+    try {
+      return await prisma.productAlias.findFirst({
+        where,
+        include: {
+          product: true
+        }
+      });
+    } catch (error) {
+      throw new DatabaseError('Failed to fetch product alias', error);
     }
   },
 
@@ -654,33 +946,33 @@ export const databaseService = {
     }
   },
 
-  async deleteProducts(data: any) {
+  async deleteProducts(where: any) {
     try {
-      return await prisma.product.deleteMany(data);
+      return await prisma.product.deleteMany({ where });
     } catch (error) {
       throw new DatabaseError('Failed to delete products', error);
     }
   },
 
-  async deletePrices(data: any) {
+  async deletePrices(where: any) {
     try {
-      return await prisma.price.deleteMany(data);
+      return await prisma.price.deleteMany({ where });
     } catch (error) {
       throw new DatabaseError('Failed to delete prices', error);
     }
   },
 
-  async deleteSuppliers(data: any) {
+  async deleteSuppliers(where: any) {
     try {
-      return await prisma.supplier.deleteMany(data);
+      return await prisma.supplier.deleteMany({ where });
     } catch (error) {
       throw new DatabaseError('Failed to delete suppliers', error);
     }
   },
 
-  async deleteUploads(data: any) {
+  async deleteUploads(where: any) {
     try {
-      return await prisma.upload.deleteMany(data);
+      return await prisma.upload.deleteMany({ where });
     } catch (error) {
       throw new DatabaseError('Failed to delete uploads', error);
     }
