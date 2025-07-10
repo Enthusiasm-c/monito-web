@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../lib/prisma';
+import { databaseService } from '../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../utils/errors';
 
 // GET /api/admin/dictionaries - Get all dictionary entries
-export async function GET(request: NextRequest) {
-  try {
+export const GET = asyncHandler(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type'); // 'language' or 'unit'
     const search = searchParams.get('search');
@@ -20,13 +20,13 @@ export async function GET(request: NextRequest) {
       } : {};
 
       const [entries, total] = await Promise.all([
-        prisma.languageDictionary.findMany({
+        databaseService.getLanguageDictionaryEntries({
           where,
           orderBy: { sourceWord: 'asc' },
           take: limit,
           skip: offset
         }),
-        prisma.languageDictionary.count({ where })
+        databaseService.getLanguageDictionaryCount({ where })
       ]);
 
       return NextResponse.json({
@@ -49,13 +49,13 @@ export async function GET(request: NextRequest) {
       } : {};
 
       const [entries, total] = await Promise.all([
-        prisma.unitDictionary.findMany({
+        databaseService.getUnitDictionaryEntries({
           where,
           orderBy: { sourceUnit: 'asc' },
           take: limit,
           skip: offset
         }),
-        prisma.unitDictionary.count({ where })
+        databaseService.getUnitDictionaryCount({ where })
       ]);
 
       return NextResponse.json({
@@ -72,8 +72,8 @@ export async function GET(request: NextRequest) {
     } else {
       // Get both types with counts
       const [langCount, unitCount] = await Promise.all([
-        prisma.languageDictionary.count(),
-        prisma.unitDictionary.count()
+        databaseService.getLanguageDictionaryCount(),
+        databaseService.getUnitDictionaryCount()
       ]);
 
       return NextResponse.json({
@@ -86,18 +86,10 @@ export async function GET(request: NextRequest) {
       });
     }
 
-  } catch (error) {
-    console.error('Dictionary API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch dictionary entries' },
-      { status: 500 }
-    );
-  }
-}
+  });
 
 // POST /api/admin/dictionaries - Create new dictionary entry
-export async function POST(request: NextRequest) {
-  try {
+export const POST = asyncHandler(async (request: NextRequest) => {
     const body = await request.json();
     const { type, ...data } = body;
 
@@ -111,7 +103,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const entry = await prisma.languageDictionary.create({
+      const entry = await databaseService.createLanguageDictionaryEntry({
         data: {
           sourceWord: sourceWord.toLowerCase().trim(),
           targetWord: targetWord.toLowerCase().trim(),
@@ -137,7 +129,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const entry = await prisma.unitDictionary.create({
+      const entry = await databaseService.createUnitDictionaryEntry({
         data: {
           sourceUnit: sourceUnit.toLowerCase().trim(),
           targetUnit: targetUnit.toLowerCase().trim(),
@@ -160,19 +152,4 @@ export async function POST(request: NextRequest) {
       );
     }
 
-  } catch (error: any) {
-    console.error('Dictionary creation error:', error);
-    
-    if (error.code === 'P2002') {
-      return NextResponse.json(
-        { error: 'Entry already exists' },
-        { status: 409 }
-      );
-    }
-    
-    return NextResponse.json(
-      { error: 'Failed to create dictionary entry' },
-      { status: 500 }
-    );
-  }
-}
+  });

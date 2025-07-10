@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../../lib/prisma';
+import { databaseService } from '../../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../../utils/errors';
 
-export async function GET(request: NextRequest) {
-  try {
+export const GET = asyncHandler(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
     const page = parseInt(searchParams.get('page') || '1');
     const offset = (page - 1) * limit;
 
     // Get pending uploads with supplier information
-    const pendingUploads = await prisma.upload.findMany({
+    const pendingUploads = await databaseService.getUploads({
       where: {
         approvalStatus: 'pending_review'
       },
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Get total count for pagination
-    const totalCount = await prisma.upload.count({
+    const totalCount = await databaseService.getUploadsCount({
       where: {
         approvalStatus: 'pending_review'
       }
@@ -60,13 +60,4 @@ export async function GET(request: NextRequest) {
       }
     });
 
-  } catch (error) {
-    console.error('Error fetching pending uploads:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch pending uploads' },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  });

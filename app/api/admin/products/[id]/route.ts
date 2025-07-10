@@ -1,30 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { productFieldUpdateSchema, createValidationErrorResponse } from '@/app/lib/validations/admin';
-import { z } from 'zod';
+import { databaseService } from '../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../utils/errors';
 
-const prisma = new PrismaClient();
-
-export async function GET(
+export const GET = asyncHandler(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
-  try {
-    const product = await prisma.product.findUnique({
-      where: { id: params.id },
-      include: {
-        prices: {
-          where: { validTo: null },
-          include: { 
-            supplier: true,
-            upload: true 
-          },
-          orderBy: { amount: 'asc' }
-        }
-      }
-    });
+) => {
+    const product = await databaseService.getProductById(params.id);
 
     if (!product) {
       return NextResponse.json(
@@ -35,20 +17,12 @@ export async function GET(
 
     return NextResponse.json(product);
 
-  } catch (error) {
-    console.error('Error fetching product:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch product' },
-      { status: 500 }
-    );
-  }
-}
+  });
 
-export async function PUT(
+export const PUT = asyncHandler(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
-  try {
+) => {
     const productId = params.id;
     
     // Check authentication
@@ -74,9 +48,7 @@ export async function PUT(
     }
 
     // Validate product exists
-    const product = await prisma.product.findUnique({
-      where: { id: productId }
-    });
+    const product = await databaseService.getProductById(productId);
 
     if (!product) {
       return NextResponse.json(
@@ -86,9 +58,7 @@ export async function PUT(
     }
 
     // Update the product
-    const updatedProduct = await prisma.product.update({
-      where: { id: productId },
-      data: {
+    const updatedProduct = await databaseService.updateProduct(productId, {
         [field]: value,
         updatedAt: new Date()
       }
@@ -99,36 +69,22 @@ export async function PUT(
       data: updatedProduct
     });
 
-  } catch (error) {
-    console.error('Error in PUT /api/admin/products/[id]:', error);
-    return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    );
-  }
-}
+  });
 
-export async function DELETE(
+export const DELETE = asyncHandler(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
-  try {
+) => {
     const productId = params.id;
     
-    // Check authentication - only admins can delete products
+    // Check authentication - only admins and managers can delete products
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Admin role required' }, { status: 403 });
+    if (!session || !['admin', 'manager'].includes(session.user.role)) {
+      return NextResponse.json({ error: 'Admin or Manager role required' }, { status: 403 });
     }
 
     // Check if product exists
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-      include: { _count: { select: { prices: true } } }
-    });
+    const product = await databaseService.getProductById(productId);
 
     if (!product) {
       return NextResponse.json(
@@ -138,9 +94,9 @@ export async function DELETE(
     }
 
     // Delete all related prices first, then the product
-    await prisma.$transaction(async (tx) => {
+    await databaseService.executeTransaction(async (tx) => {
       // Delete price history
-      await tx.priceHistory.deleteMany({
+      await databaseService.deletePriceHistory(tx, {
         where: { 
           price: {
             productId: productId
@@ -149,12 +105,12 @@ export async function DELETE(
       });
 
       // Delete prices
-      await tx.price.deleteMany({
+      await databaseService.deletePrices(tx, {
         where: { productId: productId }
       });
 
       // Delete the product
-      await tx.product.delete({
+      await databaseService.deleteProduct(tx, {
         where: { id: productId }
       });
     });
@@ -164,14 +120,4 @@ export async function DELETE(
       message: `Product "${product.name}" and ${product._count.prices} related prices deleted successfully`
     });
 
-  } catch (error) {
-    console.error('Error in DELETE /api/admin/products/[id]:', error);
-    return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    );
-  }
-}
+  });

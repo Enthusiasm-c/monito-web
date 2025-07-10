@@ -30,17 +30,9 @@ export interface Job {
   result?: any;
 }
 
-export class JobQueue {
-  private static instance: JobQueue;
-  private isProcessing = false;
-  private processingInterval: NodeJS.Timeout | null = null;
-
-  public static getInstance(): JobQueue {
-    if (!JobQueue.instance) {
-      JobQueue.instance = new JobQueue();
-    }
-    return JobQueue.instance;
-  }
+export const jobQueue = {
+  isProcessing: false,
+  processingInterval: null as NodeJS.Timeout | null,
 
   /**
    * Add a job to the queue
@@ -65,7 +57,7 @@ export class JobQueue {
     console.log(`📝 Job queued: ${jobId} for upload ${data.uploadId}`);
     
     // Start processing if not already running
-    this.startProcessing();
+    jobQueue.startProcessing();
     
     return jobId;
   }
@@ -73,14 +65,14 @@ export class JobQueue {
   /**
    * Start the job processing loop
    */
-  private startProcessing() {
-    if (this.isProcessing) return;
+  startProcessing() {
+    if (jobQueue.isProcessing) return;
     
-    this.isProcessing = true;
+    jobQueue.isProcessing = true;
     console.log('🚀 Starting job queue processor...');
     
-    this.processingInterval = setInterval(async () => {
-      await this.processNextJob();
+    jobQueue.processingInterval = setInterval(async () => {
+      await jobQueue.processNextJob();
     }, 2000); // Check for jobs every 2 seconds
   }
 
@@ -88,18 +80,18 @@ export class JobQueue {
    * Stop the job processing loop
    */
   stopProcessing() {
-    if (this.processingInterval) {
-      clearInterval(this.processingInterval);
-      this.processingInterval = null;
+    if (jobQueue.processingInterval) {
+      clearInterval(jobQueue.processingInterval);
+      jobQueue.processingInterval = null;
     }
-    this.isProcessing = false;
+    jobQueue.isProcessing = false;
     console.log('⏹️ Job queue processor stopped');
   }
 
   /**
    * Process the next pending job
    */
-  private async processNextJob() {
+  async processNextJob() {
     try {
       // Find the oldest pending job
       const upload = await prisma.upload.findFirst({
@@ -136,7 +128,7 @@ export class JobQueue {
       console.log(`🔄 Processing job: ${jobId} for upload ${upload.id}`);
 
       // Mark as running
-      await this.updateJobStatus(upload.id, 'running', 5, 'Starting extraction...');
+      await jobQueue.updateJobStatus(upload.id, 'running', 5, 'Starting extraction...');
 
       // Import the processor here to avoid circular dependencies
       const { AsyncFileProcessor } = await import('./AsyncFileProcessor');
@@ -255,7 +247,7 @@ export class JobQueue {
    * Cancel a job
    */
   async cancelJob(uploadId: string) {
-    await this.updateJobStatus(uploadId, 'cancelled', 0, 'Job cancelled by user');
+    await jobQueue.updateJobStatus(uploadId, 'cancelled', 0, 'Job cancelled by user');
   }
 
   /**
@@ -284,7 +276,7 @@ export class JobQueue {
 
       if (actuallyQueuedUploads.length > 0) {
         console.log('🚀 Starting processing for queued jobs...');
-        this.startProcessing();
+        jobQueue.startProcessing();
       } else {
         console.log('✅ No queued jobs found');
       }
@@ -293,7 +285,4 @@ export class JobQueue {
       console.error('❌ Error checking for queued jobs:', error);
     }
   }
-}
-
-// Export singleton instance
-export const jobQueue = JobQueue.getInstance();
+};

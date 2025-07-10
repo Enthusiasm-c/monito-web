@@ -519,6 +519,37 @@ EXPLAIN ANALYZE SELECT * FROM prices WHERE supplier_id = $1 AND valid_to IS NULL
 
 ## Troubleshooting
 
+### Running `ts-node` Scripts with Application Imports
+
+Some scripts may need to import modules from the main application (`app/`). However, the default `ts-node` configuration in this project does not resolve the `@/` path alias correctly, which can lead to `Error: Cannot find module` errors.
+
+**The Problem:**
+The `tsconfig.node.json` is configured to run files in the `scripts/` directory but does not have the necessary setup to handle the path aliases used by the main application.
+
+**The Solution:**
+To fix this, you need to install `tsconfig-paths` and update the `npm` scripts to use it. This allows `ts-node` to correctly resolve the aliased paths.
+
+**Step 1: Install `tsconfig-paths`**
+```bash
+npm install tsconfig-paths
+```
+
+**Step 2: Update `package.json`**
+Modify the `scripts` in your `package.json` to prepend `-r tsconfig-paths/register` to any command that uses `ts-node`.
+
+*Example:*
+
+**Before:**
+```json
+"validate:data": "ts-node --project tsconfig.node.json scripts/validate-data-quality.ts",
+```
+
+**After:**
+```json
+"validate:data": "ts-node -r tsconfig-paths/register --project tsconfig.node.json scripts/validate-data-quality.ts",
+```
+This ensures that any script requiring application modules can now resolve the paths correctly.
+
 ### Common Issues
 
 #### 1. Build Failures

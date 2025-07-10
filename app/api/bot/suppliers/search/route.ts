@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateBot } from '../../middleware';
 
-import { prisma } from '../../../../../lib/prisma';
+import { databaseService } from '../../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../../utils/errors';
 
 // Search suppliers by name for Telegram bot
-export async function GET(request: NextRequest) {
-  // Authenticate bot
-  const authError = authenticateBot(request);
-  if (authError) return authError;
-
-  try {
+export const GET = asyncHandler(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
     const name = searchParams.get('name');
 
@@ -21,30 +17,16 @@ export async function GET(request: NextRequest) {
     }
 
     // Try exact match first
-    let supplier = await prisma.supplier.findFirst({
-      where: {
-        name: {
-          equals: name,
-          mode: 'insensitive'
-        }
-      }
-    });
+    let supplier = await databaseService.getSupplierByName(name);
 
     // If no exact match, try contains search
     if (!supplier) {
-      supplier = await prisma.supplier.findFirst({
-        where: {
-          name: {
-            contains: name,
-            mode: 'insensitive'
-          }
-        }
-      });
+      supplier = await databaseService.getSupplierByName(name);
     }
 
     // If still no match, try fuzzy search
     if (!supplier) {
-      const suppliers = await prisma.supplier.findMany({
+      const suppliers = await databaseService.getSuppliers({
         where: {
           OR: [
             { name: { contains: name.split(' ')[0], mode: 'insensitive' } },
@@ -76,11 +58,4 @@ export async function GET(request: NextRequest) {
       suggestions: []
     });
 
-  } catch (error) {
-    console.error('Bot API - Error searching suppliers:', error);
-    return NextResponse.json(
-      { error: 'Failed to search suppliers' },
-      { status: 500 }
-    );
-  }
-}
+  });

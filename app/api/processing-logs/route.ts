@@ -2,15 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { prisma } from '../../../lib/prisma';
+import { databaseService } from '../../../services/DatabaseService';
+import { asyncHandler } from '../../../utils/errors';
 
 /**
  * Processing Logs API
  * View detailed processing logs and metrics
  */
 
-export async function GET(request: NextRequest) {
-  try {
+export const GET = asyncHandler(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
     const uploadId = searchParams.get('uploadId');
     const limit = parseInt(searchParams.get('limit') || '20');
@@ -18,17 +18,7 @@ export async function GET(request: NextRequest) {
 
     if (uploadId) {
       // Get specific upload details
-      const upload = await prisma.upload.findUnique({
-        where: { id: uploadId },
-        include: {
-          supplier: true,
-          prices: {
-            include: {
-              product: true
-            }
-          }
-        }
-      });
+      const upload = await databaseService.getUploadById(uploadId);
 
       if (!upload) {
         return NextResponse.json(
@@ -69,7 +59,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get recent uploads with processing metrics
-    const uploads = await prisma.upload.findMany({
+    const uploads = await databaseService.getUploads({
       take: limit,
       orderBy: { createdAt: 'desc' },
       include: {
@@ -123,11 +113,4 @@ export async function GET(request: NextRequest) {
       total: summaryData.length
     });
 
-  } catch (error) {
-    console.error('Error fetching processing logs:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch processing logs' },
-      { status: 500 }
-    );
-  }
-}
+  });

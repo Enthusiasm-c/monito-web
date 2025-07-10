@@ -4,20 +4,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { priceHistoryService } from '@/app/services/admin/PriceHistoryService';
-import { priceFieldUpdateSchema, createValidationErrorResponse } from '@/app/lib/validations/admin';
-import { z } from 'zod';
+import { databaseService } from '../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../utils/errors';
 
-const prisma = new PrismaClient();
-
-export async function PUT(
+export const PUT = asyncHandler(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
-  try {
+) => {
     const priceId = params.id;
     
     // Check authentication
@@ -43,13 +36,7 @@ export async function PUT(
     }
 
     // Get current price to compare for history
-    const currentPrice = await prisma.price.findUnique({
-      where: { id: priceId },
-      include: {
-        product: true,
-        supplier: true
-      }
-    });
+    const currentPrice = await databaseService.getPriceById(priceId);
 
     if (!currentPrice) {
       return NextResponse.json(
@@ -81,37 +68,19 @@ export async function PUT(
     }
 
     // Update the price
-    const updatedPrice = await prisma.price.update({
-      where: { id: priceId },
-      data: updateData,
-      include: {
-        product: true,
-        supplier: true
-      }
-    });
+    const updatedPrice = await databaseService.updatePrice(priceId, updateData);
 
     return NextResponse.json({
       success: true,
       data: updatedPrice
     });
 
-  } catch (error) {
-    console.error('Error in PUT /api/admin/prices/[id]:', error);
-    return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    );
-  }
-}
+  });
 
-export async function DELETE(
+export const DELETE = asyncHandler(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
-  try {
+) => {
     const priceId = params.id;
     
     // Check authentication - only admins can delete prices
@@ -121,13 +90,7 @@ export async function DELETE(
     }
 
     // Check if price exists
-    const price = await prisma.price.findUnique({
-      where: { id: priceId },
-      include: {
-        product: { select: { name: true } },
-        supplier: { select: { name: true } }
-      }
-    });
+    const price = await databaseService.getPriceById(priceId);
 
     if (!price) {
       return NextResponse.json(
@@ -137,14 +100,14 @@ export async function DELETE(
     }
 
     // Delete price and its history in a transaction
-    await prisma.$transaction(async (tx) => {
+    await databaseService.executeTransaction(async (tx) => {
       // Delete price history records
-      await tx.priceHistory.deleteMany({
+      await databaseService.deletePriceHistory(tx, {
         where: { priceId: priceId }
       });
 
       // Delete the price
-      await tx.price.delete({
+      await databaseService.deletePrice(tx, {
         where: { id: priceId }
       });
     });
@@ -154,14 +117,4 @@ export async function DELETE(
       message: `Price for "${price.product.name}" from "${price.supplier.name}" deleted successfully`
     });
 
-  } catch (error) {
-    console.error('Error in DELETE /api/admin/prices/[id]:', error);
-    return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    );
-  }
-}
+  });

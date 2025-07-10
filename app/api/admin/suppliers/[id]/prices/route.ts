@@ -4,18 +4,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { bulkOperationsService } from '@/app/services/admin/BulkOperationsService';
+import { databaseService } from '../../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../../utils/errors';
 
-const prisma = new PrismaClient();
-
-export async function DELETE(
+export const DELETE = asyncHandler(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
-  try {
+) => {
     const supplierId = params.id;
     
     // Check authentication
@@ -36,10 +31,7 @@ export async function DELETE(
     const performingUserId = session.user.id;
 
     // Validate supplier exists
-    const supplier = await prisma.supplier.findUnique({
-      where: { id: supplierId },
-      select: { id: true, name: true }
-    });
+    const supplier = await databaseService.getSupplierById(supplierId);
 
     if (!supplier) {
       return NextResponse.json(
@@ -76,23 +68,12 @@ export async function DELETE(
       }
     });
 
-  } catch (error) {
-    console.error('Error in DELETE /api/admin/suppliers/[id]/prices:', error);
-    return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    );
-  }
-}
+  });
 
-export async function GET(
+export const GET = asyncHandler(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
-  try {
+) => {
     const supplierId = params.id;
     const { searchParams } = new URL(request.url);
     
@@ -117,7 +98,7 @@ export async function GET(
     }
 
     const [prices, total] = await Promise.all([
-      prisma.price.findMany({
+      databaseService.getPrices({
         where: whereClause,
         include: {
           product: {
@@ -137,7 +118,7 @@ export async function GET(
         skip,
         take: limit
       }),
-      prisma.price.count({ where: whereClause })
+      databaseService.getPricesCount({ where: whereClause })
     ]);
 
     return NextResponse.json({
@@ -162,14 +143,4 @@ export async function GET(
       }
     });
 
-  } catch (error) {
-    console.error('Error in GET /api/admin/suppliers/[id]/prices:', error);
-    return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    );
-  }
-}
+  });

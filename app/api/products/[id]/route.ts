@@ -1,31 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../lib/prisma';
-import { calcUnitPrice } from '../../../lib/utils/product-normalizer';
+import { databaseService } from '../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../utils/errors';
+import { calculateUnitPrice } from '../../../../lib/utils/unified-unit-converter';
 
-export async function GET(
+export const GET = asyncHandler(async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const { id: productId } = await params;
 
     // Get product with all its prices and suppliers
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-      include: {
-        prices: {
-          where: {
-            validTo: null // Only active prices
-          },
-          include: {
-            supplier: true
-          },
-          orderBy: {
-            amount: 'asc'
-          }
-        }
-      }
-    });
+    const product = await databaseService.getProductById(productId);
 
     if (!product) {
       return NextResponse.json(
@@ -42,7 +27,7 @@ export async function GET(
     const pricesWithUnitPrice = activePrices.map(price => {
       const unitPrice = price.unitPrice 
         ? Number(price.unitPrice)
-        : calcUnitPrice(Number(price.amount), 1, price.unit);
+        : calculateUnitPrice(Number(price.amount), 1, price.unit);
       
       return {
         ...price,
@@ -109,11 +94,4 @@ export async function GET(
 
     return NextResponse.json(formattedProduct);
 
-  } catch (error) {
-    console.error('Error fetching product details:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch product details' },
-      { status: 500 }
-    );
-  }
-}
+  });

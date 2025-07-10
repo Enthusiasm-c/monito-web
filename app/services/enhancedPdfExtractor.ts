@@ -51,7 +51,7 @@ class EnhancedPdfExtractor extends BaseProcessor {
     maxPages: parseInt(process.env.AI_VISION_MAX_PAGES || '8'),
   };
 
-  public static getInstance(): EnhancedPdfExtractor {
+  public static getInstance(): EnhancedPdfExtractor { // BaseProcessor
     return super.getInstance.call(this) as EnhancedPdfExtractor;
   }
 
@@ -334,6 +334,4 @@ class EnhancedPdfExtractor extends BaseProcessor {
   }
 }
 
-// Export singleton instance
-const enhancedPdfExtractor = EnhancedPdfExtractor.getInstance();
-export { enhancedPdfExtractor, type PdfExtractionResult, type ExtractedProduct };
+export { type PdfExtractionResult, type ExtractedProduct };

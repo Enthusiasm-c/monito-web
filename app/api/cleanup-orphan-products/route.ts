@@ -4,27 +4,20 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../lib/prisma';
+import { databaseService } from '../../../services/DatabaseService';
+import { asyncHandler } from '../../../utils/errors';
 
-export async function POST(request: NextRequest) {
-  try {
+export const POST = asyncHandler(async (request: NextRequest) => {
     console.log('🧹 Starting automatic orphan product cleanup...');
     
     let deletedCount = 0;
     
     // 1. Delete products without any prices
-    const productsWithoutPrices = await prisma.product.findMany({
-      where: {
-        prices: {
-          none: {}
-        }
-      },
-      select: { id: true, name: true }
-    });
+    const productsWithoutPrices = await databaseService.getProductsWithoutPrices();
     
     if (productsWithoutPrices.length > 0) {
       const productIds = productsWithoutPrices.map(p => p.id);
-      const deleted = await prisma.product.deleteMany({
+      const deleted = await databaseService.deleteProducts({
         where: { id: { in: productIds } }
       });
       deletedCount += deleted.count;
@@ -32,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
     
     // 2. Delete products with empty or invalid names
-    const deletedInvalidNames = await prisma.product.deleteMany({
+    const deletedInvalidNames = await databaseService.deleteProducts({
       where: {
         OR: [
           { name: { in: ['', ' ', 'null', 'undefined'] } },
@@ -45,7 +38,7 @@ export async function POST(request: NextRequest) {
     console.log(`✅ Deleted ${deletedInvalidNames.count} products with invalid names`);
     
     // 3. Delete prices with zero or negative amounts
-    const deletedInvalidPrices = await prisma.price.deleteMany({
+    const deletedInvalidPrices = await databaseService.deletePrices({
       where: {
         amount: { lte: 0 }
       }
@@ -53,7 +46,7 @@ export async function POST(request: NextRequest) {
     console.log(`✅ Deleted ${deletedInvalidPrices.count} invalid prices (≤ 0)`);
     
     // 4. Remove suppliers with no prices
-    const deletedEmptySuppliers = await prisma.supplier.deleteMany({
+    const deletedEmptySuppliers = await databaseService.deleteSuppliers({
       where: {
         AND: [
           {
@@ -73,10 +66,10 @@ export async function POST(request: NextRequest) {
     
     // 5. Get final stats
     const stats = {
-      products: await prisma.product.count(),
-      prices: await prisma.price.count(),
-      suppliers: await prisma.supplier.count(),
-      uploads: await prisma.upload.count()
+      products: await databaseService.getProductsCount(),
+      prices: await databaseService.getPricesCount(),
+      suppliers: await databaseService.getSuppliersCount(),
+      uploads: await databaseService.getUploadsCount()
     };
     
     console.log('🎉 Automatic cleanup completed');
@@ -90,17 +83,7 @@ export async function POST(request: NextRequest) {
       finalStats: stats
     });
     
-  } catch (error) {
-    console.error('❌ Cleanup failed:', error);
-    
-    return NextResponse.json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  });
 
 // Allow GET for manual trigger
 export async function GET() {

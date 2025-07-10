@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '../../../lib/prisma';
+import { databaseService } from '../../../services/DatabaseService';
+import { asyncHandler } from '../../../utils/errors';
 
-export async function GET() {
-  try {
+export const GET = asyncHandler(async () => {
     const [
       productCount,
       supplierCount,
@@ -10,14 +10,14 @@ export async function GET() {
       recentUploads,
       priceData
     ] = await Promise.all([
-      prisma.product.count(),
-      prisma.supplier.count(),
-      prisma.upload.count(),
-      prisma.upload.findFirst({
+      databaseService.getProductsCount(),
+      databaseService.getSuppliersCount(),
+      databaseService.getUploadsCount(),
+      databaseService.findFirstUpload({
         orderBy: { createdAt: 'desc' },
         select: { createdAt: true }
       }),
-      prisma.price.findMany({
+      databaseService.getPrices({
         include: {
           product: true
         },
@@ -64,14 +64,7 @@ export async function GET() {
       uploads: uploadCount
     });
 
-  } catch (error) {
-    console.error('Error fetching stats:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch statistics' },
-      { status: 500 }
-    );
-  }
-}
+  });
 
 function formatTimeSince(date: Date): string {
   const now = new Date();

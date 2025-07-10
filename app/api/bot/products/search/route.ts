@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateBot } from '../../middleware';
 
-import { prisma } from '../../../../../lib/prisma';
+import { databaseService } from '../../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../../utils/errors';
 
 // Simple product search API for Telegram bot
-export async function GET(request: NextRequest) {
-  // Authenticate bot
-  const authError = authenticateBot(request);
-  if (authError) return authError;
-
-  try {
+export const GET = asyncHandler(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q');
     const limit = parseInt(searchParams.get('limit') || '10');
@@ -22,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Search for products with fuzzy matching
-    const products = await prisma.product.findMany({
+    const products = await databaseService.getProducts({
       where: {
         OR: [
           { name: { contains: query, mode: 'insensitive' } },
@@ -93,11 +89,4 @@ export async function GET(request: NextRequest) {
       query: query
     });
 
-  } catch (error) {
-    console.error('Bot API - Error searching products:', error);
-    return NextResponse.json(
-      { error: 'Failed to search products' },
-      { status: 500 }
-    );
-  }
-}
+  });

@@ -1,22 +1,13 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '../../../../../lib/prisma';
+import { databaseService } from '../../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../../utils/errors';
 
-export async function GET() {
-  try {
-    const pendingCount = await prisma.upload.count({
+export const GET = asyncHandler(async () => {
+    const pendingCount = await databaseService.getUploadsCount({
       where: {
         approvalStatus: 'pending_review'
       }
     });
 
     return NextResponse.json({ count: pendingCount });
-  } catch (error) {
-    console.error('Error fetching pending uploads count:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch pending uploads count' },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  });

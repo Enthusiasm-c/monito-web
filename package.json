@@ -16,11 +16,11 @@
     "test:suppliers": "playwright test comprehensive-supplier-crud.spec.js",
     "test:suppliers:headed": "playwright test comprehensive-supplier-crud.spec.js --headed",
     "postinstall": "prisma generate && prisma db push --accept-data-loss",
-    "validate:data": "ts-node --project tsconfig.node.json scripts/validate-data-quality.ts",
-    "fix:indonesian": "ts-node --project tsconfig.node.json scripts/quick-fix-indonesian.ts",
-    "fix:data": "ts-node --project tsconfig.node.json scripts/fix-existing-data.ts",
-    "fix:duplicates": "ts-node --project tsconfig.node.json scripts/fix-existing-data.ts --skip-names --skip-units --skip-prices",
-    "fix:all": "ts-node --project tsconfig.node.json scripts/fix-existing-data.ts"
+    "validate:data": "ts-node -r tsconfig-paths/register --project tsconfig.node.json scripts/validate-data-quality.ts",
+    "fix:indonesian": "ts-node -r tsconfig-paths/register --project tsconfig.node.json scripts/quick-fix-indonesian.ts",
+    "fix:data": "ts-node -r tsconfig-paths/register --project tsconfig.node.json scripts/fix-existing-data.ts",
+    "fix:duplicates": "ts-node -r tsconfig-paths/register --project tsconfig.node.json scripts/fix-existing-data.ts --skip-names --skip-units --skip-prices",
+    "fix:all": "ts-node -r tsconfig-paths/register --project tsconfig.node.json scripts/fix-existing-data.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",

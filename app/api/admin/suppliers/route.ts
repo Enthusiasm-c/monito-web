@@ -1,14 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { asyncHandler } from '../../../../utils/errors';
-import { databaseService } from '../../../../services/DatabaseService';
-import { parsePaginationParams } from '../../../../utils/api-helpers';
+import { asyncHandler } from '../../../utils/errors';
+import { parsePaginationParams } from '../../../utils/api-helpers';
+import { databaseService } from '../../../services/DatabaseService';
 
 export const GET = asyncHandler(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const search = searchParams.get('search') || '';
   const pagination = parsePaginationParams(request);
 
-  const { suppliers, total } = await databaseService.getSuppliers(pagination, search);
+  const where = search ? {
+    OR: [
+      { name: { contains: search, mode: 'insensitive' as const } },
+      { email: { contains: search, mode: 'insensitive' as const } },
+      { phone: { contains: search, mode: 'insensitive' as const } }
+    ]
+  } : {};
+
+  const [suppliers, total] = await Promise.all([
+    databaseService.getSuppliers({
+      where,
+      include: {
+        _count: {
+          select: {
+            prices: true,
+            uploads: true
+          }
+        }
+      },
+      orderBy: {
+        name: 'asc'
+      },
+      skip: pagination.offset,
+      take: pagination.limit,
+    }),
+    databaseService.getSuppliersCount({ where })
+  ]);
 
   return NextResponse.json({
     suppliers,
@@ -18,19 +44,4 @@ export const GET = asyncHandler(async (request: NextRequest) => {
       totalPages: Math.ceil(total / pagination.limit),
     },
   });
-});
-
-export const POST = asyncHandler(async (request: NextRequest) => {
-  const body = await request.json();
-  const { name, email, phone, address, contactInfo } = body;
-
-  const supplier = await databaseService.createSupplier({
-    name,
-    email,
-    phone,
-    address,
-    contactInfo,
-  });
-
-  return NextResponse.json(supplier);
 });

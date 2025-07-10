@@ -59,7 +59,7 @@ class EnhancedExcelExtractor extends BaseProcessor {
     llmModel: process.env.LLM_MODEL || 'gpt-4o-mini'
   };
 
-  public static getInstance(): EnhancedExcelExtractor {
+  public static getInstance(): EnhancedExcelExtractor { // BaseProcessor
     return super.getInstance() as EnhancedExcelExtractor;
   }
 
@@ -837,9 +837,6 @@ class EnhancedExcelExtractor extends BaseProcessor {
     };
   }
 }
-
-// Export singleton instance
-export const enhancedExcelExtractor = EnhancedExcelExtractor.getInstance();
 
 // Export types
 export type { 

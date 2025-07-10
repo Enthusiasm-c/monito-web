@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../lib/prisma';
+import { databaseService } from '../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../utils/errors';
 
 // GET /api/admin/unmatched - Get unmatched products queue
-export async function GET(request: NextRequest) {
-  try {
+export const GET = asyncHandler(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') || 'pending';
     const search = searchParams.get('search');
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     orderBy[sortBy] = sortOrder;
 
     const [entries, total, statusCounts] = await Promise.all([
-      prisma.unmatchedQueue.findMany({
+      databaseService.getUnmatchedQueue({
         where,
         orderBy,
         take: limit,
@@ -50,9 +50,9 @@ export async function GET(request: NextRequest) {
           }
         }
       }),
-      prisma.unmatchedQueue.count({ where }),
+      databaseService.getUnmatchedQueueCount({ where }),
       // Get counts by status
-      prisma.unmatchedQueue.groupBy({
+      databaseService.groupUnmatchedQueueBy({
         by: ['status'],
         _count: { status: true }
       })
@@ -80,18 +80,10 @@ export async function GET(request: NextRequest) {
       }
     });
 
-  } catch (error) {
-    console.error('Unmatched queue API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch unmatched products' },
-      { status: 500 }
-    );
-  }
-}
+  });
 
 // POST /api/admin/unmatched - Create unmatched entry (used by matching pipeline)
-export async function POST(request: NextRequest) {
-  try {
+export const POST = asyncHandler(async (request: NextRequest) => {
     const body = await request.json();
     const { 
       rawName, 
@@ -109,7 +101,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if this rawName already exists - if so, increment frequency
-    const existing = await prisma.unmatchedQueue.findFirst({
+    const existing = await databaseService.findFirstUnmatchedQueue({
       where: {
         rawName: rawName.toLowerCase().trim(),
         status: 'pending'
@@ -117,7 +109,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (existing) {
-      const updated = await prisma.unmatchedQueue.update({
+      const updated = await databaseService.updateUnmatchedQueue({
         where: { id: existing.id },
         data: {
           frequency: existing.frequency + 1,
@@ -136,7 +128,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new entry
-    const entry = await prisma.unmatchedQueue.create({
+    const entry = await databaseService.createUnmatchedQueue({
       data: {
         rawName: rawName.toLowerCase().trim(),
         normalizedName: normalizedName?.toLowerCase().trim(),
@@ -153,11 +145,4 @@ export async function POST(request: NextRequest) {
       message: 'Unmatched entry created successfully'
     });
 
-  } catch (error) {
-    console.error('Unmatched queue creation error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create unmatched entry' },
-      { status: 500 }
-    );
-  }
-}
+  });

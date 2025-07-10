@@ -9,10 +9,10 @@ import path from 'path';
 import fs from 'fs/promises';
 import { tmpdir } from 'os';
 
-import { prisma } from '../../../lib/prisma';
+import { databaseService } from '../../../services/DatabaseService';
+import { asyncHandler } from '../../../utils/errors';
 
-export async function POST(request: NextRequest) {
-  try {
+export const POST = asyncHandler(async (request: NextRequest) => {
     console.log('📁 Document classification request received');
     
     // Temporary disabled - document classifier service not available
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
 
       // Update upload record with classification if uploadId provided
       if (uploadId) {
-        await prisma.upload.update({
+        await databaseService.updateUpload({
           where: { id: uploadId },
           data: {
             fileHash: classification.file_hash,
@@ -105,21 +105,9 @@ export async function POST(request: NextRequest) {
       throw classificationError;
     }
 
-  } catch (error) {
-    console.error('❌ Document classification failed:', error);
-    
-    return NextResponse.json(
-      { 
-        error: 'Classification failed',
-        details: error instanceof Error ? error.message : String(error)
-      },
-      { status: 500 }
-    );
-  }
-}
+  });
 
-export async function GET(request: NextRequest) {
-  try {
+export const GET = asyncHandler(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action');
 
@@ -151,18 +139,7 @@ export async function GET(request: NextRequest) {
       { status: 400 }
     );
 
-  } catch (error) {
-    console.error('❌ Classification API error:', error);
-    
-    return NextResponse.json(
-      { 
-        error: 'API request failed',
-        details: error instanceof Error ? error.message : String(error)
-      },
-      { status: 500 }
-    );
-  }
-}
+  });
 
 // Helper functions
 
@@ -177,7 +154,7 @@ async function createTempFile(buffer: Buffer, originalName: string): Promise<str
 }
 
 async function checkForDuplicate(fileHash: string) {
-  return await prisma.upload.findFirst({
+  return await databaseService.findFirstUpload({
     where: { fileHash },
     include: { supplier: true },
     orderBy: { createdAt: 'desc' }
@@ -185,7 +162,7 @@ async function checkForDuplicate(fileHash: string) {
 }
 
 async function getClassificationStats() {
-  const stats = await prisma.upload.groupBy({
+  const stats = await databaseService.groupUploadsBy({
     by: ['documentType', 'status'],
     _count: {
       id: true
@@ -200,7 +177,7 @@ async function getClassificationStats() {
     }
   });
 
-  const total = await prisma.upload.count({
+  const total = await databaseService.getUploadsCount({
     where: { documentType: { not: null } }
   });
 

@@ -1,26 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { databaseService } from '@/app/services/DatabaseService';
+import { asyncHandler } from '@/app/utils/errors';
 
-export async function GET(
+export const GET = asyncHandler(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
-  console.log('[DEBUG] Status debug endpoint called');
-  console.log('[DEBUG] Params:', params);
-  console.log('[DEBUG] Upload ID:', params.id);
-  
-  try {
+) => {
     // Check if upload exists
-    const upload = await prisma.upload.findUnique({
-      where: { id: params.id },
-      select: {
-        id: true,
-        status: true,
-        originalName: true,
-        createdAt: true,
-        updatedAt: true,
-      }
-    });
+    const upload = await databaseService.getUploadById(params.id);
     
     return NextResponse.json({
       debug: {
@@ -31,12 +18,4 @@ export async function GET(
         timestamp: new Date().toISOString(),
       }
     });
-  } catch (error) {
-    console.error('[DEBUG] Error:', error);
-    return NextResponse.json({
-      error: error instanceof Error ? error.message : 'Unknown error',
-      params: params,
-      uploadId: params.id,
-    }, { status: 500 });
-  }
-}
+  });

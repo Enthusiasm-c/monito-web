@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '../../../lib/prisma';
+import { databaseService } from '../../../services/DatabaseService';
+import { asyncHandler } from '../../../utils/errors';
 
-export async function POST() {
-  try {
+export const POST = asyncHandler(async () => {
     // Create sample suppliers
     const suppliers = await Promise.all([
-      prisma.supplier.upsert({
+      databaseService.upsertSupplier({
         where: { name: 'Fresh Foods Co' },
         update: {},
         create: {
@@ -15,7 +15,7 @@ export async function POST() {
           address: '123 Market Street, City, State 12345'
         }
       }),
-      prisma.supplier.upsert({
+      databaseService.upsertSupplier({
         where: { name: 'Market Direct' },
         update: {},
         create: {
@@ -25,7 +25,7 @@ export async function POST() {
           address: '456 Supply Road, City, State 12346'
         }
       }),
-      prisma.supplier.upsert({
+      databaseService.upsertSupplier({
         where: { name: 'Green Valley' },
         update: {},
         create: {
@@ -39,7 +39,7 @@ export async function POST() {
 
     // Create sample products
     const products = await Promise.all([
-      prisma.product.upsert({
+      databaseService.upsertProduct({
         where: { standardizedName_standardizedUnit: { standardizedName: 'cherry tomatoes', standardizedUnit: 'kg' } },
         update: {},
         create: {
@@ -51,7 +51,7 @@ export async function POST() {
           description: 'Fresh cherry tomatoes'
         }
       }),
-      prisma.product.upsert({
+      databaseService.upsertProduct({
         where: { standardizedName_standardizedUnit: { standardizedName: 'chicken breast', standardizedUnit: 'kg' } },
         update: {},
         create: {
@@ -63,7 +63,7 @@ export async function POST() {
           description: 'Fresh chicken breast fillets'
         }
       }),
-      prisma.product.upsert({
+      databaseService.upsertProduct({
         where: { standardizedName_standardizedUnit: { standardizedName: 'jasmine rice', standardizedUnit: 'kg' } },
         update: {},
         create: {
@@ -75,7 +75,7 @@ export async function POST() {
           description: 'Premium jasmine rice'
         }
       }),
-      prisma.product.upsert({
+      databaseService.upsertProduct({
         where: { standardizedName_standardizedUnit: { standardizedName: 'red onions', standardizedUnit: 'kg' } },
         update: {},
         create: {
@@ -87,7 +87,7 @@ export async function POST() {
           description: 'Fresh red onions'
         }
       }),
-      prisma.product.upsert({
+      databaseService.upsertProduct({
         where: { standardizedName_standardizedUnit: { standardizedName: 'salmon fillet', standardizedUnit: 'kg' } },
         update: {},
         create: {
@@ -129,7 +129,7 @@ export async function POST() {
 
     await Promise.all(
       priceData.map(price =>
-        prisma.price.upsert({
+        databaseService.upsertPrice({
           where: {
             supplierId_productId_validFrom: {
               supplierId: price.supplierId,
@@ -155,11 +155,4 @@ export async function POST() {
       prices: priceData.length
     });
 
-  } catch (error) {
-    console.error('Seed error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create seed data' },
-      { status: 500 }
-    );
-  }
-}
+  });

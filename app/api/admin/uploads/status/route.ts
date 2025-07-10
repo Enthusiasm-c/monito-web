@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../../lib/prisma';
+import { databaseService } from '../../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../../utils/errors';
 
-export async function GET(request: NextRequest) {
-  try {
+export const GET = asyncHandler(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '10');
 
-    const uploads = await prisma.upload.findMany({
+    const uploads = await databaseService.getUploads({
       include: {
         supplier: true,
         prices: {
@@ -41,11 +41,4 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json(uploadsWithMetrics);
-  } catch (error) {
-    console.error('Error fetching upload status:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch upload status' },
-      { status: 500 }
-    );
-  }
-}
+  });

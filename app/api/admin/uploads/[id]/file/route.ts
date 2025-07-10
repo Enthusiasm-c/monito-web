@@ -1,24 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../../../lib/prisma';
+import { databaseService } from '../../../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../../../utils/errors';
 
-export async function GET(
+export const GET = asyncHandler(async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const { id: uploadId } = await params;
 
-    const upload = await prisma.upload.findUnique({
-      where: { id: uploadId },
-      select: {
-        id: true,
-        originalName: true,
-        url: true,
-        mimeType: true,
-        fileSize: true,
-        approvalStatus: true
-      }
-    });
+    const upload = await databaseService.getUploadById(uploadId);
 
     if (!upload) {
       return NextResponse.json(
@@ -51,13 +41,4 @@ export async function GET(
       uploadId: upload.id
     });
 
-  } catch (error) {
-    console.error('Error fetching file info:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch file information' },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  });

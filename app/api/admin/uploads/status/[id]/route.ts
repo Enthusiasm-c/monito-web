@@ -1,22 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../../../lib/prisma';
+import { databaseService } from '../../../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../../../utils/errors';
 
-export async function GET(
+export const GET = asyncHandler(async (
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const params = await context.params;
     const uploadId = params.id;
 
-    const upload = await prisma.upload.findUnique({
-      where: { id: uploadId },
-      include: {
-        supplier: {
-          select: { id: true, name: true }
-        }
-      }
-    });
+    const upload = await databaseService.getUploadById(uploadId);
 
     if (!upload) {
       return NextResponse.json(
@@ -61,14 +54,7 @@ export async function GET(
 
     return NextResponse.json(detailedStatus);
 
-  } catch (error) {
-    console.error('Error fetching upload status:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch upload status' },
-      { status: 500 }
-    );
-  }
-}
+  });
 
 function calculateProgress(upload: any): number {
   if (upload.status === 'failed') return 0;

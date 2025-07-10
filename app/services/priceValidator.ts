@@ -17,12 +17,11 @@ interface ProductCategory {
   commonUnits: string[];
 }
 
-export class PriceValidator {
-  private static instance: PriceValidator;
+export const priceValidator = {
   
   // Price ranges for different product categories in IDR
   // Updated based on actual Indonesian market data
-  private readonly categories: Record<string, ProductCategory> = {
+  categories: Record<string, ProductCategory> = {
     // Dairy products
     cheese: {
       keywords: ['cheese', 'keju', 'mozzarella', 'cheddar', 'parmesan', 'gouda', 'brie', 'mascarpone', 'ricotta'],
@@ -99,7 +98,7 @@ export class PriceValidator {
   };
   
   // General price bounds for unknown products
-  private readonly generalBounds = {
+  generalBounds = {
     minPrice: 500,       // 500 IDR absolute minimum (for very small items)
     maxPrice: 50000000,  // 50M IDR absolute maximum
     suspiciouslyLow: 1000,     // Below 1k is suspicious (unless unit pricing)
@@ -138,22 +137,22 @@ export class PriceValidator {
     }
 
     // Check absolute bounds
-    if (product.price < this.generalBounds.minPrice) {
+    if (product.price < priceValidator.generalBounds.minPrice) {
       result.isValid = false;
-      result.errors.push(`Price ${product.price} is below absolute minimum ${this.generalBounds.minPrice}`);
+      result.errors.push(`Price ${product.price} is below absolute minimum ${priceValidator.generalBounds.minPrice}`);
       result.confidence = 0;
       return result;
     }
 
-    if (product.price > this.generalBounds.maxPrice) {
+    if (product.price > priceValidator.generalBounds.maxPrice) {
       result.isValid = false;
-      result.errors.push(`Price ${product.price} exceeds absolute maximum ${this.generalBounds.maxPrice}`);
+      result.errors.push(`Price ${product.price} exceeds absolute maximum ${priceValidator.generalBounds.maxPrice}`);
       result.confidence = 0;
       return result;
     }
 
     // Detect product category
-    const category = this.detectCategory(product.name, product.category);
+    const category = priceValidator.detectCategory(product.name, product.category);
     
     if (category) {
       // Validate against category-specific ranges
@@ -187,19 +186,19 @@ export class PriceValidator {
       }
     } else {
       // No specific category detected, use general validation
-      if (product.price < this.generalBounds.suspiciouslyLow) {
+      if (product.price < priceValidator.generalBounds.suspiciouslyLow) {
         result.warnings.push(`Price ${product.price} seems suspiciously low`);
         result.confidence *= 0.8;
       }
       
-      if (product.price > this.generalBounds.suspiciouslyHigh) {
+      if (product.price > priceValidator.generalBounds.suspiciouslyHigh) {
         result.warnings.push(`Price ${product.price} seems suspiciously high`);
         result.confidence *= 0.8;
       }
     }
 
     // Check for common price parsing errors
-    if (this.looksLikePriceError(product.price)) {
+    if (priceValidator.looksLikePriceError(product.price)) {
       result.warnings.push('Price might have decimal point parsing error');
       result.confidence *= 0.6;
     }
@@ -231,7 +230,7 @@ export class PriceValidator {
       };
     };
   } {
-    const results = products.map(p => this.validateProduct(p));
+    const results = products.map(p => priceValidator.validateProduct(p));
     
     const summary = {
       totalProducts: products.length,
@@ -253,11 +252,11 @@ export class PriceValidator {
   /**
    * Detect product category based on name and optional category hint
    */
-  private detectCategory(productName: string, categoryHint?: string): ProductCategory | null {
+  detectCategory(productName: string, categoryHint?: string): ProductCategory | null {
     const nameLower = productName.toLowerCase();
     const categoryLower = categoryHint?.toLowerCase() || '';
     
-    for (const [categoryName, category] of Object.entries(this.categories)) {
+    for (const [categoryName, category] of Object.entries(priceValidator.categories)) {
       // Check category hint first
       if (categoryLower && categoryLower.includes(categoryName)) {
         return category;
@@ -277,7 +276,7 @@ export class PriceValidator {
   /**
    * Check if price looks like a parsing error
    */
-  private looksLikePriceError(price: number): boolean {
+  looksLikePriceError(price: number): boolean {
     // Check if price is a round decimal that might be missing zeros
     // e.g., 316.35 instead of 316350
     const priceStr = price.toString();
@@ -322,7 +321,4 @@ export class PriceValidator {
     
     return null;
   }
-}
-
-// Export singleton instance
-export const priceValidator = PriceValidator.getInstance();
+};

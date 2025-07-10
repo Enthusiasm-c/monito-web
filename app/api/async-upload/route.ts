@@ -8,10 +8,10 @@ import { put } from '@vercel/blob';
 import { jobQueue } from '../../services/background/JobQueue';
 import '../../services/background/startProcessor';
 
-import { prisma } from '../../../lib/prisma';
+import { databaseService } from '../../../services/DatabaseService';
+import { asyncHandler } from '../../../utils/errors';
 
-export async function POST(request: NextRequest) {
-  try {
+export const POST = asyncHandler(async (request: NextRequest) => {
     console.log('🚀 Async upload endpoint called');
     
     const formData = await request.formData();
@@ -56,14 +56,7 @@ export async function POST(request: NextRequest) {
         console.log(`🏢 Creating/finding supplier: ${actualSupplierName}`);
         
         // Try to find existing supplier by name (case insensitive)
-        const existingSupplier = await prisma.supplier.findFirst({
-          where: { 
-            name: { 
-              equals: actualSupplierName, 
-              mode: 'insensitive' 
-            } 
-          }
-        });
+        const existingSupplier = await databaseService.getSupplierByName(actualSupplierName);
         
         if (existingSupplier) {
           console.log(`✅ Found existing supplier: ${existingSupplier.name} (${existingSupplier.id})`);
@@ -71,7 +64,7 @@ export async function POST(request: NextRequest) {
         } else {
           // Create new supplier
           console.log(`🆕 Creating new supplier: ${actualSupplierName}`);
-          const newSupplier = await prisma.supplier.create({
+          const newSupplier = await databaseService.createSupplier({
             data: {
               name: actualSupplierName,
               email: `${actualSupplierName.toLowerCase().replace(/\s+/g, '')}@supplier.com`
@@ -83,7 +76,7 @@ export async function POST(request: NextRequest) {
       } else {
         // Fallback to temporary processing
         console.log(`⚠️ No supplier name found, using Temporary Processing`);
-        const tempSupplier = await prisma.supplier.upsert({
+        const tempSupplier = await databaseService.upsertSupplier({
           where: { name: 'Temporary Processing' },
           update: {},
           create: {
@@ -97,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     // Create upload record
     console.log(`💾 Creating upload record in database`);
-    const upload = await prisma.upload.create({
+    const upload = await databaseService.createUpload({
       data: {
         fileName: file.name,
         originalName: file.name,
@@ -143,14 +136,7 @@ export async function POST(request: NextRequest) {
       batchSize
     });
 
-  } catch (error) {
-    console.error('❌ Async upload failed:', error);
-    return NextResponse.json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Upload failed'
-    }, { status: 500 });
-  }
-}
+  });
 
 /**
  * Extract supplier name from filename
@@ -207,8 +193,7 @@ function extractSupplierNameFromFile(fileName: string): string {
 /**
  * Get processing status
  */
-export async function GET(request: NextRequest) {
-  try {
+export const GET = asyncHandler(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
     const uploadId = searchParams.get('uploadId');
 
@@ -224,10 +209,4 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(status);
 
-  } catch (error) {
-    console.error('❌ Status check failed:', error);
-    return NextResponse.json({
-      error: error instanceof Error ? error.message : 'Status check failed'
-    }, { status: 500 });
-  }
-}
+  });

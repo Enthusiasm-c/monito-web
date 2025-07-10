@@ -35,8 +35,9 @@ interface ImageProcessingResult {
   };
 }
 
-export class OptimizedImageProcessor {
-  private static instance: OptimizedImageProcessor;
+import { BaseProcessor } from '../../lib/core/BaseProcessor';
+
+export class OptimizedImageProcessor extends BaseProcessor {
   private openai: OpenAI;
   
   private readonly config = {
@@ -49,23 +50,23 @@ export class OptimizedImageProcessor {
     chunksForLargeImages: 4,  // Split large images into chunks
   };
 
+  public static getInstance(): OptimizedImageProcessor { // BaseProcessor
+    return super.getInstance() as OptimizedImageProcessor;
+  }
+
   constructor() {
+    super('OptimizedImageProcessor');
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
   }
 
-  public static getInstance(): OptimizedImageProcessor {
-    if (!OptimizedImageProcessor.instance) {
-      OptimizedImageProcessor.instance = new OptimizedImageProcessor();
-    }
-    return OptimizedImageProcessor.instance;
-  }
-
   /**
    * Process image with optimizations
    */
-  async processImage(imageUrl: string, fileName: string, uploadId?: string): Promise<ImageProcessingResult> {
+  async processDocument(fileContent: Buffer | string, fileName:string, options?: any): Promise<ImageProcessingResult> {
+    const imageUrl = typeof fileContent === 'string' ? fileContent : `data:image/jpeg;base64,${fileContent.toString('base64')}`;
+    const uploadId = options?.uploadId;
     const startTime = Date.now();
     const errors: string[] = [];
     let preprocessingTime = 0;
@@ -385,5 +386,3 @@ Important instructions:
   }
 }
 
-// Export singleton instance
-export const optimizedImageProcessor = OptimizedImageProcessor.getInstance();

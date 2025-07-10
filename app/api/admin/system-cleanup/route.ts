@@ -1,36 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../lib/prisma';
+import { databaseService } from '../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../utils/errors';
 
-export async function POST(request: NextRequest) {
-  try {
+export const POST = asyncHandler(async (request: NextRequest) => {
     console.log('🧹 Starting complete system cleanup...');
     
     // Get counts before cleanup
     const beforeCounts = {
-      uploads: await prisma.upload.count(),
-      products: await prisma.product.count(),
-      prices: await prisma.price.count(),
-      suppliers: await prisma.supplier.count()
+      uploads: await databaseService.getUploadsCount(),
+      products: await databaseService.getProductsCount(),
+      prices: await databaseService.getPricesCount(),
+      suppliers: await databaseService.getSuppliersCount()
     };
 
     console.log('📊 Before cleanup:', beforeCounts);
 
     // Delete all data in correct order (foreign key constraints)
     console.log('🗑️ Deleting all prices...');
-    await prisma.price.deleteMany({});
+    await databaseService.deletePrices({});
 
     console.log('🗑️ Deleting all uploads...');
-    await prisma.upload.deleteMany({});
+    await databaseService.deleteUploads({});
 
     console.log('🗑️ Deleting all products...');
-    await prisma.product.deleteMany({});
+    await databaseService.deleteProducts({});
 
     console.log('🗑️ Deleting all suppliers...');
-    await prisma.supplier.deleteMany({});
+    await databaseService.deleteSuppliers({});
 
     // Reset sequence counters if needed
     console.log('🔄 Resetting database sequences...');
-    await prisma.$executeRaw`TRUNCATE TABLE "uploads", "products", "prices", "suppliers" RESTART IDENTITY CASCADE;`;
+    await databaseService.executeRaw`TRUNCATE TABLE "uploads", "products", "prices", "suppliers" RESTART IDENTITY CASCADE;`;
 
     // Verify cleanup
     const afterCounts = {
@@ -56,26 +56,15 @@ export async function POST(request: NextRequest) {
       }
     });
     
-  } catch (error) {
-    console.error('❌ System cleanup failed:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'System cleanup failed',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  });
 
-export async function GET() {
-  try {
+export const GET = asyncHandler(async () => {
     // Get current system status
     const counts = {
-      uploads: await prisma.upload.count(),
-      products: await prisma.product.count(),
-      prices: await prisma.price.count(),
-      suppliers: await prisma.supplier.count()
+      uploads: await databaseService.getUploadsCount(),
+      products: await databaseService.getProductsCount(),
+      prices: await databaseService.getPricesCount(),
+      suppliers: await databaseService.getSuppliersCount()
     };
 
     return NextResponse.json({
@@ -88,12 +77,4 @@ export async function GET() {
       },
       warning: 'POST operation will DELETE ALL DATA - use with extreme caution!'
     });
-  } catch (error) {
-    return NextResponse.json({
-      error: 'Failed to get system status',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  });

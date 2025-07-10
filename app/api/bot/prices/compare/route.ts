@@ -1,65 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateBot } from '../../middleware';
 import { calculateUnitPrice, areUnitsComparable, getCanonicalUnit } from '../../../../lib/utils/unit-price-calculator';
-import { normalize, coreNoun, hasDifferentCoreNoun, calcUnitPrice } from '../../../../lib/utils/product-normalizer';
-import { prisma } from '../../../../../lib/prisma';
+import { normalize, coreNoun, hasDifferentCoreNoun, calculateProductSimilarity } from '../../../../lib/utils/product-normalizer';
+import { databaseService } from '../../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../../utils/errors';
 import { randomUUID } from 'crypto';
 // Embedded searchProductsWithAliases function to avoid import issues
 async function searchProductsWithAliases(query: string) {
   const normalizedQuery = normalize(query);
   
   // First check for exact alias match
-  const alias = await prisma.productAlias.findUnique({
+  const alias = await databaseService.getProductAlias({
     where: { alias: normalizedQuery },
     select: { productId: true }
   });
   
   if (alias) {
     // Return the exact product matched by alias
-    const product = await prisma.product.findUnique({
-      where: { id: alias.productId },
-      include: {
-        prices: {
-          where: { validTo: null },
-          include: {
-            supplier: {
-              select: {
-                id: true,
-                name: true
-              }
-            }
-          }
-        }
-      }
-    });
+    const product = await databaseService.getProductById(alias.productId);
     
     return product ? [product] : [];
   }
   
   // Fallback to regular search
-  return await prisma.product.findMany({
-    where: {
-      OR: [
-        { name: { contains: normalizedQuery, mode: 'insensitive' } },
-        { standardizedName: { contains: normalizedQuery, mode: 'insensitive' } },
-        { rawName: { contains: normalizedQuery, mode: 'insensitive' } }
-      ]
-    },
-    include: {
-      prices: {
-        where: { validTo: null },
-        include: {
-          supplier: {
-            select: {
-              id: true,
-              name: true
-            }
-          }
-        }
-      }
-    },
-    take: 20
-  });
+  return await databaseService.getProducts({
 }
 import { standardizeProducts, type StandardizedProduct } from '../../../../lib/utils/standardization';
 
@@ -158,7 +122,7 @@ export async function POST(request: NextRequest) {
   const authError = authenticateBot(request);
   if (authError) return authError;
 
-  try {
+  return asyncHandler(async (request: NextRequest) => {
     const body = await request.json();
     const { items } = body;
 
@@ -195,27 +159,7 @@ export async function POST(request: NextRequest) {
               ]
             }));
 
-            products = await prisma.product.findMany({
-              where: {
-                AND: allWordsConditions
-              },
-              include: {
-                prices: {
-                  where: {
-                    validTo: null
-                  },
-                  include: {
-                    supplier: {
-                      select: {
-                        id: true,
-                        name: true
-                      }
-                    }
-                  }
-                }
-              },
-              take: 20
-            });
+            products = await databaseService.getProducts({
           }
         }
 
@@ -232,58 +176,14 @@ export async function POST(request: NextRequest) {
               ]
             }));
 
-            products = await prisma.product.findMany({
-              where: {
-                OR: wordConditions
-              },
-              include: {
-                prices: {
-                  where: {
-                    validTo: null
-                  },
-                  include: {
-                    supplier: {
-                      select: {
-                        id: true,
-                        name: true
-                      }
-                    }
-                  }
-                }
-              },
-              take: 20
-            });
+            products = await databaseService.getProducts({
           }
         }
 
         // If still no results, try partial word matches (for short queries like "romana")
         if (products.length === 0 && item.product_name.length >= 4) {
           const query = item.product_name.toLowerCase();
-          products = await prisma.product.findMany({
-            where: {
-              OR: [
-                { name: { contains: query, mode: 'insensitive' } },
-                { standardizedName: { contains: query, mode: 'insensitive' } },
-                { rawName: { contains: query, mode: 'insensitive' } }
-              ]
-            },
-            include: {
-              prices: {
-                where: {
-                  validTo: null
-                },
-                include: {
-                  supplier: {
-                    select: {
-                      id: true,
-                      name: true
-                    }
-                  }
-                }
-              }
-            },
-            take: 20
-          });
+          products = await databaseService.getProducts({
         }
 
         // If no products found, try fuzzy search for common misspellings
@@ -301,31 +201,7 @@ export async function POST(request: NextRequest) {
 
           for (const variant of variations) {
             if (variant !== item.product_name) {
-              products = await prisma.product.findMany({
-                where: {
-                  OR: [
-                    { name: { contains: variant, mode: 'insensitive' } },
-                    { standardizedName: { contains: variant, mode: 'insensitive' } },
-                    { rawName: { contains: variant, mode: 'insensitive' } }
-                  ]
-                },
-                include: {
-                  prices: {
-                    where: {
-                      validTo: null
-                    },
-                    include: {
-                      supplier: {
-                        select: {
-                          id: true,
-                          name: true
-                        }
-                      }
-                    }
-                  }
-                },
-                take: 20 // Get more products to find best matches
-              });
+              products = await databaseService.getProducts({
               
               if (products.length > 0) break;
             }
@@ -356,7 +232,7 @@ export async function POST(request: NextRequest) {
               ]
             };
 
-            await prisma.unmatched_queue.create({
+            await databaseService.createUnmatchedQueue({
               data: {
                 id: randomUUID(),
                 rawName: item.product_name,
@@ -510,7 +386,7 @@ export async function POST(request: NextRequest) {
 
         // MVP: Calculate scanned unit price for comparison (M-4 requirement)
         const scannedUnitPrice = item.unit && item.quantity ? 
-          calcUnitPrice(item.scanned_price, item.quantity, item.unit) : 
+          calculateUnitPrice(item.scanned_price, item.quantity, item.unit) : 
           item.scanned_price;
 
         // Collect all prices from all matching products for statistics
@@ -553,7 +429,7 @@ export async function POST(request: NextRequest) {
               entryUnitPrice = Number(p.unitPrice);
             } else {
               // Calculate unit price based on unit (assuming quantity = 1 if not stored)
-              entryUnitPrice = calcUnitPrice(Number(p.amount), 1, p.unit || product.unit);
+              entryUnitPrice = calculateUnitPrice(Number(p.amount), 1, p.unit || product.unit);
             }
 
             // Include ALL prices for statistics, but mark same supplier
@@ -713,14 +589,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
-  } catch (error) {
-    console.error('Bot API - Error comparing prices:', error);
-    return NextResponse.json(
-      { error: 'Failed to compare prices' },
-      { status: 500 }
-    );
-  }
-}
+  });
 
 // Normalize product name for comparison
 function normalizeProductName(name: string): string {
@@ -898,23 +767,3 @@ function calculateProductSimilarity(query: string, productName: string): number 
   return Math.max(0, Math.min(90, finalScore)); // Cap at 90 to reserve 95+ for exact matches
 }
 
-// Legacy similarity function for fallback
-function calculateSimilarity(str1: string, str2: string): number {
-  const s1 = str1.toLowerCase();
-  const s2 = str2.toLowerCase();
-  
-  if (s1 === s2) return 1;
-  
-  const longer = s1.length > s2.length ? s1 : s2;
-  const shorter = s1.length > s2.length ? s2 : s1;
-  
-  if (longer.includes(shorter)) return 0.8;
-  
-  // Count matching characters
-  let matches = 0;
-  for (let i = 0; i < shorter.length; i++) {
-    if (longer.includes(shorter[i])) matches++;
-  }
-  
-  return matches / longer.length;
-}

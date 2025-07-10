@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as XLSX from 'xlsx';
 
-import { prisma } from '../../../lib/prisma';
+import { databaseService } from '../../../services/DatabaseService';
+import { asyncHandler } from '../../../utils/errors';
 
-export async function GET(request: NextRequest) {
-  try {
+export const GET = asyncHandler(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url);
     const format = searchParams.get('format') || 'excel';
     const category = searchParams.get('category');
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       where.category = category;
     }
 
-    const products = await prisma.product.findMany({
+    const products = await databaseService.getProducts({
       where,
       include: {
         prices: {
@@ -102,11 +102,4 @@ export async function GET(request: NextRequest) {
       });
     }
 
-  } catch (error) {
-    console.error('Export error:', error);
-    return NextResponse.json(
-      { error: 'Failed to export data' },
-      { status: 500 }
-    );
-  }
-}
+  });

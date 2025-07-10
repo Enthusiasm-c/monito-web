@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { databaseService } from '@/app/services/DatabaseService';
+import { asyncHandler } from '@/app/utils/errors';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -47,20 +48,7 @@ export async function GET(
         // Set up polling interval
         interval = setInterval(async () => {
           try {
-            const upload = await prisma.upload.findUnique({
-              where: { id: uploadId },
-              select: {
-                status: true,
-                errorMessage: true,
-                createdAt: true,
-                updatedAt: true,
-                extractedData: true,
-                totalRowsDetected: true,
-                totalRowsProcessed: true,
-                approvalStatus: true,
-                rejectionReason: true,
-              },
-            });
+            const upload = await databaseService.getUploadById(uploadId);
             
             if (!upload) {
               console.log('[SSE] Upload not found:', uploadId);

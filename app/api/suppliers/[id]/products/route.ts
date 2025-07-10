@@ -1,25 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../../lib/prisma';
+import { databaseService } from '../../../../../services/DatabaseService';
+import { asyncHandler } from '../../../../../utils/errors';
 
-export async function GET(
+export const GET = asyncHandler(async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
+) => {
     const { id: supplierId } = await params;
 
     // Get supplier details
-    const supplier = await prisma.supplier.findUnique({
-      where: { id: supplierId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        address: true,
-        createdAt: true
-      }
-    });
+    const supplier = await databaseService.getSupplierById(supplierId);
 
     if (!supplier) {
       return NextResponse.json(
@@ -29,33 +19,7 @@ export async function GET(
     }
 
     // Get all products with prices from this supplier
-    const products = await prisma.product.findMany({
-      where: {
-        prices: {
-          some: {
-            supplierId: supplierId
-          }
-        }
-      },
-      include: {
-        prices: {
-          where: {
-            supplierId: supplierId
-          },
-          include: {
-            supplier: true
-          }
-        },
-        _count: {
-          select: {
-            prices: true
-          }
-        }
-      },
-      orderBy: {
-        standardizedName: 'asc'
-      }
-    });
+    const products = await databaseService.getProductsBySupplier(supplierId);
 
     // Format the response with supplier-specific pricing
     const formattedProducts = products.map(product => {
@@ -82,11 +46,4 @@ export async function GET(
       products: formattedProducts
     });
 
-  } catch (error) {
-    console.error('Error fetching supplier products:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch supplier products' },
-      { status: 500 }
-    );
-  }
-}
+  });

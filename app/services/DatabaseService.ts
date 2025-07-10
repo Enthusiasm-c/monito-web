@@ -20,15 +20,7 @@ export interface SearchParams {
   sortOrder: 'asc' | 'desc';
 }
 
-export class DatabaseService {
-  private static instance: DatabaseService;
-
-  public static getInstance(): DatabaseService {
-    if (!DatabaseService.instance) {
-      DatabaseService.instance = new DatabaseService();
-    }
-    return DatabaseService.instance;
-  }
+export const databaseService = {
 
   /**
    * Supplier operations
@@ -116,6 +108,21 @@ export class DatabaseService {
     }
   }
 
+  async getSupplierByName(name: string) {
+    try {
+      return await prisma.supplier.findFirst({
+        where: { 
+          name: { 
+            equals: name, 
+            mode: 'insensitive' 
+          } 
+        }
+      });
+    } catch (error) {
+      throw new DatabaseError('Failed to fetch supplier by name', error);
+    }
+  }
+
   async updateSupplier(id: string, data: Partial<{
     name: string;
     email: string;
@@ -136,6 +143,18 @@ export class DatabaseService {
         throw new ConflictError('Supplier with this name already exists');
       }
       throw new DatabaseError('Failed to update supplier', error);
+    }
+  }
+
+  async upsertSupplier(data: {
+    where: { name: string },
+    update: {},
+    create: { name: string, email: string }
+  }) {
+    try {
+      return await prisma.supplier.upsert(data);
+    } catch (error) {
+      throw new DatabaseError('Failed to upsert supplier', error);
     }
   }
 
@@ -225,6 +244,40 @@ export class DatabaseService {
     }
   }
 
+  async getProductsBySupplier(supplierId: string) {
+    try {
+      return await prisma.product.findMany({
+        where: {
+          prices: {
+            some: {
+              supplierId: supplierId
+            }
+          }
+        },
+        include: {
+          prices: {
+            where: {
+              supplierId: supplierId
+            },
+            include: {
+              supplier: true
+            }
+          },
+          _count: {
+            select: {
+              prices: true
+            }
+          }
+        },
+        orderBy: {
+          standardizedName: 'asc'
+        }
+      });
+    } catch (error) {
+      throw new DatabaseError('Failed to fetch products by supplier', error);
+    }
+  }
+
   async createProduct(data: {
     name: string;
     standardizedName?: string;
@@ -236,6 +289,7 @@ export class DatabaseService {
     try {
       const productData = {
         ...data,
+        rawName: data.name, // FIX: Add missing rawName
         standardizedName: data.standardizedName || data.name.toLowerCase().trim(),
         category: data.category || 'Other',
         standardizedUnit: data.standardizedUnit || data.unit.toLowerCase()
@@ -271,6 +325,14 @@ export class DatabaseService {
     }
   }
 
+  async upsertProduct(data: any) {
+    try {
+      return await prisma.product.upsert(data);
+    } catch (error) {
+      throw new DatabaseError('Failed to upsert product', error);
+    }
+  }
+
   /**
    * Price operations
    */
@@ -303,6 +365,63 @@ export class DatabaseService {
     }
   }
 
+  async upsertPrice(data: any) {
+    try {
+      return await prisma.price.upsert(data);
+    } catch (error) {
+      throw new DatabaseError('Failed to upsert price', error);
+    }
+  }
+
+  async getPrices(options: any) {
+    try {
+      return await prisma.price.findMany(options);
+    } catch (error) {
+      throw new DatabaseError('Failed to fetch prices', error);
+    }
+  }
+
+  async getPriceById(id: string) {
+    try {
+      return await prisma.price.findUnique({
+        where: { id },
+        include: {
+          product: true,
+          supplier: true
+        }
+      });
+    } catch (error) {
+      throw new DatabaseError('Failed to fetch price by id', error);
+    }
+  }
+
+  async updatePrice(id: string, data: any) {
+    try {
+      return await prisma.price.update({
+        where: { id },
+        data
+      });
+    } catch (error) {
+      throw new DatabaseError('Failed to update price', error);
+    }
+  }
+
+  async deletePriceHistory(tx: Prisma.TransactionClient, data: any) {
+    try {
+      return await tx.priceHistory.deleteMany(data);
+    } catch (error) {
+      throw new DatabaseError('Failed to delete price history', error);
+    }
+  }
+
+  async deletePrice(tx: Prisma.TransactionClient, data: any) {
+    try {
+      return await tx.price.delete(data);
+    } catch (error) {
+      throw new DatabaseError('Failed to delete price', error);
+    }
+  }
+
   /**
    * Upload operations
    */
@@ -315,27 +434,116 @@ export class DatabaseService {
     metadata?: any;
   }) {
     try {
-      return await prisma.upload.create({ data });
+      const dataForCreation: any = {
+        fileName: data.fileName,
+        fileUrl: data.fileUrl,
+        fileSize: data.fileSize,
+        status: data.status,
+        metadata: data.metadata,
+      };
+
+      if (data.supplierId) {
+        dataForCreation.supplier = {
+          connect: { id: data.supplierId },
+        };
+      }
+      
+      return await prisma.upload.create({ data: dataForCreation });
     } catch (error) {
       throw new DatabaseError('Failed to create upload record', error);
     }
   }
 
-  async updateUploadStatus(id: string, status: string, metadata?: any) {
+  async updateUpload(id: string, data: any) {
     try {
       return await prisma.upload.update({
         where: { id },
-        data: {
-          status,
-          metadata: metadata ? { ...metadata } : undefined,
-          updatedAt: new Date()
-        }
+        data
+      });
+    } catch (error) {
+      throw new DatabaseError('Failed to update upload', error);
+    }
+  }
+
+  async updateUpload(id: string, data: any) {
+    try {
+      return await prisma.upload.update({
+        where: { id },
+        data
+      });
+    } catch (error) {
+      throw new DatabaseError('Failed to update upload', error);
+    }
+  }
+
+  async updateUploadStatus(id: string, status: string, metadata?: any) {
+    try {
+      const dataToUpdate: any = {
+        status,
+        updatedAt: new Date(),
+      };
+      if (metadata) {
+        dataToUpdate.metadata = metadata;
+      }
+      return await prisma.upload.update({
+        where: { id },
+        data: dataToUpdate,
       });
     } catch (error: any) {
       if (error.code === 'P2025') {
         throw new NotFoundError('Upload', id);
       }
       throw new DatabaseError('Failed to update upload status', error);
+    }
+  }
+
+  async getUploadById(id: string) {
+    try {
+      return await prisma.upload.findUnique({
+        where: { id },
+        include: {
+          supplier: true,
+          prices: {
+            include: {
+              product: true
+            }
+          }
+        }
+      });
+    } catch (error) {
+      throw new DatabaseError('Failed to fetch upload by id', error);
+    }
+  }
+
+  async getUploads(options: any) {
+    try {
+      return await prisma.upload.findMany(options);
+    } catch (error) {
+      throw new DatabaseError('Failed to fetch uploads', error);
+    }
+  }
+
+  async findFirstUpload(options: any) {
+    try {
+      return await prisma.upload.findFirst(options);
+    } catch (error) {
+      throw new DatabaseError('Failed to find first upload', error);
+    }
+  }
+
+  async findFirstUpload(options: any) {
+    try {
+      return await prisma.upload.findFirst(options);
+    } catch (error) {
+      throw new DatabaseError('Failed to find first upload', error);
+    }
+  }
+
+  async groupUploadsBy(options: any) {
+    try {
+      return await prisma.upload.groupBy(options);
+    } catch (error) {
+      throw new DatabaseError('Failed to group uploads by', error);
     }
   }
 
@@ -411,6 +619,14 @@ export class DatabaseService {
     }
   }
 
+  async executeRaw(query: any) {
+    try {
+      return await prisma.$executeRaw(query);
+    } catch (error) {
+      throw new DatabaseError('Failed to execute raw query', error);
+    }
+  }
+
   /**
    * Health check
    */
@@ -421,8 +637,84 @@ export class DatabaseService {
     } catch (error) {
       return false;
     }
-  }
-}
+  },
 
-// Export singleton instance
-export const databaseService = DatabaseService.getInstance();
+  async getProductsWithoutPrices() {
+    try {
+      return await prisma.product.findMany({
+        where: {
+          prices: {
+            none: {}
+          }
+        },
+        select: { id: true, name: true }
+      });
+    } catch (error) {
+      throw new DatabaseError('Failed to fetch products without prices', error);
+    }
+  },
+
+  async deleteProducts(data: any) {
+    try {
+      return await prisma.product.deleteMany(data);
+    } catch (error) {
+      throw new DatabaseError('Failed to delete products', error);
+    }
+  },
+
+  async deletePrices(data: any) {
+    try {
+      return await prisma.price.deleteMany(data);
+    } catch (error) {
+      throw new DatabaseError('Failed to delete prices', error);
+    }
+  },
+
+  async deleteSuppliers(data: any) {
+    try {
+      return await prisma.supplier.deleteMany(data);
+    } catch (error) {
+      throw new DatabaseError('Failed to delete suppliers', error);
+    }
+  }
+
+  async deleteUploads(data: any) {
+    try {
+      return await prisma.upload.deleteMany(data);
+    } catch (error) {
+      throw new DatabaseError('Failed to delete uploads', error);
+    }
+  },
+
+  async getProductsCount() {
+    try {
+      return await prisma.product.count();
+    } catch (error) {
+      throw new DatabaseError('Failed to get products count', error);
+    }
+  },
+
+  async getPricesCount() {
+    try {
+      return await prisma.price.count();
+    } catch (error) {
+      throw new DatabaseError('Failed to get prices count', error);
+    }
+  },
+
+  async getSuppliersCount() {
+    try {
+      return await prisma.supplier.count();
+    } catch (error) {
+      throw new DatabaseError('Failed to get suppliers count', error);
+    }
+  },
+
+  async getUploadsCount() {
+    try {
+      return await prisma.upload.count();
+    } catch (error) {
+      throw new DatabaseError('Failed to get uploads count', error);
+    }
+  }
+};

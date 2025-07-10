@@ -47,19 +47,18 @@ interface ProcessingMetrics {
   errors: string[];
 }
 
-class EnhancedFileProcessor {
-  private static instance: EnhancedFileProcessor;
+import { BaseProcessor } from '../../lib/core/BaseProcessor';
+
+class EnhancedFileProcessor extends BaseProcessor {
   private processingLogger: ProcessingLogger;
   private standardizationCache: Map<string, string>;
 
-  public static getInstance(): EnhancedFileProcessor {
-    if (!EnhancedFileProcessor.instance) {
-      EnhancedFileProcessor.instance = new EnhancedFileProcessor();
-    }
-    return EnhancedFileProcessor.instance;
+  public static getInstance(): EnhancedFileProcessor { // BaseProcessor
+    return super.getInstance() as EnhancedFileProcessor;
   }
 
   constructor() {
+    super('EnhancedFileProcessor');
     this.processingLogger = new ProcessingLogger();
     this.standardizationCache = new Map<string, string>();
   }
@@ -86,7 +85,11 @@ class EnhancedFileProcessor {
   /**
    * Main file processing entry point
    */
-  async processFile(uploadId: string): Promise<ProcessingResult> {
+  async processDocument(fileContent: Buffer | string, fileName: string, options?: ProcessOptions): Promise<ProcessingResult> {
+    const uploadId = options?.uploadId; // Get uploadId from options
+    if (!uploadId) {
+      throw new Error('uploadId is required in options');
+    }
     const metrics: ProcessingMetrics = {
       startTime: Date.now(),
       totalTokensUsed: 0,
@@ -1447,9 +1450,6 @@ class ProcessingLogger {
     }
   }
 }
-
-// Export singleton instance
-export const enhancedFileProcessor = EnhancedFileProcessor.getInstance();
 
 // Export types
 export type { ProcessingResult };

@@ -18,17 +18,13 @@ interface CostCalculation {
   currency: string;
 }
 
-class TokenCostMonitor {
-  private static instance: TokenCostMonitor;
-  private totalCostUsd: number = 0;
-  private monthlyUsage: Map<string, number> = new Map(); // model -> cost
+export const tokenCostMonitor = {
+  totalCostUsd: number = 0,
+  monthlyUsage: Map<string, number> = new Map(); // model -> cost
 
   // Cost per 1K tokens in USD (from environment)
-  private readonly costs = {
-    'gpt-4o-mini': {
-      input: parseFloat(process.env.OPENAI_GPT4OMINI_INPUT_COST_PER_1K || '0.00015'),
-      output: parseFloat(process.env.OPENAI_GPT4OMINI_OUTPUT_COST_PER_1K || '0.0006')
-    },
+  costs = {
+    
     // Legacy model names for backward compatibility
     'gpt-o3': {
       input: parseFloat(process.env.OPENAI_GPTO3_INPUT_COST_PER_1K || '0.06'),
@@ -48,30 +44,25 @@ class TokenCostMonitor {
     }
   };
 
-  public static getInstance(): TokenCostMonitor {
-    if (!TokenCostMonitor.instance) {
-      TokenCostMonitor.instance = new TokenCostMonitor();
-    }
-    return TokenCostMonitor.instance;
-  }
+  
 
 
   /**
    * Track token usage and add to totals
    */
   trackUsage(usage: TokenUsage): CostCalculation {
-    const cost = this.calculateCostDetailed(usage);
+    const cost = tokenCostMonitor.calculateCostDetailed(usage);
     
     // Add to total cost
-    this.totalCostUsd += cost.totalCost;
+    tokenCostMonitor.totalCostUsd += cost.totalCost;
     
     // Add to monthly usage by model
-    const modelKey = this.normalizeModelName(usage.model);
+    const modelKey = tokenCostMonitor.normalizeModelName(usage.model);
     const currentMonthKey = `${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
     const monthlyKey = `${currentMonthKey}-${modelKey}`;
     
-    const existingCost = this.monthlyUsage.get(monthlyKey) || 0;
-    this.monthlyUsage.set(monthlyKey, existingCost + cost.totalCost);
+    const existingCost = tokenCostMonitor.monthlyUsage.get(monthlyKey) || 0;
+    tokenCostMonitor.monthlyUsage.set(monthlyKey, existingCost + cost.totalCost);
 
     // Log the usage
     console.log(`💰 Token Usage: ${usage.inputTokens} in + ${usage.outputTokens} out = $${cost.totalCost.toFixed(4)} (${usage.model})`);
@@ -83,7 +74,7 @@ class TokenCostMonitor {
    * Get current total costs
    */
   getTotalCost(): number {
-    return this.totalCostUsd;
+    return tokenCostMonitor.totalCostUsd;
   }
 
   /**
@@ -93,7 +84,7 @@ class TokenCostMonitor {
     const result: Record<string, number> = {};
     const currentMonthKey = `${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
     
-    for (const [key, cost] of this.monthlyUsage.entries()) {
+    for (const [key, cost] of tokenCostMonitor.monthlyUsage.entries()) {
       if (key.startsWith(currentMonthKey)) {
         const model = key.split('-').slice(2).join('-');
         result[model] = (result[model] || 0) + cost;
@@ -108,10 +99,10 @@ class TokenCostMonitor {
    */
   getUsageStats() {
     return {
-      totalCostUsd: this.totalCostUsd,
-      monthlyUsage: this.getMonthlyUsage(),
-      supportedModels: Object.keys(this.costs),
-      costRates: this.costs
+      totalCostUsd: tokenCostMonitor.totalCostUsd,
+      monthlyUsage: tokenCostMonitor.getMonthlyUsage(),
+      supportedModels: Object.keys(tokenCostMonitor.costs),
+      costRates: tokenCostMonitor.costs
     };
   }
 
@@ -119,18 +110,17 @@ class TokenCostMonitor {
    * Reset usage statistics (for testing)
    */
   reset(): void {
-    this.totalCostUsd = 0;
-    this.monthlyUsage.clear();
+    tokenCostMonitor.totalCostUsd = 0;
+    tokenCostMonitor.monthlyUsage.clear();
   }
 
   /**
    * Normalize model names for consistent tracking
    */
-  private normalizeModelName(model: string): string {
+  normalizeModelName(model: string): string {
     // Handle different model name variations
-    if (model.includes('gpt-4o-mini')) return 'gpt-4o-mini';
     if (model.includes('gpt-4o')) return 'gpt-4o';
-    if (model.includes('gpt-o3-mini')) return 'gpt-4o-mini'; // Map old model to new
+    if (model.includes('gpt-o3-mini')) return 'o3-mini';
     if (model.includes('gpt-o3')) return 'gpt-4o'; // Map old model to new
     if (model.includes('gpt-4')) return 'gpt-4o'; // Default GPT-4 to gpt-4o rates
     if (model.includes('gpt-3.5')) return 'gpt-3.5-turbo';
@@ -156,17 +146,17 @@ class TokenCostMonitor {
   calculateCost(tokensOrUsage: number | TokenUsage, model: string = 'gpt-4o-mini'): number {
     if (typeof tokensOrUsage === 'number') {
       // Simple calculation assuming all tokens are output
-      const modelKey = this.normalizeModelName(model);
-      const rates = this.costs[modelKey as keyof typeof this.costs];
+      const modelKey = tokenCostMonitor.normalizeModelName(model);
+      const rates = tokenCostMonitor.costs[modelKey as keyof typeof tokenCostMonitor.costs];
       if (!rates) {
         console.warn(`Unknown model: ${model}, using gpt-4o-mini rates`);
-        const fallbackRates = this.costs['gpt-4o-mini'] || this.costs['gpt-o3-mini'];
+        const fallbackRates = tokenCostMonitor.costs['gpt-4o-mini'] || tokenCostMonitor.costs['gpt-o3-mini'];
         return (tokensOrUsage / 1000) * fallbackRates.output;
       }
       return (tokensOrUsage / 1000) * rates.output;
     } else {
       // Full calculation with input/output split
-      const calc = this.calculateCostDetailed(tokensOrUsage);
+      const calc = tokenCostMonitor.calculateCostDetailed(tokensOrUsage);
       return calc.totalCost;
     }
   }
@@ -174,13 +164,13 @@ class TokenCostMonitor {
   /**
    * Detailed cost calculation with input/output breakdown
    */
-  private calculateCostDetailed(usage: TokenUsage): CostCalculation {
-    const modelKey = this.normalizeModelName(usage.model);
-    const rates = this.costs[modelKey as keyof typeof this.costs];
+  calculateCostDetailed(usage: TokenUsage): CostCalculation {
+    const modelKey = tokenCostMonitor.normalizeModelName(usage.model);
+    const rates = tokenCostMonitor.costs[modelKey as keyof typeof tokenCostMonitor.costs];
     
     if (!rates) {
       console.warn(`Unknown model: ${usage.model}, using gpt-4o-mini rates`);
-      const fallbackRates = this.costs['gpt-4o-mini'] || this.costs['gpt-o3-mini'];
+      const fallbackRates = tokenCostMonitor.costs['gpt-4o-mini'] || tokenCostMonitor.costs['gpt-o3-mini'];
       const inputCost = (usage.inputTokens / 1000) * fallbackRates.input;
       const outputCost = (usage.outputTokens / 1000) * fallbackRates.output;
       const totalCost = inputCost + outputCost;
@@ -202,7 +192,7 @@ class TokenCostMonitor {
     const todayKey = new Date().toISOString().split('T')[0];
     let todayCost = 0;
     
-    for (const [key, cost] of this.monthlyUsage.entries()) {
+    for (const [key, cost] of tokenCostMonitor.monthlyUsage.entries()) {
       if (key.includes(todayKey)) {
         todayCost += cost;
       }
@@ -215,10 +205,7 @@ class TokenCostMonitor {
     
     return false;
   }
-}
-
-// Export singleton instance
-export const tokenCostMonitor = TokenCostMonitor.getInstance();
+};
 
 // Export types
 export type { TokenUsage, CostCalculation };
