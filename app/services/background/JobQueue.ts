@@ -33,6 +33,10 @@ export interface Job {
 export const jobQueue = {
   isProcessing: false,
   processingInterval: null as NodeJS.Timeout | null,
+  retryCount: 0,
+  maxRetries: 5,
+  baseDelay: 2000, // Start with 2 seconds
+  maxDelay: 60000, // Max 60 seconds
 
   /**
    * Add a job to the queue
@@ -63,13 +67,59 @@ export const jobQueue = {
   },
 
   /**
+   * Check database connection health
+   */
+  async checkDatabaseConnection(): Promise<boolean> {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      return true;
+    } catch (error) {
+      console.error('❌ Database connection check failed:', error);
+      return false;
+    }
+  },
+
+  /**
+   * Calculate delay with exponential backoff
+   */
+  calculateBackoffDelay(): number {
+    const delay = Math.min(
+      jobQueue.baseDelay * Math.pow(2, jobQueue.retryCount),
+      jobQueue.maxDelay
+    );
+    return delay;
+  },
+
+  /**
    * Start the job processing loop
    */
-  startProcessing() {
+  async startProcessing() {
     if (jobQueue.isProcessing) return;
     
     jobQueue.isProcessing = true;
     console.log('🚀 Starting job queue processor...');
+    
+    // Check database connection before starting
+    const isConnected = await jobQueue.checkDatabaseConnection();
+    if (!isConnected) {
+      console.error('❌ Cannot start job processor - database connection failed');
+      jobQueue.isProcessing = false;
+      
+      // Retry with exponential backoff
+      const delay = jobQueue.calculateBackoffDelay();
+      jobQueue.retryCount++;
+      
+      if (jobQueue.retryCount <= jobQueue.maxRetries) {
+        console.log(`⏳ Retrying in ${delay / 1000} seconds... (attempt ${jobQueue.retryCount}/${jobQueue.maxRetries})`);
+        setTimeout(() => jobQueue.startProcessing(), delay);
+      } else {
+        console.error('❌ Max retries reached. Job processor stopped.');
+      }
+      return;
+    }
+    
+    // Reset retry count on successful connection
+    jobQueue.retryCount = 0;
     
     jobQueue.processingInterval = setInterval(async () => {
       await jobQueue.processNextJob();
@@ -92,30 +142,81 @@ export const jobQueue = {
    * Process the next pending job
    */
   async processNextJob() {
+    console.log('🔍 Checking for pending jobs...');
     try {
-      // Find the oldest pending job
-      const upload = await prisma.upload.findFirst({
+      // Check database connection before each job
+      const isConnected = await jobQueue.checkDatabaseConnection();
+      if (!isConnected) {
+        console.error('❌ Database connection lost during job processing');
+        jobQueue.stopProcessing();
+        
+        // Try to restart with backoff
+        setTimeout(() => jobQueue.startProcessing(), jobQueue.calculateBackoffDelay());
+        return;
+      }
+      // Find all processing jobs
+      const uploads = await prisma.upload.findMany({
         where: { 
           status: 'processing'
         },
         orderBy: { createdAt: 'asc' }
       });
       
-      // Check if this job is actually queued
-      if (upload && upload.processingDetails) {
-        let details;
-        if (typeof upload.processingDetails === 'string') {
-          details = JSON.parse(upload.processingDetails);
-        } else {
-          details = upload.processingDetails as any;
+      if (uploads.length === 0) {
+        console.log('✅ No pending jobs found');
+        return;
+      }
+      
+      console.log(`📋 Found ${uploads.length} uploads with processing status`);
+      
+      // Find the first queued job
+      let queuedUpload = null;
+      for (const upload of uploads) {
+        let details = {};
+        if (upload.processingDetails) {
+          try {
+            if (typeof upload.processingDetails === 'string') {
+              details = JSON.parse(upload.processingDetails);
+            } else {
+              details = upload.processingDetails as any;
+            }
+          } catch (e) {
+            details = {};
+          }
         }
         
-        if (details.stage !== 'queued') {
-          return; // Skip if not queued
+        console.log(`📋 Upload ${upload.id}: stage=${details.stage || 'unknown'}, jobId=${details.jobId || 'none'}`);
+        
+        // If no stage is set, consider it failed/abandoned
+        if (!details.stage && upload.status === 'processing') {
+          // Mark as failed if it's been processing for too long without stage
+          const uploadAge = Date.now() - upload.createdAt.getTime();
+          if (uploadAge > 10 * 60 * 1000) { // 10 minutes
+            console.log(`⚠️ Marking abandoned upload ${upload.id} as failed`);
+            await prisma.upload.update({
+              where: { id: upload.id },
+              data: {
+                status: 'failed',
+                errorMessage: 'Processing abandoned - no stage information'
+              }
+            });
+            continue;
+          }
+        }
+        
+        if (details.stage === 'queued') {
+          queuedUpload = upload;
+          break;
         }
       }
-
-      if (!upload) return; // No pending jobs
+      
+      if (!queuedUpload) {
+        console.log('✅ No queued jobs found (all are running or completed)');
+        return;
+      }
+      
+      const upload = queuedUpload;
+      console.log(`🎯 Processing queued job: ${upload.id}`)
 
       let processingDetails;
       if (typeof upload.processingDetails === 'string') {
@@ -146,8 +247,25 @@ export const jobQueue = {
         }
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Job processing error:', error);
+      
+      // Check if it's a database connection error
+      if (error.code === 'P1001' || error.code === 'P1017' || error.code === 'P2024') {
+        console.error('❌ Database connection error detected');
+        jobQueue.stopProcessing();
+        
+        // Try to restart with backoff
+        jobQueue.retryCount++;
+        const delay = jobQueue.calculateBackoffDelay();
+        
+        if (jobQueue.retryCount <= jobQueue.maxRetries) {
+          console.log(`⏳ Retrying in ${delay / 1000} seconds... (attempt ${jobQueue.retryCount}/${jobQueue.maxRetries})`);
+          setTimeout(() => jobQueue.startProcessing(), delay);
+        } else {
+          console.error('❌ Max retries reached. Job processor stopped.');
+        }
+      }
     }
   },
 
@@ -251,6 +369,65 @@ export const jobQueue = {
   },
 
   /**
+   * Reset stuck jobs from running to queued
+   */
+  async resetStuckJobs() {
+    try {
+      console.log('🔄 Resetting stuck jobs...');
+      
+      const stuckUploads = await prisma.upload.findMany({
+        where: { 
+          status: 'processing'
+        }
+      });
+      
+      let resetCount = 0;
+      
+      for (const upload of stuckUploads) {
+        if (upload.processingDetails) {
+          let details;
+          if (typeof upload.processingDetails === 'string') {
+            details = JSON.parse(upload.processingDetails);
+          } else {
+            details = upload.processingDetails as any;
+          }
+          
+          if (details.stage === 'running') {
+            console.log(`🔄 Resetting upload ${upload.id} from running to queued`);
+            
+            details.stage = 'queued';
+            details.progress = 0;
+            details.message = 'Reset to queued for reprocessing';
+            
+            await prisma.upload.update({
+              where: { id: upload.id },
+              data: {
+                processingDetails: JSON.stringify(details)
+              }
+            });
+            
+            resetCount++;
+          }
+        }
+      }
+      
+      console.log(`✅ Reset ${resetCount} stuck jobs`);
+      
+      // If we reset any jobs, start processing
+      if (resetCount > 0 && !jobQueue.isProcessing) {
+        console.log('🚀 Starting processor after reset...');
+        jobQueue.startProcessing();
+      }
+      
+      return resetCount;
+      
+    } catch (error) {
+      console.error('❌ Error resetting stuck jobs:', error);
+      return 0;
+    }
+  },
+
+  /**
    * Check for existing queued jobs and start processing if any exist
    */
   async checkAndStartProcessing() {
@@ -266,8 +443,14 @@ export const jobQueue = {
 
       const actuallyQueuedUploads = queuedUploads.filter(upload => {
         if (upload.processingDetails) {
-          const details = upload.processingDetails as any;
-          return details.stage === 'queued';
+          try {
+            const details = typeof upload.processingDetails === 'string'
+              ? JSON.parse(upload.processingDetails)
+              : upload.processingDetails as any;
+            return details.stage === 'queued';
+          } catch (e) {
+            return false;
+          }
         }
         return false;
       });

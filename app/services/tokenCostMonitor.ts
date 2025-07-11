@@ -25,6 +25,16 @@ export const tokenCostMonitor = {
   // Cost per 1K tokens in USD (from environment)
   costs: {
     
+    // o3 models
+    'o3-mini': {
+      input: parseFloat(process.env.OPENAI_GPTO3MINI_INPUT_COST_PER_1K || '0.003'),
+      output: parseFloat(process.env.OPENAI_GPTO3MINI_OUTPUT_COST_PER_1K || '0.012')
+    },
+    'o3-mini-2025-01-31': {
+      input: parseFloat(process.env.OPENAI_GPTO3MINI_INPUT_COST_PER_1K || '0.003'),
+      output: parseFloat(process.env.OPENAI_GPTO3MINI_OUTPUT_COST_PER_1K || '0.012')
+    },
+    
     // Legacy model names for backward compatibility
     'gpt-o3': {
       input: parseFloat(process.env.OPENAI_GPTO3_INPUT_COST_PER_1K || '0.06'),
@@ -37,6 +47,10 @@ export const tokenCostMonitor = {
     'gpt-4o': {
       input: parseFloat(process.env.OPENAI_GPT4O_INPUT_COST_PER_1K || '0.0025'),
       output: parseFloat(process.env.OPENAI_GPT4O_OUTPUT_COST_PER_1K || '0.01')
+    },
+    'gpt-4o-mini': {
+      input: parseFloat(process.env.OPENAI_GPT4OMINI_INPUT_COST_PER_1K || '0.00015'),
+      output: parseFloat(process.env.OPENAI_GPT4OMINI_OUTPUT_COST_PER_1K || '0.0006')
     },
     'gpt-3.5-turbo': {
       input: parseFloat(process.env.OPENAI_GPT35_INPUT_COST_PER_1K || '0.0005'),
@@ -119,6 +133,8 @@ export const tokenCostMonitor = {
    */
   normalizeModelName(model: string): string {
     // Handle different model name variations
+    if (model.includes('o3-mini')) return 'o3-mini';
+    if (model.includes('gpt-4o-mini')) return 'gpt-4o-mini';
     if (model.includes('gpt-4o')) return 'gpt-4o';
     if (model.includes('gpt-o3-mini')) return 'o3-mini';
     if (model.includes('gpt-o3')) return 'gpt-4o'; // Map old model to new

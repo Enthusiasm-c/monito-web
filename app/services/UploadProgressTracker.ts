@@ -62,10 +62,36 @@ export class UploadProgressTracker {
     
     // Update database
     try {
+      // Get current processingDetails to preserve stage and jobId
+      const upload = await prisma.upload.findUnique({
+        where: { id: uploadId },
+        select: { processingDetails: true }
+      });
+      
+      let existingDetails = {};
+      if (upload?.processingDetails) {
+        try {
+          existingDetails = typeof upload.processingDetails === 'string'
+            ? JSON.parse(upload.processingDetails)
+            : upload.processingDetails;
+        } catch (e) {
+          existingDetails = {};
+        }
+      }
+      
+      // Merge with existing details to preserve stage and jobId
+      const fullDetails = {
+        ...existingDetails,
+        ...currentProgress.details,
+        stage: step, // Update stage based on current step
+        progress,
+        lastUpdated: new Date().toISOString()
+      };
+      
       await prisma.upload.update({
         where: { id: uploadId },
         data: {
-          processingDetails: currentProgress.details,
+          processingDetails: fullDetails,
           status: currentProgress.status === 'completed' ? 'completed' : 
                  currentProgress.status === 'failed' ? 'failed' : 'processing'
         }

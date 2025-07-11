@@ -43,7 +43,37 @@ export async function GET(
         controller.enqueue(encoder.encode(': ping\n\n'));
         
         // Send initial status
-        await sendStatus(controller, encoder, uploadId);
+        try {
+          const upload = await databaseService.getUploadById(uploadId);
+          if (upload) {
+            let processingDetails = upload.processingDetails;
+            if (typeof processingDetails === 'string') {
+              try {
+                processingDetails = JSON.parse(processingDetails);
+              } catch (e) {
+                processingDetails = {};
+              }
+            }
+            
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+              type: 'progress',
+              uploadId,
+              status: upload.status,
+              currentStep: processingDetails?.stage || 'Unknown',
+              progress: processingDetails?.progress || 0,
+              productsCreated: processingDetails?.productsCreated || 0,
+              message: processingDetails?.message || '',
+              steps: processingDetails?.steps || [],
+              uploadInfo: {
+                fileName: upload.originalName,
+                fileSize: upload.fileSize,
+                createdAt: upload.createdAt
+              }
+            })}\n\n`));
+          }
+        } catch (error) {
+          console.error('[SSE] Error sending initial status:', error);
+        }
         
         // Set up polling interval
         interval = setInterval(async () => {
@@ -80,9 +110,7 @@ export async function GET(
               currentStep: processingDetails?.stage || 'Unknown',
               progress: processingDetails?.progress || 0,
               detailedProgress: processingDetails || {},
-            })}
-
-`));
+            })}\n\n`));
             
             // Close stream if processing is complete
             if (upload.status === 'completed' || upload.status === 'failed' || 
